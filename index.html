@@ -4282,5 +4282,70 @@ table.bt2 tbody td { color: var(--ink-dim) !important; }
 .cb-status.pending { background: rgba(232,193,106,0.16) !important; color: var(--gold) !important; }
 </style>
 
+<!-- ══════════════════════════════════════════════
+     AETHER 深空玻璃皮膚 — 建案詳情 / 裝潢方案彈窗覆蓋
+     （以「屬性:色值」配對覆蓋大量內聯樣式）
+══════════════════════════════════════════════ -->
+<style>
+/* 容器底色 */
+#projDetailOverlay, #decoOverlay { background: var(--void) !important; }
+
+/* ── 淺色背景 → 深空玻璃 ── */
+#projDetailOverlay [style*="background:#fff"], #decoOverlay [style*="background:#fff"] { background: rgba(255,255,255,0.04) !important; backdrop-filter: blur(6px); }
+#decoOverlay [style*="background:#F7F4ED"] { background: var(--void) !important; }
+#decoOverlay [style*="background:#F0EFE6"] { background: var(--void-2) !important; }
+#projDetailOverlay [style*="background:rgba(245,243,239"] { background: rgba(10,16,32,0.9) !important; }
+#decoOverlay [style*="background:rgba(242,246,251"] { background: rgba(10,16,32,0.92) !important; }
+#pdGallery { background: var(--void-2) !important; }
+/* 浮動方向鍵的白底 */
+#projDetailOverlay [style*="rgba(255,255,255,.85)"], #decoOverlay [style*="rgba(255,255,255,.85)"] { background: rgba(14,21,38,0.85) !important; }
+
+/* ── 標籤底（深綠透明）→ 青色透明 ── */
+#projDetailOverlay [style*="rgba(47,74,62,.09)"], #decoOverlay [style*="rgba(47,74,62,.09)"],
+#projDetailOverlay [style*="rgba(47,74,62,.08)"], #decoOverlay [style*="rgba(47,74,62,.08)"],
+#projDetailOverlay [style*="rgba(47,74,62,.07)"], #decoOverlay [style*="rgba(47,74,62,.07)"] { background: rgba(91,232,255,0.08) !important; }
+
+/* ── 深綠按鈕漸層 → 電光青 ── */
+#projDetailOverlay [style*="linear-gradient(135deg,#2F4A3E,#4A6B59)"], #decoOverlay [style*="linear-gradient(135deg,#2F4A3E,#4A6B59)"] { background: linear-gradient(120deg, var(--cyan), var(--cyan-2) 55%, var(--cyan-deep)) !important; color: #03121A !important; box-shadow: 0 8px 22px rgba(56,198,240,0.35), 0 0 30px rgba(91,232,255,0.22) !important; }
+/* 建案詳情大 CTA 區（純深綠）→ 玻璃青框 */
+#projDetailOverlay [style*="linear-gradient(135deg,#2F4A3E,#2F4A3E)"] { background: linear-gradient(135deg, rgba(91,232,255,0.1), rgba(154,134,255,0.06)) !important; border: 1px solid rgba(91,232,255,0.3) !important; box-shadow: inset 0 0 40px rgba(91,232,255,0.06), 0 0 40px rgba(91,232,255,0.1) !important; }
+
+/* ── 文字色 ── */
+#projDetailOverlay [style*="color:#2F4A3E"], #decoOverlay [style*="color:#2F4A3E"] { color: var(--ink) !important; }
+#projDetailOverlay [style*="color:#1A1A1A"] { color: var(--ink) !important; }
+#decoOverlay [style*="color:#4A90C4"] { color: var(--cyan) !important; }
+#decoOverlay [style*="color:#4A6580"] { color: var(--ink-dim) !important; }
+#projDetailOverlay [style*="color:#7A8FA6"], #decoOverlay [style*="color:#7A8FA6"] { color: var(--ink-faint) !important; }
+#decoOverlay [style*="color:#C99A57"] { color: var(--gold) !important; text-shadow: 0 0 14px rgba(232,193,106,0.35); }
+#projDetailOverlay [style*="color:#555"], #projDetailOverlay [style*="color:#666"], #projDetailOverlay [style*="color:#333"] { color: var(--ink-dim) !important; }
+#projDetailOverlay [style*="color:#888"], #projDetailOverlay [style*="color:#999"], #projDetailOverlay [style*="color:#aaa"], #projDetailOverlay [style*="color:#bbb"] { color: var(--ink-faint) !important; }
+/* 巨型浮水印數字 */
+#decoOverlay [style*="color:rgba(47,74,62,.07)"] { color: rgba(91,232,255,0.12) !important; }
+
+/* ── 邊框色 ── */
+#projDetailOverlay [style*="#E5E1D2"], #decoOverlay [style*="#E5E1D2"],
+#projDetailOverlay [style*="#D8D2C0"], #decoOverlay [style*="#D8D2C0"],
+#projDetailOverlay [style*="#d4cfc8"], #decoOverlay [style*="#d4cfc8"] { border-color: var(--line) !important; }
+
+/* ── 裝潢頁進度點 ── */
+.deco-sdot { background: var(--cyan) !important; }
+
+/* ── 建案詳情 class 元件 ── */
+.pd-spec-cell { border-color: var(--line) !important; }
+.pd-spec-label { color: var(--ink-faint) !important; }
+.pd-spec-value { color: var(--ink) !important; }
+.pd-unit-card { background: rgba(255,255,255,0.04) !important; border-color: var(--line) !important; backdrop-filter: blur(6px); }
+.pd-unit-card:hover { border-color: rgba(91,232,255,0.4) !important; box-shadow: 0 4px 16px rgba(0,0,0,0.35), 0 0 22px rgba(91,232,255,0.12) !important; }
+.pd-unit-type { color: var(--ink-faint) !important; }
+.pd-unit-area { color: var(--ink) !important; }
+.pd-unit-price { color: var(--gold) !important; }
+.pd-unit-status.available { background: rgba(91,232,255,0.12) !important; color: var(--cyan) !important; }
+.pd-unit-status.reserved { background: rgba(232,193,106,0.16) !important; color: var(--gold) !important; }
+.pd-transport-item { color: var(--ink-dim) !important; }
+.pd-transport-item::before { color: var(--cyan) !important; }
+.pd-amenity-tag { background: rgba(91,232,255,0.08) !important; color: var(--ink) !important; }
+.pd-spec-cell, .pd-amenity-tag { } /* anchor */
+</style>
+
 </body>
 </html>

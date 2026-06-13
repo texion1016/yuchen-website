@@ -4135,5 +4135,152 @@ function closeDecoOverlay() {
 
 </div>
 
+<!-- ══════════════════════════════════════════════
+     AETHER 深空玻璃皮膚 — 預約 / 仲介彈窗覆蓋
+══════════════════════════════════════════════ -->
+<style>
+/* ───── 預約賞屋 BOOKING ───── */
+.bk-right { background: var(--void) !important; }
+.bk-left { background:
+    linear-gradient(150deg, rgba(6,9,18,0.82) 0%, rgba(10,16,32,0.6) 50%, rgba(6,9,18,0.88) 100%),
+    url('https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=900&h=1200&fit=crop&auto=format') center/cover no-repeat !important; }
+.bk-left::before, .bk-left::after { border-color: rgba(91,232,255,0.25) !important; }
+.bk-brand span, .bk-hero-label, .bk-hero-title em, .bk-step-num { color: var(--cyan) !important; }
+.bk-step-num { border-color: rgba(91,232,255,0.5) !important; box-shadow: 0 0 14px rgba(91,232,255,0.25); }
+.bk-close { color: var(--ink-dim) !important; }
+.bk-close:hover { color: var(--cyan) !important; }
+.bk-form-title { background: linear-gradient(120deg, var(--cyan), #9A86FF) !important; -webkit-background-clip: text !important; background-clip: text !important; -webkit-text-fill-color: transparent !important; }
+.bk-form-sub { color: var(--ink-dim) !important; }
+.bk-form-sub span { color: var(--cyan) !important; }
+.bk-fg label { color: var(--ink) !important; }
+.bk-fg label .req { color: var(--cyan) !important; }
+.bk-fg input, .bk-fg select, .bk-fg textarea {
+  background: rgba(255,255,255,0.04) !important; color: var(--ink) !important;
+  border: 1.5px solid var(--line-2) !important; backdrop-filter: blur(6px); }
+.bk-fg input::placeholder, .bk-fg textarea::placeholder { color: var(--ink-faint); }
+.bk-fg input:focus, .bk-fg select:focus, .bk-fg textarea:focus { border-color: var(--cyan) !important; box-shadow: 0 0 0 3px rgba(91,232,255,0.14), 0 0 18px rgba(91,232,255,0.2) !important; }
+.bk-fg select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235BE8FF' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") !important; }
+.bk-fg select option { background: var(--void-2); color: var(--ink); }
+.bk-slot label { background: rgba(255,255,255,0.04) !important; color: var(--ink-dim) !important; border: 1.5px solid var(--line-2) !important; }
+.bk-slot label strong { color: var(--ink-faint) !important; }
+.bk-slot input[type=radio]:checked + label { border-color: var(--cyan) !important; background: rgba(91,232,255,0.12) !important; color: var(--cyan) !important; box-shadow: 0 0 16px rgba(91,232,255,0.25); }
+.bk-slot label:hover { border-color: rgba(91,232,255,0.5) !important; }
+.bk-submit-btn { background: linear-gradient(120deg, var(--cyan), var(--cyan-2) 55%, var(--cyan-deep)) !important; color: #03121A !important; box-shadow: 0 8px 26px rgba(56,198,240,0.4), 0 0 40px rgba(91,232,255,0.25) !important; }
+.bk-submit-btn:hover { box-shadow: 0 12px 34px rgba(56,198,240,0.55), 0 0 56px rgba(91,232,255,0.45) !important; }
+.bk-privacy { color: var(--ink-faint) !important; }
+.bk-privacy a { color: var(--cyan) !important; }
+#bkSuccess .bk-success-icon { background: linear-gradient(135deg, var(--cyan), var(--cyan-deep)) !important; color: #03121A; box-shadow: 0 0 40px rgba(91,232,255,0.4) !important; }
+.bk-success-title { color: var(--ink) !important; }
+.bk-success-msg { color: var(--ink-dim) !important; }
+.bk-success-ref { background: rgba(91,232,255,0.1) !important; border-color: rgba(91,232,255,0.35) !important; color: var(--cyan) !important; }
+.bk-success-close { background: linear-gradient(120deg, var(--cyan), var(--cyan-deep)) !important; color: #03121A !important; }
+
+/* 客戶預約清單卡 */
+.cb-card { background: rgba(255,255,255,0.035) !important; border: 1.5px solid var(--line) !important; backdrop-filter: blur(6px); }
+.cb-card:hover { border-color: rgba(91,232,255,0.4) !important; box-shadow: 0 4px 20px rgba(0,0,0,0.35), 0 0 24px rgba(91,232,255,0.12) !important; }
+.cb-name { color: var(--ink) !important; }
+.cb-meta { color: var(--ink-dim) !important; }
+.cb-ref, .cb-note { color: var(--ink-faint) !important; }
+.cb-project { color: var(--cyan) !important; }
+.cb-btn { border-color: var(--line-2) !important; color: var(--ink-dim) !important; }
+.cb-btn:hover { background: rgba(91,232,255,0.08) !important; }
+.cb-empty { color: var(--ink-faint) !important; }
+
+/* ───── 仲介後台 BROKER ───── */
+#brokerOverlay { background: var(--void) !important; }
+#boLogin { background: linear-gradient(150deg, #060912 0%, #0A1020 55%, #060912 100%) !important; }
+.bo-login-box { background: rgba(14,21,38,0.78) !important; border-top: 3px solid var(--cyan) !important; box-shadow: 0 24px 60px rgba(0,0,0,0.5), 0 0 50px rgba(91,232,255,0.12); backdrop-filter: blur(14px); }
+.bo-login-brand { color: var(--ink) !important; }
+.bo-login-sub { color: var(--ink-faint) !important; }
+.bo-fg label { color: var(--ink-dim) !important; }
+.bo-fg input { background: rgba(255,255,255,0.04) !important; border: 1px solid var(--line-2) !important; color: var(--ink) !important; }
+.bo-fg input:focus { border-color: var(--cyan) !important; box-shadow: 0 0 0 3px rgba(91,232,255,0.12) !important; }
+.bo-login-btn { background: linear-gradient(120deg, var(--cyan), var(--cyan-deep)) !important; color: #03121A !important; }
+.bo-login-btn:hover { box-shadow: 0 0 28px rgba(91,232,255,0.4); }
+.bo-demo { background: rgba(91,232,255,0.06) !important; border-left: 3px solid var(--cyan) !important; color: var(--ink-dim) !important; }
+.bo-demo strong { color: var(--cyan) !important; }
+.bo-sb { background: #070B16 !important; border-right: 1px solid var(--line); }
+.bo-sb-av { background: linear-gradient(135deg, var(--cyan), var(--cyan-deep)) !important; color: #03121A !important; }
+.bo-ni.active { background: rgba(91,232,255,0.12) !important; color: var(--cyan) !important; }
+.bo-ni.active::before { background: var(--cyan) !important; box-shadow: 0 0 8px var(--cyan); }
+.bo-main { background: var(--void) !important; }
+.bo-topbar { background: rgba(10,16,32,0.85) !important; border-bottom: 1px solid var(--line) !important; backdrop-filter: blur(12px); }
+.bo-tb-title { color: var(--ink) !important; }
+.bo-date { color: var(--ink-faint) !important; }
+.bo-close { border: 1px solid var(--line-2) !important; color: var(--ink-dim) !important; }
+.bo-close:hover { background: var(--cyan) !important; color: #03121A !important; border-color: var(--cyan) !important; }
+.boc { background: rgba(255,255,255,0.035) !important; border: 1px solid var(--line) !important; backdrop-filter: blur(6px); }
+.boc-title { color: var(--ink) !important; }
+.bo-stat-grid { background: var(--line) !important; }
+.bo-stat { background: rgba(14,21,38,0.85) !important; }
+.bo-stat-num { color: var(--cyan) !important; font-family: var(--font-tech); text-shadow: 0 0 18px rgba(91,232,255,0.4); }
+.bo-stat-lbl { color: var(--ink-faint) !important; }
+.bo-table-wrap { border: 1px solid var(--line) !important; }
+table.bt2 thead tr { background: rgba(91,232,255,0.1) !important; }
+table.bt2 thead th { color: var(--cyan) !important; }
+table.bt2 tbody tr { border-bottom: 1px solid var(--line) !important; }
+table.bt2 tbody tr:hover { background: rgba(91,232,255,0.06) !important; }
+table.bt2 tbody td { color: var(--ink-dim) !important; }
+.td-name { color: var(--ink) !important; }
+.bb-primary { background: linear-gradient(120deg, var(--cyan), var(--cyan-deep)) !important; color: #03121A !important; border-color: transparent !important; }
+.bb-outline { color: var(--cyan) !important; border-color: var(--line-2) !important; }
+.bb-outline:hover { background: var(--cyan) !important; color: #03121A !important; border-color: var(--cyan) !important; }
+.bb-gold { background: linear-gradient(120deg, #F0CE7E, var(--gold-2)) !important; color: #1A1206 !important; border-color: transparent !important; }
+.bo-fbar input, .bo-fbar select { background: rgba(255,255,255,0.04) !important; border: 1px solid var(--line-2) !important; color: var(--ink) !important; }
+.bo-fbar select option { background: var(--void-2); color: var(--ink); }
+.bo-fbar input:focus, .bo-fbar select:focus { border-color: var(--cyan) !important; }
+.bo-proj-tabs { border-bottom: 1px solid var(--line) !important; }
+.bo-ptab { color: var(--ink-faint) !important; }
+.bo-ptab:hover { color: var(--ink) !important; }
+.bo-ptab.active { color: var(--cyan) !important; border-bottom-color: var(--cyan) !important; }
+.bo-fg2 label { color: var(--ink-dim) !important; }
+.bo-fg2 input, .bo-fg2 select, .bo-fg2 textarea { background: rgba(255,255,255,0.04) !important; border: 1px solid var(--line-2) !important; color: var(--ink) !important; }
+.bo-fg2 select option { background: var(--void-2); color: var(--ink); }
+.bo-fg2 input:focus, .bo-fg2 select:focus, .bo-fg2 textarea:focus { border-color: var(--cyan) !important; }
+.bo-modal { background: rgba(14,21,38,0.95) !important; border-top: 3px solid var(--cyan) !important; backdrop-filter: blur(16px); }
+.bo-modal-hdr, .bo-modal-foot { border-color: var(--line) !important; }
+.bo-modal-title { color: var(--ink) !important; }
+.bo-modal-close { color: var(--ink-faint) !important; }
+.bo-modal-close:hover { color: var(--cyan) !important; }
+.bo-mini-cal { background: rgba(91,232,255,0.05) !important; border: 1px solid var(--line) !important; }
+.bo-cal-hdr span { color: var(--ink) !important; }
+.bo-cal-nav { background: none !important; border: 1px solid var(--line-2) !important; color: var(--ink-dim) !important; }
+.bo-cal-nav:hover { background: var(--cyan) !important; color: #03121A !important; border-color: var(--cyan) !important; }
+.bo-cal-dl { color: var(--ink-faint) !important; }
+.bo-cal-d { color: var(--ink-dim) !important; }
+.bo-cal-d:hover { background: var(--cyan) !important; color: #03121A !important; }
+.bo-cal-d.today { background: var(--gold) !important; color: #1A1206 !important; }
+.bo-brec { border-bottom: 1px solid var(--line) !important; }
+.bo-brec-date { background: rgba(91,232,255,0.06) !important; border-left: 2px solid var(--cyan) !important; }
+.bo-brec-d { color: var(--cyan) !important; }
+.bo-brec-m, .bo-brec-meta { color: var(--ink-faint) !important; }
+.bo-brec-proj { color: var(--ink) !important; }
+.bo-mat-item { background: rgba(255,255,255,0.035) !important; border: 1px solid var(--line) !important; }
+.bo-mat-item:hover { border-color: var(--cyan) !important; }
+.bo-mat-thumb { background: rgba(91,232,255,0.06) !important; border-bottom: 1px solid var(--line) !important; color: var(--ink-dim) !important; }
+.bo-mat-name { color: var(--ink) !important; }
+.bo-mat-size { color: var(--ink-faint) !important; }
+.bo-mat-dl { color: var(--cyan) !important; }
+.bo-news-item { background: rgba(255,255,255,0.035) !important; border: 1px solid var(--line) !important; }
+.bo-news-item:hover { border-left-color: var(--cyan) !important; }
+.bo-news-date { border-right: 1px solid var(--line) !important; }
+.bnd-d { color: var(--cyan) !important; }
+.bnd-m { color: var(--ink-faint) !important; }
+.bo-news-title { color: var(--ink) !important; }
+.bo-news-exc { color: var(--ink-dim) !important; }
+.bo-comm-banner { background: rgba(91,232,255,0.07) !important; border-left: 4px solid var(--cyan) !important; color: var(--ink) !important; }
+.bo-ct-person { border-bottom: 1px solid var(--line) !important; }
+.bo-ct-av { background: linear-gradient(135deg, var(--cyan), var(--cyan-deep)) !important; color: #03121A !important; }
+.bo-ct-name { color: var(--ink) !important; }
+.bo-ct-role { color: var(--ink-faint) !important; }
+.bo-ct-item { color: var(--ink-dim) !important; }
+.bo-ct-ico { background: rgba(91,232,255,0.06) !important; border: 1px solid var(--line) !important; }
+.bo-toast { background: rgba(14,21,38,0.95) !important; border-left: 3px solid var(--cyan) !important; color: var(--ink) !important; box-shadow: 0 6px 24px rgba(0,0,0,0.5), 0 0 30px rgba(91,232,255,0.2) !important; }
+/* 半透明狀態標籤微調為冷色系 */
+.bt-b { background: rgba(91,232,255,0.12) !important; color: var(--cyan) !important; border-color: rgba(91,232,255,0.35) !important; }
+.cb-status.confirmed { background: rgba(91,232,255,0.14) !important; color: var(--cyan) !important; }
+.cb-status.pending { background: rgba(232,193,106,0.16) !important; color: var(--gold) !important; }
+</style>
+
 </body>
 </html>

@@ -595,10 +595,27 @@
       .hr-btns .btn { width: 100%; }
       .footer-bottom { flex-direction: column; text-align: center; }
     }
-  </style>
+  
+/* 密碼眼睛 */
+.pwd-wrap { position: relative; }
+.pwd-wrap input { padding-right: 2.8rem !important; }
+.pwd-eye {
+  position: absolute; right: .8rem; top: 50%; transform: translateY(-50%);
+  cursor: pointer; color: var(--ink-dim); font-size: 1.1rem;
+  user-select: none; transition: color .2s;
+}
+.pwd-eye:hover { color: var(--cyan); }
+
+</style>
 
   <!-- Supabase SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+function togglePwd(id, el) {
+  const inp = document.getElementById(id);
+  if (inp.type === 'password') { inp.type = 'text'; el.textContent = '🙈'; }
+  else { inp.type = 'password'; el.textContent = '👁'; }
+}
+</script>
   <script>
     const _SB_URL = 'https://femuufnveodwcnusuthy.supabase.co';
     const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlbXV1Zm52ZW9kd2NudXN1dGh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2ODQ0MjcsImV4cCI6MjA5NzI2MDQyN30.TQER06oE6_CT8nHprhPlf79qjbcsgS4nhEJs5VUregQ';
@@ -2380,7 +2397,10 @@ table.bt2 tbody td{padding:.72rem 1rem;color:#555;white-space:nowrap}
       <div class="bov-form-title">仲介登入</div>
       <div id="loginMsg" class="bov-msg"></div>
       <div class="bov-field"><label>電子信箱</label><input type="email" id="loginEmail" placeholder="broker@example.com" /></div>
-      <div class="bov-field"><label>密碼</label><input type="password" id="loginPwd" placeholder="••••••••" /></div>
+      <div class="bov-field"><label>密碼</label><div class="pwd-wrap">
+      <input type="password" id="loginPwd" placeholder="••••••••" />
+      <span class="pwd-eye" onclick="togglePwd('loginPwd',this)">👁</span>
+    </div></div>
       <button class="bov-btn" onclick="doBrokerLogin()">登入</button>
       <div class="bov-divider">或</div>
       <button class="bov-btn bov-btn-sec" onclick="switchBovTab('register')">還沒有帳號？申請成為合作仲介</button>
@@ -2398,7 +2418,10 @@ table.bt2 tbody td{padding:.72rem 1rem;color:#555;white-space:nowrap}
         <div class="bov-field"><label>聯絡電話 *</label><input type="tel" id="regPhone" placeholder="0912-345-678" /></div>
         <div class="bov-field"><label>電子信箱 *</label><input type="email" id="regEmail" placeholder="broker@example.com" /></div>
       </div>
-      <div class="bov-field"><label>設定密碼 *</label><input type="password" id="regPwd" placeholder="至少 8 個字元" /></div>
+      <div class="bov-field"><label>設定密碼 *</label><div class="pwd-wrap">
+      <input type="password" id="regPwd" placeholder="至少 8 個字元" />
+      <span class="pwd-eye" onclick="togglePwd('regPwd',this)">👁</span>
+    </div></div>
       <button class="bov-btn" onclick="doBrokerRegister()">送出申請</button>
       <div class="bov-divider">或</div>
       <button class="bov-btn bov-btn-sec" onclick="switchBovTab('login')">已有帳號？登入</button>

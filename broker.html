@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>譽誠廣告｜仲介專區</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --green-dark:#2C4A3E;--green-mid:#3D6B5C;--green-light:#EAF0EC;
+      --gold:#C8A96E;--gold-light:#F0E6D3;--cream:#F7F4EF;
+      --white:#fff;--text:#1A1A1A;--text-mid:#4A4A4A;--text-light:#888;
+      --border:#E0DAD0;--red:#E05252;--blue:#3D6BB8;--orange:#E0954A;
+      --shadow:0 4px 20px rgba(44,74,62,.10);--shadow-lg:0 12px 40px rgba(44,74,62,.16);
+      --radius:10px;--tr:.28s cubic-bezier(.4,0,.2,1);
+      --sidebar:240px;
+    }
+    html{scroll-behavior:smooth}
+    body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--text);overflow-x:hidden}
+    img{max-width:100%;display:block}
+    a{text-decoration:none;color:inherit}
+    ul{list-style:none}
+    input,select,textarea,button{font-family:inherit}
+    ::-webkit-scrollbar{width:5px;height:5px}
+    ::-webkit-scrollbar-track{background:#f0ede8}
+    ::-webkit-scrollbar-thumb{background:var(--green-mid);border-radius:3px}
+
+    /* ── Helpers ── */
+    .tag{display:inline-block;padding:.2rem .65rem;border-radius:50px;font-size:.72rem;font-weight:500}
+    .tag-green{background:var(--green-light);color:var(--green-dark)}
+    .tag-gold{background:var(--gold-light);color:#7A5A30}
+    .tag-red{background:#FDEAEA;color:var(--red)}
+    .tag-blue{background:#EAF0FD;color:var(--blue)}
+    .tag-orange{background:#FDF2EA;color:var(--orange)}
+    .btn{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.4rem;border-radius:50px;font-size:.85rem;font-weight:500;cursor:pointer;border:none;transition:var(--tr);white-space:nowrap}
+    .btn-primary{background:var(--green-dark);color:#fff}
+    .btn-primary:hover{background:var(--green-mid);transform:translateY(-1px);box-shadow:var(--shadow)}
+    .btn-outline{background:transparent;color:var(--green-dark);border:1.5px solid var(--green-dark)}
+    .btn-outline:hover{background:var(--green-dark);color:#fff}
+    .btn-gold{background:var(--gold);color:#fff}
+    .btn-gold:hover{background:#b8954f;transform:translateY(-1px)}
+    .btn-red{background:var(--red);color:#fff}
+    .btn-red:hover{background:#c43c3c}
+    .btn-sm{padding:.4rem 1rem;font-size:.78rem}
+    .card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:1.5rem}
+    .form-group{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.1rem}
+    .form-group label{font-size:.82rem;font-weight:500;color:var(--text-mid)}
+    .form-group input,.form-group select,.form-group textarea{
+      padding:.65rem .9rem;border:1.5px solid var(--border);border-radius:8px;
+      font-size:.88rem;color:var(--text);background:#fff;transition:var(--tr);outline:none
+    }
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--green-mid);box-shadow:0 0 0 3px rgba(61,107,92,.1)}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 1rem}
+    .section-title{font-family:'Noto Serif TC',serif;font-size:1.3rem;font-weight:700;color:var(--green-dark);margin-bottom:1.5rem}
+    .divider{height:1px;background:var(--border);margin:1.5rem 0}
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━
+       LOGIN PAGE
+    ━━━━━━━━━━━━━━━━━━━━━━━━ */
+    #loginPage{
+      min-height:100vh;display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,var(--green-dark) 0%,#1A3028 100%);
+      padding:2rem;
+    }
+    .login-card{
+      background:#fff;border-radius:16px;padding:3rem 2.5rem;
+      width:100%;max-width:420px;box-shadow:var(--shadow-lg);
+    }
+    .login-logo{
+      font-family:'Noto Serif TC',serif;font-size:1.5rem;font-weight:700;
+      color:var(--green-dark);text-align:center;margin-bottom:.35rem;
+    }
+    .login-sub{font-size:.82rem;color:var(--text-light);text-align:center;margin-bottom:2rem}
+    .login-card .form-group{margin-bottom:1.2rem}
+    .login-card .form-group input{font-size:.9rem;padding:.75rem 1rem}
+    .login-btn{width:100%;justify-content:center;padding:.85rem;font-size:.95rem;border-radius:10px;margin-top:.5rem}
+    .login-demo{
+      margin-top:1.5rem;padding:1rem;background:var(--green-light);border-radius:8px;
+      font-size:.78rem;color:var(--text-mid);line-height:1.7;
+    }
+    .login-demo strong{color:var(--green-dark)}
+    .login-back{
+      display:block;text-align:center;margin-top:1.2rem;font-size:.8rem;
+      color:var(--text-light);transition:var(--tr);
+    }
+    .login-back:hover{color:var(--green-dark)}
+    .login-err{
+      display:none;padding:.65rem 1rem;background:#FDEAEA;border:1px solid #f5c6c6;
+      border-radius:8px;font-size:.82rem;color:var(--red);margin-bottom:1rem;
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━
+       DASHBOARD LAYOUT
+    ━━━━━━━━━━━━━━━━━━━━━━━━ */
+    #dashPage{display:none}
+    .dash-wrap{display:flex;min-height:100vh}
+
+    /* Sidebar */
+    .sidebar{
+      width:var(--sidebar);flex-shrink:0;
+      background:var(--green-dark);
+      display:flex;flex-direction:column;
+      position:fixed;top:0;left:0;bottom:0;
+      z-index:100;transition:var(--tr);
+    }
+    .sidebar-logo{
+      padding:1.5rem 1.2rem 1rem;
+      font-family:'Noto Serif TC',serif;font-size:1.1rem;font-weight:700;
+      color:#fff;border-bottom:1px solid rgba(255,255,255,.1);
+      display:flex;align-items:center;gap:.6rem;
+    }
+    .sidebar-logo span{font-size:.7rem;color:rgba(255,255,255,.5);display:block;margin-top:.1rem;font-family:'Noto Sans TC',sans-serif;font-weight:300}
+    .sidebar-user{
+      padding:.9rem 1.2rem;border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex;align-items:center;gap:.7rem;
+    }
+    .user-avatar{
+      width:36px;height:36px;border-radius:50%;background:var(--gold);
+      display:flex;align-items:center;justify-content:center;
+      font-size:.85rem;font-weight:700;color:#fff;flex-shrink:0;
+    }
+    .user-name{font-size:.82rem;color:#fff;font-weight:500}
+    .user-role{font-size:.7rem;color:rgba(255,255,255,.5);margin-top:.1rem}
+    .sidebar-nav{flex:1;padding:.8rem 0;overflow-y:auto}
+    .nav-section-label{
+      font-size:.65rem;letter-spacing:.14em;color:rgba(255,255,255,.35);
+      padding:.6rem 1.2rem .3rem;text-transform:uppercase;
+    }
+    .nav-item{
+      display:flex;align-items:center;gap:.7rem;
+      padding:.65rem 1.2rem;font-size:.85rem;color:rgba(255,255,255,.7);
+      cursor:pointer;transition:var(--tr);position:relative;
+    }
+    .nav-item:hover{background:rgba(255,255,255,.07);color:#fff}
+    .nav-item.active{background:rgba(200,169,110,.18);color:var(--gold)}
+    .nav-item.active::before{
+      content:'';position:absolute;left:0;top:20%;bottom:20%;
+      width:3px;background:var(--gold);border-radius:0 3px 3px 0;
+    }
+    .nav-item .nav-icon{font-size:1rem;width:20px;text-align:center}
+    .nav-badge{
+      margin-left:auto;background:var(--red);color:#fff;
+      font-size:.65rem;padding:.1rem .45rem;border-radius:50px;
+    }
+    .sidebar-footer{
+      padding:1rem 1.2rem;border-top:1px solid rgba(255,255,255,.08);
+    }
+    .logout-btn{
+      display:flex;align-items:center;gap:.6rem;
+      font-size:.82rem;color:rgba(255,255,255,.5);cursor:pointer;transition:var(--tr);
+    }
+    .logout-btn:hover{color:#fff}
+
+    /* Main content */
+    .dash-main{
+      margin-left:var(--sidebar);flex:1;
+      display:flex;flex-direction:column;min-width:0;
+    }
+    .dash-topbar{
+      background:#fff;border-bottom:1px solid var(--border);
+      padding:.9rem 2rem;display:flex;align-items:center;
+      justify-content:space-between;position:sticky;top:0;z-index:50;
+    }
+    .topbar-title{font-size:1.05rem;font-weight:700;color:var(--green-dark)}
+    .topbar-right{display:flex;align-items:center;gap:.8rem}
+    .topbar-badge{
+      position:relative;width:36px;height:36px;border-radius:50%;
+      background:var(--green-light);display:flex;align-items:center;justify-content:center;
+      cursor:pointer;font-size:1rem;transition:var(--tr);
+    }
+    .topbar-badge:hover{background:var(--green-dark);color:#fff}
+    .badge-dot{
+      position:absolute;top:4px;right:4px;width:8px;height:8px;
+      border-radius:50%;background:var(--red);border:2px solid #fff;
+    }
+    .dash-content{padding:2rem;flex:1}
+
+    /* Panels */
+    .panel{display:none}
+    .panel.active{display:block}
+
+    /* ── Overview cards ── */
+    .overview-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-bottom:2rem}
+    .ov-card{
+      background:#fff;border-radius:var(--radius);padding:1.4rem;
+      box-shadow:var(--shadow);display:flex;align-items:center;gap:1rem;
+    }
+    .ov-icon{
+      width:52px;height:52px;border-radius:12px;
+      display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;
+    }
+    .ov-icon-green{background:var(--green-light)}
+    .ov-icon-gold{background:var(--gold-light)}
+    .ov-icon-red{background:#FDEAEA}
+    .ov-icon-blue{background:#EAF0FD}
+    .ov-num{font-size:1.6rem;font-weight:700;color:var(--green-dark);line-height:1}
+    .ov-label{font-size:.76rem;color:var(--text-light);margin-top:.25rem}
+    .ov-change{font-size:.72rem;color:#4CAF50;margin-top:.2rem}
+
+    /* ── Table ── */
+    .table-wrap{overflow-x:auto;border-radius:var(--radius);box-shadow:var(--shadow)}
+    table{width:100%;border-collapse:collapse;background:#fff;font-size:.85rem}
+    thead tr{background:var(--green-dark);color:#fff}
+    thead th{padding:.85rem 1rem;text-align:left;font-weight:500;font-size:.8rem;letter-spacing:.03em;white-space:nowrap}
+    tbody tr{border-bottom:1px solid var(--border);transition:var(--tr)}
+    tbody tr:last-child{border:none}
+    tbody tr:hover{background:#f9f7f4}
+    tbody td{padding:.8rem 1rem;color:var(--text-mid);white-space:nowrap}
+    .td-bold{font-weight:700;color:var(--text)}
+
+    /* ── Filter bar ── */
+    .filter-bar{
+      display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;
+      margin-bottom:1.2rem;
+    }
+    .filter-bar input,.filter-bar select{
+      padding:.5rem .85rem;border:1.5px solid var(--border);border-radius:8px;
+      font-size:.82rem;outline:none;transition:var(--tr);background:#fff;
+    }
+    .filter-bar input:focus,.filter-bar select:focus{border-color:var(--green-mid)}
+    .filter-bar input{min-width:220px}
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━
+       PANEL: 帶看登記
+    ━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .booking-layout{display:grid;grid-template-columns:1fr 1.3fr;gap:1.5rem;align-items:start}
+    .booking-form-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:1.8rem}
+    .booking-list-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:1.8rem}
+    .booking-steps{display:flex;gap:0;margin-bottom:1.8rem}
+    .b-step{
+      flex:1;text-align:center;padding:.5rem .3rem;font-size:.75rem;
+      color:var(--text-light);border-bottom:2px solid var(--border);position:relative;
+    }
+    .b-step.active{color:var(--green-dark);font-weight:700;border-color:var(--green-dark)}
+    .b-step.done{color:var(--gold);border-color:var(--gold)}
+    .booking-success{
+      display:none;text-align:center;padding:2rem 1rem;
+    }
+    .booking-success .success-icon{font-size:3rem;margin-bottom:1rem}
+    .booking-success h3{font-size:1.1rem;color:var(--green-dark);margin-bottom:.5rem}
+    .booking-success p{font-size:.85rem;color:var(--text-light)}
+
+    /* Calendar mini */
+    .mini-cal{background:var(--green-light);border-radius:var(--radius);padding:1rem;margin-bottom:1rem}
+    .cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem}
+    .cal-header span{font-size:.88rem;font-weight:700;color:var(--green-dark)}
+    .cal-nav{background:none;border:none;cursor:pointer;color:var(--green-dark);font-size:1rem;padding:.1rem .4rem;border-radius:4px;transition:var(--tr)}
+    .cal-nav:hover{background:var(--green-dark);color:#fff}
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center}
+    .cal-day-label{font-size:.68rem;color:var(--text-light);padding:.2rem 0;font-weight:500}
+    .cal-day{
+      font-size:.78rem;padding:.35rem .2rem;border-radius:6px;cursor:pointer;
+      color:var(--text-mid);transition:var(--tr);
+    }
+    .cal-day:hover{background:var(--green-dark);color:#fff}
+    .cal-day.today{background:var(--gold);color:#fff;font-weight:700}
+    .cal-day.selected{background:var(--green-dark);color:#fff;font-weight:700}
+    .cal-day.has-booking{position:relative}
+    .cal-day.has-booking::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--red)}
+    .cal-day.empty{pointer-events:none;opacity:0}
+
+    /* Booking records */
+    .booking-record{
+      display:flex;align-items:flex-start;gap:.8rem;padding:.9rem 0;
+      border-bottom:1px solid var(--border);
+    }
+    .booking-record:last-child{border:none}
+    .record-date{
+      flex-shrink:0;width:44px;text-align:center;
+      background:var(--green-light);border-radius:8px;padding:.4rem .2rem;
+    }
+    .record-date .rd-day{font-size:1.1rem;font-weight:700;color:var(--green-dark);line-height:1}
+    .record-date .rd-month{font-size:.65rem;color:var(--text-light)}
+    .record-info{flex:1;min-width:0}
+    .record-project{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:.2rem}
+    .record-meta{font-size:.76rem;color:var(--text-light);line-height:1.6}
+    .record-actions{display:flex;gap:.4rem}
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━
+       PANEL: 撞客查詢
+    ━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .conflict-layout{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+    .conflict-result{
+      padding:1.5rem;border-radius:var(--radius);border:2px solid var(--border);
+      text-align:center;display:none;
+    }
+    .conflict-result.safe{border-color:#4CAF50;background:#F0FDF4}
+    .conflict-result.danger{border-color:var(--red);background:#FFF5F5}
+    .conflict-result .cr-icon{font-size:2.5rem;margin-bottom:.5rem}
+    .conflict-result h3{font-size:1rem;font-weight:700;margin-bottom:.4rem}
+    .conflict-result p{font-size:.82rem;color:var(--text-mid)}
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━
+       PANEL: 素材下載
+    ━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .material-tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem}
+    .mtab{
+      padding:.4rem 1rem;border-radius:50px;font-size:.82rem;cursor:pointer;
+      background:var(--white);border:1.5px solid var(--border);color:var(--text-mid);transition:var(--tr);
+    }
+    .mtab.active,.mtab:hover{background:var(--green-dark);color:#fff;border-color:var(--green-dark)}
+    .material-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem}
+    .material-item{
+      background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);
+      overflow:hidden;transition:var(--tr);cursor:pointer;
+    }
+    .material-item:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+    .material-thumb{
+      height:110px;display:flex;align-items:center;justify-content:center;
+      font-size:2.5rem;background:var(--green-light);
+    }
+    .material-info{padding:.85rem .9rem}
+    .material-name{font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:.25rem;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .material-size{font-size:.72rem;color:var(--text-light);margin-bottom:.6rem}
+    .material-dl{
+      display:flex;align-items:center;gap:.3rem;font-size:.75rem;
+      color:var(--green-mid);font-weight:500;
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━
+       PANEL: 傭金公告
+    ━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .commission-banner{
+      background:linear-gradient(135deg,var(--green-dark),var(--green-mid));
+      border-radius:var(--radius);padding:1.5rem 2rem;
+      display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem;color:#fff;
+    }
+    .comm-icon{font-size:2.5rem}
+    .comm-title{font-size:1rem;font-weight:700;margin-bottom:.25rem}
+    .comm-desc{font-size:.82rem;color:rgba(255,255,255,.75)}
+    .comm-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:1.5rem;margin-bottom:1rem}
+    .comm-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+    .comm-card-title{font-weight:700;font-size:.95rem;color:var(--green-dark)}
+    .comm-table td{padding:.6rem .8rem;font-size:.84rem}
+    .comm-table thead th{padding:.7rem .8rem;font-size:.78rem}
+    .comm-highlight{color:var(--gold);font-weight:700}
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━
+       PANEL: 最新消息
+    ━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .news-list{}
+    .news-item{
+      background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);
+      padding:1.3rem 1.5rem;margin-bottom:1rem;display:flex;gap:1.2rem;
+      align-items:flex-start;transition:var(--tr);cursor:pointer;
+    }
+    .news-item:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+    .news-date{
+      flex-shrink:0;width:50px;text-align:center;
+    }
+    .nd-day{font-size:1.2rem;font-weight:700;color:var(--green-dark);line-height:1}
+    .nd-mon{font-size:.68rem;color:var(--text-light)}
+    .news-content{flex:1}
+    .news-title{font-size:.92rem;font-weight:700;color:var(--text);margin-bottom:.35rem}
+    .news-excerpt{font-size:.8rem;color:var(--text-light);line-height:1.65}
+    .news-tags{display:flex;gap:.4rem;margin-top:.5rem;flex-wrap:wrap}
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━
+       PANEL: 聯絡窗口
+    ━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .contact-layout{display:grid;grid-template-columns:1fr 1.4fr;gap:1.5rem}
+    .contact-info-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:1.8rem}
+    .contact-person{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem}
+    .cp-avatar{width:56px;height:56px;border-radius:50%;background:var(--green-mid);display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#fff;flex-shrink:0}
+    .cp-name{font-weight:700;font-size:.95rem;color:var(--text);margin-bottom:.2rem}
+    .cp-role{font-size:.78rem;color:var(--text-light)}
+    .contact-item{display:flex;align-items:center;gap:.8rem;margin-bottom:1rem;font-size:.85rem;color:var(--text-mid)}
+    .contact-item-icon{width:32px;height:32px;border-radius:8px;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+    .contact-form-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:1.8rem}
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━
+       PANEL: 建案詳細
+    ━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .project-detail-header{
+      background:linear-gradient(135deg,var(--green-dark),#1A3028);
+      border-radius:var(--radius);padding:2rem;color:#fff;margin-bottom:1.5rem;
+      display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;
+    }
+    .pdh-title{font-family:'Noto Serif TC',serif;font-size:1.5rem;font-weight:700;margin-bottom:.3rem}
+    .pdh-loc{font-size:.85rem;color:rgba(255,255,255,.7)}
+    .pdh-price{font-size:1.8rem;font-weight:700;color:var(--gold);line-height:1}
+    .pdh-price-note{font-size:.78rem;color:rgba(255,255,255,.5);margin-top:.2rem}
+    .units-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem}
+    .unit-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:1.2rem;cursor:pointer;transition:var(--tr);border:2px solid transparent}
+    .unit-card:hover{border-color:var(--green-mid);transform:translateY(-2px)}
+    .unit-card.selected{border-color:var(--gold)}
+    .unit-floor{font-size:.75rem;color:var(--text-light);margin-bottom:.3rem}
+    .unit-type{font-size:.95rem;font-weight:700;color:var(--green-dark);margin-bottom:.5rem}
+    .unit-specs{display:flex;gap:.5rem;flex-wrap:wrap}
+    .unit-spec{font-size:.72rem;padding:.2rem .55rem;border-radius:4px;background:var(--green-light);color:var(--green-dark)}
+    .unit-price{margin-top:.7rem;font-size:1rem;font-weight:700;color:var(--gold)}
+
+    /* Toast */
+    .toast{
+      position:fixed;bottom:2rem;right:2rem;z-index:9999;
+      background:var(--green-dark);color:#fff;padding:.85rem 1.5rem;
+      border-radius:10px;font-size:.88rem;box-shadow:var(--shadow-lg);
+      display:none;align-items:center;gap:.6rem;
+      animation:slideUp .3s ease;
+    }
+    @keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+    /* Responsive */
+    @media(max-width:1024px){
+      .overview-grid{grid-template-columns:repeat(2,1fr)}
+      .booking-layout,.conflict-layout,.contact-layout{grid-template-columns:1fr}
+    }
+    @media(max-width:768px){
+      :root{--sidebar:0px}
+      .sidebar{transform:translateX(-240px);width:240px}
+      .sidebar.open{transform:translateX(0)}
+      .dash-main{margin-left:0}
+      .overview-grid{grid-template-columns:1fr 1fr}
+      .form-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ━━ TOAST ━━ -->
+<div class="toast" id="toast">✓ <span id="toastMsg"></span></div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     LOGIN PAGE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div id="loginPage">
+  <div class="login-card">
+    <div class="login-logo">譽誠廣告</div>
+    <div class="login-sub">仲介合作夥伴專區登入</div>
+
+    <div class="login-err" id="loginErr">帳號或密碼錯誤，請重新輸入</div>
+
+    <form onsubmit="doLogin(event)">
+      <div class="form-group">
+        <label>帳號（Email）</label>
+        <input type="text" id="loginUser" placeholder="請輸入帳號" autocomplete="username"/>
+      </div>
+      <div class="form-group">
+        <label>密碼</label>
+        <input type="password" id="loginPass" placeholder="請輸入密碼" autocomplete="current-password"/>
+      </div>
+      <button type="submit" class="btn btn-primary login-btn">登入仲介專區</button>
+    </form>
+
+    <div class="login-demo">
+      <strong>🔑 測試帳號</strong><br/>
+      帳號：<strong>broker@yucheng.com</strong><br/>
+      密碼：<strong>yucheng2025</strong>
+    </div>
+    <a href="index.html" class="login-back">← 返回首頁</a>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     DASHBOARD
+━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div id="dashPage">
+  <div class="dash-wrap">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        🏠 譽誠廣告
+        <div><span>仲介合作專區</span></div>
+      </div>
+      <div class="sidebar-user">
+        <div class="user-avatar" id="userAvatar">王</div>
+        <div>
+          <div class="user-name" id="userName">王大明 仲介</div>
+          <div class="user-role">合作仲介夥伴</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">主要功能</div>
+        <div class="nav-item active" onclick="switchPanel('overview',this)">
+          <span class="nav-icon">📊</span> 總覽儀表板
+        </div>
+        <div class="nav-item" onclick="switchPanel('units',this)">
+          <span class="nav-icon">🏢</span> 即時可售戶
+          <span class="nav-badge" id="unitsBadge">12</span>
+        </div>
+        <div class="nav-item" onclick="switchPanel('projects',this)">
+          <span class="nav-icon">📋</span> 建案詳細資料
+        </div>
+        <div class="nav-section-label">帶看服務</div>
+        <div class="nav-item" onclick="switchPanel('booking',this)">
+          <span class="nav-icon">📅</span> 帶看登記系統
+        </div>
+        <div class="nav-item" onclick="switchPanel('conflict',this)">
+          <span class="nav-icon">🔍</span> 撞客查詢
+        </div>
+        <div class="nav-section-label">資源中心</div>
+        <div class="nav-item" onclick="switchPanel('materials',this)">
+          <span class="nav-icon">📦</span> 素材下載區
+        </div>
+        <div class="nav-item" onclick="switchPanel('commission',this)">
+          <span class="nav-icon">💰</span> 傭金公告
+        </div>
+        <div class="nav-section-label">資訊</div>
+        <div class="nav-item" onclick="switchPanel('news',this)">
+          <span class="nav-icon">📢</span> 最新消息
+          <span class="nav-badge">3</span>
+        </div>
+        <div class="nav-item" onclick="switchPanel('contact',this)">
+          <span class="nav-icon">💬</span> 聯絡窗口
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="logout-btn" onclick="doLogout()">🚪 登出</div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="dash-main">
+      <div class="dash-topbar">
+        <div style="display:flex;align-items:center;gap:.8rem">
+          <div style="display:none;cursor:pointer;font-size:1.2rem" id="menuToggle" onclick="toggleSidebar()">☰</div>
+          <div class="topbar-title" id="topbarTitle">總覽儀表板</div>
+        </div>
+        <div class="topbar-right">
+          <div style="font-size:.8rem;color:var(--text-light)" id="topbarDate"></div>
+          <div class="topbar-badge" title="通知">
+            🔔<div class="badge-dot"></div>
+          </div>
+          <a href="index.html" class="btn btn-outline btn-sm">← 返回首頁</a>
+        </div>
+      </div>
+
+      <div class="dash-content">
+
+        <!-- ── OVERVIEW ── -->
+        <div class="panel active" id="panel-overview">
+          <div class="overview-grid">
+            <div class="ov-card">
+              <div class="ov-icon ov-icon-green">🏢</div>
+              <div><div class="ov-num">12</div><div class="ov-label">即時可售戶</div><div class="ov-change">↑ 較昨日 +2</div></div>
+            </div>
+            <div class="ov-card">
+              <div class="ov-icon ov-icon-gold">📅</div>
+              <div><div class="ov-num">3</div><div class="ov-label">本週帶看預約</div><div class="ov-change">↑ 新增 1 筆</div></div>
+            </div>
+            <div class="ov-card">
+              <div class="ov-icon ov-icon-blue">✅</div>
+              <div><div class="ov-num">8</div><div class="ov-label">本月已成交</div><div class="ov-change">↑ 較上月 +3</div></div>
+            </div>
+            <div class="ov-card">
+              <div class="ov-icon ov-icon-red">📢</div>
+              <div><div class="ov-num">3</div><div class="ov-label">未讀最新消息</div><div class="ov-change">請盡快查閱</div></div>
+            </div>
+          </div>
+
+          <!-- Recent bookings -->
+          <div class="card" style="margin-bottom:1.2rem">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+              <div class="section-title" style="margin:0">最近帶看記錄</div>
+              <button class="btn btn-outline btn-sm" onclick="switchPanel('booking',document.querySelector('[onclick*=booking]'))">查看全部</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>日期</th><th>時間</th><th>建案</th><th>客戶姓名</th><th>狀態</th></tr></thead>
+                <tbody id="recentBookings"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Hot units -->
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+              <div class="section-title" style="margin:0">熱門可售戶</div>
+              <button class="btn btn-outline btn-sm" onclick="switchPanel('units',document.querySelector('[onclick*=units]'))">查看全部</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>建案</th><th>樓層/戶別</th><th>房型</th><th>坪數</th><th>售價</th><th>狀態</th><th>操作</th></tr></thead>
+                <tbody>
+                  <tr><td class="td-bold">譽誠沐光苑</td><td>8F-A棟</td><td>2房2廳</td><td>28.5坪</td><td class="td-bold" style="color:var(--gold)">988萬</td><td><span class="tag tag-green">可售</span></td><td><button class="btn btn-primary btn-sm" onclick="openBookingFor('沐光苑')">預約帶看</button></td></tr>
+                  <tr><td class="td-bold">譽誠和風居</td><td>12F-B棟</td><td>3房2廳</td><td>36坪</td><td class="td-bold" style="color:var(--gold)">1,280萬</td><td><span class="tag tag-green">可售</span></td><td><button class="btn btn-primary btn-sm" onclick="openBookingFor('和風居')">預約帶看</button></td></tr>
+                  <tr><td class="td-bold">譽誠晴山苑</td><td>5F-C棟</td><td>3房2廳1衛</td><td>42坪</td><td class="td-bold" style="color:var(--gold)">1,580萬</td><td><span class="tag tag-orange">保留中</span></td><td><button class="btn btn-outline btn-sm" disabled>已保留</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── UNITS ── -->
+        <div class="panel" id="panel-units">
+          <div class="filter-bar">
+            <input type="text" placeholder="🔍 搜尋建案名稱、戶別..." id="unitSearch" oninput="filterUnits()"/>
+            <select id="unitProjectFilter" onchange="filterUnits()">
+              <option value="">全部建案</option>
+              <option>譽誠沐光苑</option>
+              <option>譽誠和風居</option>
+              <option>譽誠晴山苑</option>
+              <option>譽誠星曜</option>
+              <option>譽誠綠意村</option>
+            </select>
+            <select id="unitStatusFilter" onchange="filterUnits()">
+              <option value="">全部狀態</option>
+              <option>可售</option>
+              <option>保留中</option>
+              <option>已成交</option>
+            </select>
+            <select id="unitTypeFilter" onchange="filterUnits()">
+              <option value="">全部房型</option>
+              <option>2房</option>
+              <option>3房</option>
+              <option>4房</option>
+            </select>
+            <button class="btn btn-primary btn-sm" onclick="filterUnits()">篩選</button>
+          </div>
+          <div class="table-wrap">
+            <table id="unitsTable">
+              <thead><tr><th>建案</th><th>樓層</th><th>戶別</th><th>房型</th><th>坪數</th><th>售價</th><th>車位</th><th>管理費</th><th>狀態</th><th>操作</th></tr></thead>
+              <tbody id="unitsTbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ── PROJECTS ── -->
+        <div class="panel" id="panel-projects">
+          <div style="display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:1.5rem" id="projectTabs"></div>
+          <div id="projectDetailContent"></div>
+        </div>
+
+        <!-- ── BOOKING ── -->
+        <div class="panel" id="panel-booking">
+          <div class="booking-layout">
+            <!-- Form -->
+            <div class="booking-form-card">
+              <div class="section-title">新增帶看登記</div>
+              <div class="booking-steps">
+                <div class="b-step active" id="bstep1">① 選擇建案</div>
+                <div class="b-step" id="bstep2">② 客戶資料</div>
+                <div class="b-step" id="bstep3">③ 確認送出</div>
+              </div>
+
+              <div id="bookingForm">
+                <div class="form-group">
+                  <label>選擇建案 *</label>
+                  <select id="bkProject" onchange="updateBkUnits()">
+                    <option value="">-- 請選擇 --</option>
+                    <option>譽誠沐光苑</option>
+                    <option>譽誠和風居</option>
+                    <option>譽誠晴山苑</option>
+                    <option>譽誠星曜</option>
+                    <option>譽誠綠意村</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>選擇戶別 *</label>
+                  <select id="bkUnit">
+                    <option value="">-- 請先選擇建案 --</option>
+                  </select>
+                </div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label>帶看日期 *</label>
+                    <input type="date" id="bkDate" min=""/>
+                  </div>
+                  <div class="form-group">
+                    <label>帶看時間 *</label>
+                    <select id="bkTime">
+                      <option>09:00</option><option>09:30</option>
+                      <option>10:00</option><option>10:30</option>
+                      <option>11:00</option><option>11:30</option>
+                      <option>13:30</option><option>14:00</option>
+                      <option>14:30</option><option>15:00</option>
+                      <option>15:30</option><option>16:00</option>
+                      <option>16:30</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="divider"></div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label>客戶姓名 *</label>
+                    <input type="text" id="bkClientName" placeholder="例：陳小姐"/>
+                  </div>
+                  <div class="form-group">
+                    <label>客戶電話 *</label>
+                    <input type="tel" id="bkClientPhone" placeholder="09XX-XXX-XXX"/>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>客戶需求備註</label>
+                  <textarea id="bkNote" rows="3" placeholder="例：偏好低樓層、需要停車位..."></textarea>
+                </div>
+                <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="submitBooking()">
+                  📅 確認提交帶看登記
+                </button>
+              </div>
+
+              <div class="booking-success" id="bookingSuccess">
+                <div class="success-icon">🎉</div>
+                <h3>帶看登記成功！</h3>
+                <p id="bookingSuccessMsg"></p>
+                <button class="btn btn-outline" style="margin-top:1.2rem" onclick="resetBookingForm()">繼續登記</button>
+              </div>
+            </div>
+
+            <!-- List & Calendar -->
+            <div class="booking-list-card">
+              <div class="section-title">帶看行程表</div>
+              <div class="mini-cal" id="miniCal"></div>
+              <div id="bookingRecords"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── CONFLICT ── -->
+        <div class="panel" id="panel-conflict">
+          <div class="conflict-layout">
+            <div class="card">
+              <div class="section-title">撞客查詢</div>
+              <p style="font-size:.85rem;color:var(--text-light);margin-bottom:1.5rem;line-height:1.7">
+                輸入客戶電話或身分證後四碼，確認此客戶是否已被其他仲介登記帶看。
+              </p>
+              <div class="form-group">
+                <label>選擇建案 *</label>
+                <select id="cfProject">
+                  <option value="">-- 請選擇 --</option>
+                  <option>譽誠沐光苑</option>
+                  <option>譽誠和風居</option>
+                  <option>譽誠晴山苑</option>
+                  <option>譽誠星曜</option>
+                  <option>譽誠綠意村</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>客戶電話 *</label>
+                <input type="tel" id="cfPhone" placeholder="09XX-XXX-XXX"/>
+              </div>
+              <div class="form-group">
+                <label>客戶姓名（選填）</label>
+                <input type="text" id="cfName" placeholder="輸入可提高查詢準確度"/>
+              </div>
+              <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="checkConflict()">
+                🔍 立即查詢
+              </button>
+            </div>
+
+            <div>
+              <div id="conflictResult" class="conflict-result"></div>
+              <div class="card" style="margin-top:1.2rem">
+                <div class="section-title" style="font-size:.95rem">查詢規則說明</div>
+                <ul style="font-size:.82rem;color:var(--text-mid);line-height:2;padding-left:1rem">
+                  <li>• 同一客戶同一建案，以第一次帶看登記之仲介為主</li>
+                  <li>• 客戶保護期：帶看後 <strong>60天</strong> 內有效</li>
+                  <li>• 超過保護期客戶視為公開客戶</li>
+                  <li>• 若有糾紛請洽聯絡窗口處理</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── MATERIALS ── -->
+        <div class="panel" id="panel-materials">
+          <div class="material-tabs" id="materialTabs">
+            <div class="mtab active" onclick="filterMaterials('all',this)">全部</div>
+            <div class="mtab" onclick="filterMaterials('photo',this)">📷 照片</div>
+            <div class="mtab" onclick="filterMaterials('video',this)">🎬 短影音</div>
+            <div class="mtab" onclick="filterMaterials('copy',this)">📝 文案</div>
+            <div class="mtab" onclick="filterMaterials('dm',this)">📄 DM</div>
+            <div class="mtab" onclick="filterMaterials('logo',this)">🎨 LOGO素材</div>
+          </div>
+          <div class="material-grid" id="materialGrid"></div>
+        </div>
+
+        <!-- ── COMMISSION ── -->
+        <div class="panel" id="panel-commission">
+          <div class="commission-banner">
+            <div class="comm-icon">💰</div>
+            <div>
+              <div class="comm-title">2025年 Q2 傭金方案已更新</div>
+              <div class="comm-desc">最新傭金比例與獎勵方案，請詳細閱讀後洽詢業務</div>
+            </div>
+          </div>
+          <div class="comm-card">
+            <div class="comm-card-header">
+              <div class="comm-card-title">各建案傭金比例表</div>
+              <span class="tag tag-gold">2025 Q2 有效</span>
+            </div>
+            <div class="table-wrap">
+              <table class="comm-table">
+                <thead><tr><th>建案名稱</th><th>基本傭金</th><th>快速成交獎勵</th><th>備註</th></tr></thead>
+                <tbody>
+                  <tr><td class="td-bold">譽誠沐光苑</td><td class="comm-highlight">2.0%</td><td class="comm-highlight">+0.5%</td><td>30天內成交加碼</td></tr>
+                  <tr><td class="td-bold">譽誠和風居</td><td class="comm-highlight">2.0%</td><td class="comm-highlight">+0.3%</td><td>指定樓層加碼</td></tr>
+                  <tr><td class="td-bold">譽誠晴山苑</td><td class="comm-highlight">1.8%</td><td class="comm-highlight">+0.5%</td><td>首購族優惠加碼</td></tr>
+                  <tr><td class="td-bold">譽誠星曜</td><td class="comm-highlight">2.2%</td><td class="comm-highlight">+0.5%</td><td>高總價特別方案</td></tr>
+                  <tr><td class="td-bold">譽誠綠意村</td><td class="comm-highlight">2.0%</td><td class="comm-highlight">+0.8%</td><td>新案開賣獎勵</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="comm-card">
+            <div class="comm-card-header">
+              <div class="comm-card-title">季度業績獎勵</div>
+              <span class="tag tag-green">長期有效</span>
+            </div>
+            <div class="table-wrap">
+              <table class="comm-table">
+                <thead><tr><th>季度成交戶數</th><th>額外獎勵</th><th>累積獎金</th></tr></thead>
+                <tbody>
+                  <tr><td>3 戶以上</td><td class="comm-highlight">+0.3%</td><td>當季全部成交案</td></tr>
+                  <tr><td>5 戶以上</td><td class="comm-highlight">+0.5%</td><td>當季全部成交案</td></tr>
+                  <tr><td>8 戶以上</td><td class="comm-highlight">+1.0% + 禮品</td><td>當季全部成交案</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── NEWS ── -->
+        <div class="panel" id="panel-news">
+          <div class="news-list" id="newsList"></div>
+        </div>
+
+        <!-- ── CONTACT ── -->
+        <div class="panel" id="panel-contact">
+          <div class="contact-layout">
+            <div class="contact-info-card">
+              <div class="section-title">聯絡窗口</div>
+              <div class="contact-person">
+                <div class="cp-avatar">李</div>
+                <div>
+                  <div class="cp-name">李美玲 專員</div>
+                  <div class="cp-role">仲介合作窗口｜業務部</div>
+                </div>
+              </div>
+              <div class="contact-item">
+                <div class="contact-item-icon">📞</div>
+                <div><strong>02-2792-XXXX</strong><br/><span style="font-size:.75rem;color:var(--text-light)">週一至週五 09:00–18:00</span></div>
+              </div>
+              <div class="contact-item">
+                <div class="contact-item-icon">✉️</div>
+                <div>broker@yucheng.com.tw</div>
+              </div>
+              <div class="contact-item">
+                <div class="contact-item-icon">💬</div>
+                <div>LINE ID：yucheng_broker<br/><span style="font-size:.75rem;color:var(--text-light)">加入後自動驗證合作仲介身份</span></div>
+              </div>
+              <div class="divider"></div>
+              <div class="contact-person">
+                <div class="cp-avatar" style="background:var(--gold)">陳</div>
+                <div>
+                  <div class="cp-name">陳志豪 副理</div>
+                  <div class="cp-role">糾紛處理｜高階諮詢</div>
+                </div>
+              </div>
+              <div class="contact-item">
+                <div class="contact-item-icon">📞</div>
+                <div><strong>0912-XXX-XXX</strong></div>
+              </div>
+            </div>
+
+            <div class="contact-form-card">
+              <div class="section-title">線上留言</div>
+              <div id="contactFormWrap">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label>您的姓名 *</label>
+                    <input type="text" id="ctName" placeholder="王大明"/>
+                  </div>
+                  <div class="form-group">
+                    <label>聯絡電話 *</label>
+                    <input type="tel" id="ctPhone" placeholder="09XX-XXX-XXX"/>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>主旨 *</label>
+                  <select id="ctSubject">
+                    <option>帶看相關問題</option>
+                    <option>撞客糾紛處理</option>
+                    <option>傭金計算問題</option>
+                    <option>素材需求申請</option>
+                    <option>申請成為合作仲介</option>
+                    <option>其他問題</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>訊息內容 *</label>
+                  <textarea id="ctMessage" rows="5" placeholder="請詳細描述您的問題或需求..."></textarea>
+                </div>
+                <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="submitContact()">
+                  📨 送出留言
+                </button>
+              </div>
+              <div id="contactSuccess" style="display:none;text-align:center;padding:2rem 1rem">
+                <div style="font-size:2.5rem;margin-bottom:.8rem">✅</div>
+                <h3 style="color:var(--green-dark);margin-bottom:.5rem">訊息已送出</h3>
+                <p style="font-size:.85rem;color:var(--text-light)">我們將在 1 個工作天內回覆您，感謝您的聯繫。</p>
+                <button class="btn btn-outline" style="margin-top:1.2rem" onclick="resetContact()">再次留言</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /dash-content -->
+    </div><!-- /dash-main -->
+  </div><!-- /dash-wrap -->
+</div><!-- /dashPage -->
+
+<script>
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   DATA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+const UNITS_DATA = [
+  {project:'譽誠沐光苑',floor:'3F',unit:'A棟-01',type:'2房2廳',size:'26.5',price:'958萬',parking:'無',mgmt:'2,800/月',status:'可售'},
+  {project:'譽誠沐光苑',floor:'5F',unit:'A棟-02',type:'2房2廳',size:'28.5',price:'988萬',parking:'1車位',mgmt:'2,800/月',status:'可售'},
+  {project:'譽誠沐光苑',floor:'8F',unit:'B棟-01',type:'3房2廳',size:'34',price:'1,180萬',parking:'1車位',mgmt:'3,200/月',status:'可售'},
+  {project:'譽誠沐光苑',floor:'10F',unit:'B棟-02',type:'3房2廳',size:'35.5',price:'1,220萬',parking:'2車位',mgmt:'3,200/月',status:'保留中'},
+  {project:'譽誠和風居',floor:'6F',unit:'A棟-01',type:'2房2廳',size:'30',price:'1,250萬',parking:'1車位',mgmt:'3,500/月',status:'可售'},
+  {project:'譽誠和風居',floor:'9F',unit:'A棟-03',type:'3房2廳',size:'36',price:'1,280萬',parking:'1車位',mgmt:'3,500/月',status:'可售'},
+  {project:'譽誠和風居',floor:'12F',unit:'B棟-01',type:'3房2廳',size:'38',price:'1,380萬',parking:'2車位',mgmt:'3,800/月',status:'可售'},
+  {project:'譽誠晴山苑',floor:'2F',unit:'C棟-01',type:'3房2廳1衛',size:'40',price:'1,480萬',parking:'1車位',mgmt:'4,000/月',status:'可售'},
+  {project:'譽誠晴山苑',floor:'5F',unit:'C棟-03',type:'3房2廳2衛',size:'42',price:'1,580萬',parking:'2車位',mgmt:'4,200/月',status:'保留中'},
+  {project:'譽誠晴山苑',floor:'8F',unit:'D棟-02',type:'4房3廳2衛',size:'52',price:'2,100萬',parking:'2車位',mgmt:'5,000/月',status:'可售'},
+  {project:'譽誠星曜',floor:'18F',unit:'A棟-01',type:'3房2廳',size:'45',price:'3,200萬',parking:'2車位',mgmt:'6,500/月',status:'可售'},
+  {project:'譽誠星曜',floor:'22F',unit:'A棟-02',type:'4房3廳',size:'58',price:'4,200萬',parking:'2車位',mgmt:'8,000/月',status:'可售'},
+  {project:'譽誠綠意村',floor:'3F',unit:'B棟-01',type:'2房2廳',size:'25',price:'850萬',parking:'無',mgmt:'2,200/月',status:'可售'},
+  {project:'譽誠綠意村',floor:'6F',unit:'B棟-02',type:'3房2廳',size:'32',price:'980萬',parking:'1車位',mgmt:'2,500/月',status:'已成交'},
+];
+
+const PROJECT_DETAIL = {
+  '譽誠沐光苑':{
+    location:'桃園市中壢區環中東路二段100號',
+    price:'958萬',builder:'譽誠廣告股份有限公司',
+    floors:'地上12層',completion:'2025年8月預計交屋',
+    desc:'鄰近桃園捷運A21站步行5分鐘，社區規劃空中花園及健身房，精選2-3房格局，附基本輕裝修方案。'
+  },
+  '譽誠和風居':{
+    location:'新北市新莊區中正路500號',
+    price:'1,250萬',builder:'譽誠廣告股份有限公司',
+    floors:'地上15層',completion:'2025年10月預計交屋',
+    desc:'日系設計風格，頂樓觀景平台，規劃2-3房精品宅，捷運輔大站步行8分鐘。'
+  },
+  '譽誠晴山苑':{
+    location:'台中市西屯區台灣大道四段1000號',
+    price:'1,480萬',builder:'譽誠廣告股份有限公司',
+    floors:'地上10層',completion:'2025年12月預計交屋',
+    desc:'面對大肚山第一排，3-4房大坪數規劃，社區游泳池及兒童遊戲區，離逢甲商圈10分鐘。'
+  },
+  '譽誠星曜':{
+    location:'台北市內湖區民權東路六段180號',
+    price:'3,200萬',builder:'譽誠廣告股份有限公司',
+    floors:'地上24層',completion:'2026年Q1預計交屋',
+    desc:'台北市精品豪宅，基隆河景觀，高樓層夜景無敵，頂墅規格裝潢，私人電梯大廳。'
+  },
+  '譽誠綠意村':{
+    location:'新竹縣竹北市文興路一段200號',
+    price:'850萬',builder:'譽誠廣告股份有限公司',
+    floors:'地上8層',completion:'2025年6月預計交屋',
+    desc:'竹科生活圈，綠建築認證，首購首選，2-3房自住型，社區規劃電動車充電樁。'
+  }
+};
+
+const MATERIALS_DATA = [
+  {name:'沐光苑外觀全景',type:'photo',size:'8.2 MB',icon:'📷',cat:'photo'},
+  {name:'沐光苑客廳實景',type:'photo',size:'5.4 MB',icon:'📷',cat:'photo'},
+  {name:'和風居樣品屋照',type:'photo',size:'12.1 MB',icon:'📷',cat:'photo'},
+  {name:'晴山苑山景空拍',type:'photo',size:'9.8 MB',icon:'📷',cat:'photo'},
+  {name:'星曜夜景照片集',type:'photo',size:'15.3 MB',icon:'📷',cat:'photo'},
+  {name:'沐光苑生活影片',type:'video',size:'120 MB',icon:'🎬',cat:'video'},
+  {name:'和風居環境宣傳片',type:'video',size:'85 MB',icon:'🎬',cat:'video'},
+  {name:'晴山苑短Reel',type:'video',size:'42 MB',icon:'🎬',cat:'video'},
+  {name:'星曜夜景Reel',type:'video',size:'38 MB',icon:'🎬',cat:'video'},
+  {name:'FB廣告文案包',type:'copy',size:'12 KB',icon:'📝',cat:'copy'},
+  {name:'LINE貼文文案',type:'copy',size:'8 KB',icon:'📝',cat:'copy'},
+  {name:'仲介話術SOP',type:'copy',size:'24 KB',icon:'📝',cat:'copy'},
+  {name:'沐光苑DM A4',type:'dm',size:'3.2 MB',icon:'📄',cat:'dm'},
+  {name:'和風居折頁設計',type:'dm',size:'4.5 MB',icon:'📄',cat:'dm'},
+  {name:'晴山苑名片設計',type:'dm',size:'1.1 MB',icon:'📄',cat:'dm'},
+  {name:'全案DM合輯',type:'dm',size:'18 MB',icon:'📄',cat:'dm'},
+  {name:'譽誠LOGO PNG',type:'logo',size:'2.1 MB',icon:'🎨',cat:'logo'},
+  {name:'譽誠LOGO SVG',type:'logo',size:'0.3 MB',icon:'🎨',cat:'logo'},
+  {name:'品牌色票規範',type:'logo',size:'0.8 MB',icon:'🎨',cat:'logo'},
+];
+
+const NEWS_DATA = [
+  {day:'12',mon:'05月',title:'【重要】沐光苑5月衝刺加碼活動開跑',excerpt:'本月成交沐光苑任一戶型，額外獲得0.5%傭金加碼，限時至5月31日止，歡迎積極帶看！',tags:['活動','加碼'],isNew:true},
+  {day:'08',mon:'05月',title:'和風居12F景觀戶正式釋出',excerpt:'原保留戶12F-B棟已解除保留，坪數38坪，雙車位，售價1,380萬，歡迎優先接洽。',tags:['新釋出'],isNew:true},
+  {day:'02',mon:'05月',title:'仲介平台系統更新說明',excerpt:'帶看登記系統新增「客戶備註」欄位，撞客查詢優化查詢速度，請更新瀏覽器快取。',tags:['系統'],isNew:true},
+  {day:'28',mon:'04月',title:'譽誠綠意村取得使用執照',excerpt:'綠意村正式取得新竹縣政府核發使用執照，預計6月底開始交屋，感謝各位仲介夥伴支持。',tags:['公告'],isNew:false},
+  {day:'15',mon:'04月',title:'Q2傭金方案正式公告',excerpt:'2025年第二季傭金比例已更新，請至傭金公告區查看最新方案，有任何問題請洽聯絡窗口。',tags:['傭金'],isNew:false},
+];
+
+let bookings = [
+  {date:'2025-05-16',time:'10:00',project:'譽誠沐光苑',unit:'5F-A棟-02',client:'陳小姐',phone:'0912-345-678',note:'',status:'確認中'},
+  {date:'2025-05-18',time:'14:00',project:'譽誠和風居',unit:'9F-A棟-03',client:'林先生',phone:'0923-456-789',note:'需要停車位',status:'確認中'},
+  {date:'2025-05-20',time:'11:00',project:'譽誠晴山苑',unit:'2F-C棟-01',client:'黃太太',phone:'0934-567-890',note:'帶小孩參觀',status:'待確認'},
+];
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   AUTH
+━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function doLogin(e){
+  e.preventDefault();
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  const err = document.getElementById('loginErr');
+  if(u==='broker@yucheng.com' && p==='yucheng2025'){
+    err.style.display='none';
+    document.getElementById('loginPage').style.display='none';
+    document.getElementById('dashPage').style.display='block';
+    initDash();
+  } else {
+    err.style.display='block';
+  }
+}
+function doLogout(){
+  document.getElementById('dashPage').style.display='none';
+  document.getElementById('loginPage').style.display='flex';
+  document.getElementById('loginUser').value='';
+  document.getElementById('loginPass').value='';
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   INIT DASHBOARD
+━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function initDash(){
+  const d = new Date();
+  document.getElementById('topbarDate').textContent = d.toLocaleDateString('zh-TW',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
+  const today = d.toISOString().split('T')[0];
+  document.getElementById('bkDate').min = today;
+  document.getElementById('bkDate').value = today;
+  renderRecentBookings();
+  renderAllUnits(UNITS_DATA);
+  renderProjectTabs();
+  renderBookingRecords();
+  renderMiniCal();
+  renderMaterials('all');
+  renderNews();
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   NAVIGATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+const panelTitles = {
+  overview:'總覽儀表板',units:'即時可售戶列表',projects:'建案詳細資料',
+  booking:'帶看登記系統',conflict:'撞客查詢',materials:'素材下載區',
+  commission:'傭金公告',news:'最新消息',contact:'聯絡窗口'
+};
+function switchPanel(id, el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.getElementById('topbarTitle').textContent = panelTitles[id]||id;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   UNITS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function renderAllUnits(data){
+  const tbody = document.getElementById('unitsTbody');
+  tbody.innerHTML = data.map(u=>`
+    <tr>
+      <td class="td-bold">${u.project}</td>
+      <td>${u.floor}</td>
+      <td>${u.unit}</td>
+      <td>${u.type}</td>
+      <td>${u.size} 坪</td>
+      <td style="color:var(--gold);font-weight:700">${u.price}</td>
+      <td>${u.parking}</td>
+      <td>${u.mgmt}</td>
+      <td>${statusTag(u.status)}</td>
+      <td>${u.status==='可售'?`<button class="btn btn-primary btn-sm" onclick="openBookingFor('${u.project}')">帶看</button>`:'<span style="color:var(--text-light);font-size:.78rem">—</span>'}</td>
+    </tr>`).join('');
+}
+function statusTag(s){
+  const map={'可售':'tag-green','保留中':'tag-orange','已成交':'tag-red'};
+  return `<span class="tag ${map[s]||'tag-blue'}">${s}</span>`;
+}
+function filterUnits(){
+  const q = document.getElementById('unitSearch').value.toLowerCase();
+  const proj = document.getElementById('unitProjectFilter').value;
+  const stat = document.getElementById('unitStatusFilter').value;
+  const type = document.getElementById('unitTypeFilter').value;
+  const filtered = UNITS_DATA.filter(u=>{
+    const matchQ = !q || u.project.includes(q)||u.unit.toLowerCase().includes(q);
+    const matchP = !proj || u.project===proj;
+    const matchS = !stat || u.status===stat;
+    const matchT = !type || u.type.startsWith(type);
+    return matchQ&&matchP&&matchS&&matchT;
+  });
+  renderAllUnits(filtered);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PROJECTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function renderProjectTabs(){
+  const projects = Object.keys(PROJECT_DETAIL);
+  const tabsEl = document.getElementById('projectTabs');
+  tabsEl.innerHTML = projects.map((p,i)=>`
+    <button class="btn ${i===0?'btn-primary':'btn-outline'} btn-sm" onclick="showProjectDetail('${p}',this)">${p}</button>
+  `).join('');
+  showProjectDetail(projects[0], tabsEl.querySelector('button'));
+}
+function showProjectDetail(name, el){
+  document.querySelectorAll('#projectTabs button').forEach(b=>{b.className='btn btn-outline btn-sm';});
+  if(el){el.className='btn btn-primary btn-sm';}
+  const d = PROJECT_DETAIL[name];
+  const units = UNITS_DATA.filter(u=>u.project===name);
+  document.getElementById('projectDetailContent').innerHTML = `
+    <div class="project-detail-header">
+      <div>
+        <div class="pdh-title">${name}</div>
+        <div class="pdh-loc">📍 ${d.location}</div>
+        <div style="font-size:.8rem;color:rgba(255,255,255,.6);margin-top:.5rem">${d.floors}｜${d.completion}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="pdh-price">${d.price}<span style="font-size:.6em">起</span></div>
+        <div class="pdh-price-note">開發商：${d.builder}</div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:1.2rem">
+      <div class="section-title" style="font-size:.95rem">建案說明</div>
+      <p style="font-size:.88rem;color:var(--text-mid);line-height:1.85">${d.desc}</p>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+        <div class="section-title" style="font-size:.95rem;margin:0">可售戶別（${units.filter(u=>u.status==='可售').length} 戶可售）</div>
+      </div>
+      <div class="units-grid">
+        ${units.map(u=>`
+          <div class="unit-card">
+            <div class="unit-floor">${u.floor}｜${u.unit}</div>
+            <div class="unit-type">${u.type}</div>
+            <div class="unit-specs">
+              <span class="unit-spec">${u.size}坪</span>
+              <span class="unit-spec">${u.parking}</span>
+              <span class="unit-spec">${u.mgmt}</span>
+            </div>
+            <div class="unit-price">${u.price}</div>
+            <div style="margin-top:.6rem;display:flex;gap:.5rem;align-items:center">
+              ${statusTag(u.status)}
+              ${u.status==='可售'?`<button class="btn btn-primary btn-sm" onclick="openBookingFor('${u.project}')">帶看</button>`:''}
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   BOOKING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+const unitsByProject = {
+  '譽誠沐光苑':['3F-A棟-01','5F-A棟-02','8F-B棟-01'],
+  '譽誠和風居':['6F-A棟-01','9F-A棟-03','12F-B棟-01'],
+  '譽誠晴山苑':['2F-C棟-01','8F-D棟-02'],
+  '譽誠星曜':['18F-A棟-01','22F-A棟-02'],
+  '譽誠綠意村':['3F-B棟-01'],
+};
+function updateBkUnits(){
+  const p = document.getElementById('bkProject').value;
+  const sel = document.getElementById('bkUnit');
+  sel.innerHTML = p && unitsByProject[p]
+    ? unitsByProject[p].map(u=>`<option>${u}</option>`).join('')
+    : '<option value="">-- 請先選擇建案 --</option>';
+}
+function openBookingFor(proj){
+  switchPanel('booking', document.querySelector('[onclick*="booking"]'));
+  setTimeout(()=>{
+    document.getElementById('bkProject').value = proj;
+    updateBkUnits();
+  }, 100);
+}
+function submitBooking(){
+  const proj = document.getElementById('bkProject').value;
+  const unit = document.getElementById('bkUnit').value;
+  const date = document.getElementById('bkDate').value;
+  const time = document.getElementById('bkTime').value;
+  const name = document.getElementById('bkClientName').value.trim();
+  const phone = document.getElementById('bkClientPhone').value.trim();
+  const note = document.getElementById('bkNote').value.trim();
+  if(!proj||!unit||!date||!name||!phone){showToast('⚠️ 請填寫所有必填欄位');return;}
+  bookings.unshift({date,time,project:proj,unit,client:name,phone,note,status:'待確認'});
+  renderRecentBookings();
+  renderBookingRecords();
+  renderMiniCal();
+  document.getElementById('bookingForm').style.display='none';
+  const msg = document.getElementById('bookingSuccessMsg');
+  msg.textContent = `${date} ${time} · ${proj} · ${unit} · 客戶：${name}`;
+  document.getElementById('bookingSuccess').style.display='block';
+  showToast('帶看登記成功！');
+}
+function resetBookingForm(){
+  document.getElementById('bookingForm').style.display='block';
+  document.getElementById('bookingSuccess').style.display='none';
+  document.getElementById('bkProject').value='';
+  document.getElementById('bkUnit').innerHTML='<option>-- 請先選擇建案 --</option>';
+  document.getElementById('bkClientName').value='';
+  document.getElementById('bkClientPhone').value='';
+  document.getElementById('bkNote').value='';
+}
+function renderRecentBookings(){
+  const tbody = document.getElementById('recentBookings');
+  tbody.innerHTML = bookings.slice(0,5).map(b=>`
+    <tr>
+      <td>${b.date}</td><td>${b.time}</td>
+      <td class="td-bold">${b.project}</td>
+      <td>${b.client}</td>
+      <td>${statusTag(b.status==='確認中'?'可售':b.status==='待確認'?'保留中':'已成交')}</td>
+    </tr>`).join('');
+}
+function renderBookingRecords(){
+  const el = document.getElementById('bookingRecords');
+  if(!bookings.length){el.innerHTML='<p style="color:var(--text-light);font-size:.85rem;text-align:center;padding:1rem">尚無帶看記錄</p>';return;}
+  el.innerHTML = bookings.slice(0,6).map((b,i)=>{
+    const [y,m,d] = b.date.split('-');
+    return `<div class="booking-record">
+      <div class="record-date"><div class="rd-day">${d}</div><div class="rd-month">${m}月</div></div>
+      <div class="record-info">
+        <div class="record-project">${b.project}</div>
+        <div class="record-meta">⏰ ${b.time} ｜ 🏢 ${b.unit}<br/>👤 ${b.client} ｜ 📞 ${b.phone}</div>
+      </div>
+      <div class="record-actions">
+        <button class="btn btn-red btn-sm" onclick="cancelBooking(${i})">取消</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function cancelBooking(i){
+  if(confirm('確定取消這筆帶看登記？')){
+    bookings.splice(i,1);
+    renderBookingRecords();
+    renderRecentBookings();
+    renderMiniCal();
+    showToast('帶看登記已取消');
+  }
+}
+
+/* Mini Calendar */
+let calYear, calMonth;
+function renderMiniCal(offsetMonth=0){
+  if(calYear===undefined){const n=new Date();calYear=n.getFullYear();calMonth=n.getMonth();}
+  calMonth+=offsetMonth;
+  if(calMonth>11){calMonth=0;calYear++;}
+  if(calMonth<0){calMonth=11;calYear--;}
+  const today=new Date();
+  const firstDay=new Date(calYear,calMonth,1).getDay();
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  const bookingDates=bookings.map(b=>b.date);
+  const months=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  let html=`<div class="cal-header">
+    <button class="cal-nav" onclick="renderMiniCal(-1)">‹</button>
+    <span>${calYear}年 ${months[calMonth]}</span>
+    <button class="cal-nav" onclick="renderMiniCal(1)">›</button>
+  </div>
+  <div class="cal-grid">
+    <div class="cal-day-label">日</div><div class="cal-day-label">一</div><div class="cal-day-label">二</div>
+    <div class="cal-day-label">三</div><div class="cal-day-label">四</div><div class="cal-day-label">五</div><div class="cal-day-label">六</div>`;
+  for(let i=0;i<firstDay;i++) html+=`<div class="cal-day empty"></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const dateStr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = today.getFullYear()===calYear&&today.getMonth()===calMonth&&today.getDate()===d;
+    const hasBook = bookingDates.includes(dateStr);
+    html+=`<div class="cal-day${isToday?' today':''}${hasBook?' has-booking':''}">${d}</div>`;
+  }
+  html+='</div>';
+  document.getElementById('miniCal').innerHTML=html;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   CONFLICT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function checkConflict(){
+  const proj = document.getElementById('cfProject').value;
+  const phone = document.getElementById('cfPhone').value.trim();
+  const name = document.getElementById('cfName').value.trim();
+  if(!proj||!phone){showToast('⚠️ 請填寫建案與電話');return;}
+  const el = document.getElementById('conflictResult');
+  el.style.display='block';
+  const found = bookings.find(b=>b.project===proj&&b.phone.replace(/-/g,'')===phone.replace(/-/g,''));
+  if(found){
+    el.className='conflict-result danger';
+    el.innerHTML=`<div class="cr-icon">⚠️</div><h3 style="color:var(--red)">此客戶已有帶看記錄</h3>
+      <p>建案：${found.project}<br/>帶看日期：${found.date} ${found.time}<br/>如有疑問請洽聯絡窗口</p>`;
+  } else {
+    el.className='conflict-result safe';
+    el.innerHTML=`<div class="cr-icon">✅</div><h3 style="color:#2e7d32">此客戶無衝突記錄</h3>
+      <p>在 <strong>${proj}</strong> 查無此電話的帶看登記，<br/>您可以安心安排帶看。</p>`;
+  }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   MATERIALS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function renderMaterials(cat){
+  const data = cat==='all' ? MATERIALS_DATA : MATERIALS_DATA.filter(m=>m.cat===cat);
+  document.getElementById('materialGrid').innerHTML = data.map(m=>`
+    <div class="material-item" onclick="downloadMaterial('${m.name}')">
+      <div class="material-thumb">${m.icon}</div>
+      <div class="material-info">
+        <div class="material-name">${m.name}</div>
+        <div class="material-size">${m.size}</div>
+        <div class="material-dl">⬇ 點擊下載</div>
+      </div>
+    </div>`).join('');
+}
+function filterMaterials(cat, el){
+  document.querySelectorAll('.mtab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderMaterials(cat);
+}
+function downloadMaterial(name){showToast(`開始下載：${name}`);}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   NEWS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function renderNews(){
+  document.getElementById('newsList').innerHTML = NEWS_DATA.map(n=>`
+    <div class="news-item">
+      <div class="news-date"><div class="nd-day">${n.day}</div><div class="nd-mon">${n.mon}</div></div>
+      <div class="news-content">
+        <div class="news-title">${n.isNew?'<span class="tag tag-red" style="margin-right:.4rem;font-size:.68rem">NEW</span>':''}${n.title}</div>
+        <div class="news-excerpt">${n.excerpt}</div>
+        <div class="news-tags">${n.tags.map(t=>`<span class="tag tag-green">${t}</span>`).join('')}</div>
+      </div>
+    </div>`).join('');
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   CONTACT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function submitContact(){
+  const name=document.getElementById('ctName').value.trim();
+  const phone=document.getElementById('ctPhone').value.trim();
+  const msg=document.getElementById('ctMessage').value.trim();
+  if(!name||!phone||!msg){showToast('⚠️ 請填寫必填欄位');return;}
+  document.getElementById('contactFormWrap').style.display='none';
+  document.getElementById('contactSuccess').style.display='block';
+  showToast('留言送出成功！');
+}
+function resetContact(){
+  document.getElementById('contactFormWrap').style.display='block';
+  document.getElementById('contactSuccess').style.display='none';
+  document.getElementById('ctName').value='';
+  document.getElementById('ctPhone').value='';
+  document.getElementById('ctMessage').value='';
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   TOAST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toastMsg').textContent=msg;
+  t.style.display='flex';
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.style.display='none',3000);
+}
+
+/* Responsive sidebar toggle show */
+function checkMobile(){
+  const isMobile = window.innerWidth<=768;
+  document.getElementById('menuToggle').style.display = isMobile?'block':'none';
+}
+window.addEventListener('resize',checkMobile);
+checkMobile();
+</script>
+</body>
+</html>

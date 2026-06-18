@@ -1,0 +1,166 @@
+id="boDash">
+    <div class="bo-wrap">
+      <aside class="bo-sb">
+        <div class="bo-sb-top">
+          <div class="bo-sb-brand">譽誠廣告</div>
+          <div class="bo-sb-label">仲介合作專區</div>
+        </div>
+        <div class="bo-sb-user">
+          <div class="bo-sb-av">王</div>
+          <div><div class="bo-sb-name">王大明 仲介</div><div class="bo-sb-role">合作仲介夥伴</div></div>
+        </div>
+        <nav class="bo-sb-nav">
+          <div class="bo-sb-sec">主要功能</div>
+          <button class="bo-ni active" onclick="boSwitch(this,'overview')"><span class="ico">▤</span>總覽儀表板</button>
+          <button class="bo-ni" onclick="boSwitch(this,'units')"><span class="ico">⊞</span>即時可售戶<span class="bo-nbadge" id="unitsBadge">—</span></button>
+          <button class="bo-ni" onclick="boSwitch(this,'projects')"><span class="ico">◫</span>建案詳細資料</button>
+          <div class="bo-sb-sec">帶看服務</div>
+          <button class="bo-ni" onclick="boSwitch(this,'booking')"><span class="ico">◻</span>帶看登記系統</button>
+          <button class="bo-ni" onclick="boSwitch(this,'conflict')"><span class="ico">◎</span>撞客查詢</button>
+          <div class="bo-sb-sec">資源中心</div>
+          <button class="bo-ni" onclick="boSwitch(this,'materials')"><span class="ico">▦</span>素材下載區</button>
+          <button class="bo-ni" onclick="boSwitch(this,'commission')"><span class="ico">◈</span>傭金公告</button>
+          <div class="bo-sb-sec">資訊</div>
+          <button class="bo-ni" onclick="boSwitch(this,'news')"><span class="ico">◉</span>最新消息<span class="bo-nbadge">3</span></button>
+          <button class="bo-ni" onclick="boSwitch(this,'contact')"><span class="ico">◌</span>聯絡窗口</button>
+        </nav>
+        <div class="bo-sb-foot">
+          <button class="bo-logout-btn" onclick="boDoLogout()">→ 登出</button>
+        </div>
+      </aside>
+
+      <div class="bo-main">
+        <div class="bo-topbar">
+          <div class="bo-tb-title" id="boTopTitle">總覽儀表板</div>
+          <div class="bo-tb-right">
+            <div class="bo-date" id="boDate"></div>
+            <button class="bo-close" onclick="closeBrokerOverlay()">← 返回首頁</button>
+          </div>
+        </div>
+        <div class="bo-content">
+
+          <!-- OVERVIEW -->
+          <div class="bo-panel active" id="bop-overview">
+            <div class="bo-stat-grid">
+              <div class="bo-stat"><div class="bo-stat-num" id="ovUnits">—</div><div class="bo-stat-lbl">即時可售戶</div></div>
+              <div class="bo-stat"><div class="bo-stat-num" id="ovBookings">—</div><div class="bo-stat-lbl">帶看預約</div></div>
+              <div class="bo-stat"><div class="bo-stat-num">8</div><div class="bo-stat-lbl">本月已成交</div></div>
+              <div class="bo-stat"><div class="bo-stat-num">3</div><div class="bo-stat-lbl">未讀消息</div></div>
+            </div>
+            <div class="boc">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+                <div class="boc-title" style="margin:0">最近帶看記錄</div>
+                <button class="bb bb-outline bb-sm" onclick="boSwitch(document.querySelector('.bo-ni[onclick*=booking]'),'booking')">查看全部</button>
+              </div>
+              <div class="bo-table-wrap"><table class="bt2"><thead><tr><th>日期</th><th>時間</th><th>建案</th><th>客戶</th><th>狀態</th></tr></thead><tbody id="boRecentBk"></tbody></table></div>
+            </div>
+            <div class="boc">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+                <div class="boc-title" style="margin:0">熱門可售戶</div>
+                <button class="bb bb-outline bb-sm" onclick="boSwitch(document.querySelector('.bo-ni[onclick*=units]'),'units')">查看全部</button>
+              </div>
+              <div class="bo-table-wrap">
+                <table class="bt2"><thead><tr><th>建案</th><th>樓層/戶別</th><th>房型</th><th>坪數</th><th>售價</th><th>狀態</th><th>操作</th></tr></thead>
+                <tbody id="boHotUnits"></tbody></table>
+              </div>
+            </div>
+          </div>
+
+          <!-- UNITS -->
+          <div class="bo-panel" id="bop-units">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+              <div style="font-family:'Noto Serif TC',serif;font-size:.98rem;font-weight:700;color:#1B3228">可售戶管理</div>
+              <button class="bb bb-primary" onclick="openAddUnit()">＋ 新增可售戶</button>
+            </div>
+            <div class="bo-proj-tabs" id="boProjTabs2"></div>
+            <div class="bo-fbar">
+              <input type="text" placeholder="搜尋戶別、房型..." id="boUSearch" oninput="boFilterUnits()"/>
+              <select id="boUStat" onchange="boFilterUnits()">
+                <option value="">全部狀態</option><option>可售</option><option>保留中</option><option>已成交</option>
+              </select>
+            </div>
+            <div class="bo-table-wrap">
+              <table class="bt2">
+                <thead><tr><th>建案</th><th>樓層</th><th>戶別</th><th>房型</th><th>坪數</th><th>售價</th><th>車位</th><th>管理費</th><th>狀態</th><th>操作</th></tr></thead>
+                <tbody id="boUnitsTbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- PROJECTS -->
+          <div class="bo-panel" id="bop-projects">
+            <div class="bo-proj-tabs" id="boProjTabsMain"></div>
+            <div id="boProjDetail"></div>
+          </div>
+
+          <!-- BOOKING -->
+          <div class="bo-panel" id="bop-booking">
+            <div class="bo-book-grid">
+              <div class="boc">
+                <div class="boc-title">新增帶看登記</div>
+                <div id="boBookForm">
+                  <div class="bo-fg2"><label>選擇建案 *</label>
+                    <select id="boBkProj" onchange="boBkUnits()">
+                      <option value="">-- 請選擇 --</option>
+                      <option>譽誠沐光苑</option><option>譽誠和風居</option>
+                      <option>譽誠晴山苑</option><option>譽誠星曜</option><option>譽誠綠意村</option>
+                    </select>
+                  </div>
+                  <div class="bo-fg2"><label>選擇戶別 *</label><select id="boBkUnit"><option>-- 請先選擇建案 --</option></select></div>
+                  <div class="bo-fgrid2">
+                    <div class="bo-fg2"><label>帶看日期 *</label><input type="date" id="boBkDate"/></div>
+                    <div class="bo-fg2"><label>帶看時間 *</label>
+                      <select id="boBkTime">
+                        <option>09:00</option><option>09:30</option><option>10:00</option><option>10:30</option>
+                        <option>11:00</option><option>11:30</option><option>13:30</option><option>14:00</option>
+                        <option>14:30</option><option>15:00</option><option>15:30</option><option>16:00</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div style="height:1px;background:#ECEAE6;margin:.8rem 0"></div>
+                  <div class="bo-fgrid2">
+                    <div class="bo-fg2"><label>客戶姓名 *</label><input type="text" id="boBkName" placeholder="陳小姐"/></div>
+                    <div class="bo-fg2"><label>客戶電話 *</label><input type="tel" id="boBkPhone" placeholder="09XX-XXX-XXX"/></div>
+                  </div>
+                  <div class="bo-fg2"><label>備註</label><textarea id="boBkNote" rows="3" placeholder="偏好樓層、停車需求..."></textarea></div>
+                  <button class="bb bb-primary" style="width:100%;justify-content:center;padding:.72rem;font-size:.84rem" onclick="boSubmitBooking()">確認提交帶看登記</button>
+                </div>
+                <div id="boBookOk" style="display:none;text-align:center;padding:2.5rem 1rem">
+                  <div style="font-size:1.8rem;margin-bottom:.8rem;color:#A8883A">✓</div>
+                  <div style="font-family:'Noto Serif TC',serif;font-size:.98rem;color:#1B3228;font-weight:700;margin-bottom:.4rem">登記成功</div>
+                  <div style="font-size:.79rem;color:#aaa" id="boBookOkMsg"></div>
+                  <button class="bb bb-outline" style="margin-top:1.2rem" onclick="boResetBook()">繼續登記</button>
+                </div>
+              </div>
+              <div class="boc">
+                <div class="boc-title">帶看行程表</div>
+                <div class="bo-mini-cal" id="boCal"></div>
+                <div id="boBookRecs"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CONFLICT -->
+          <div class="bo-panel" id="bop-conflict">
+            <div style="display:grid;grid-template-columns:380px 1fr;gap:1.5rem;align-items:start">
+              <div class="boc">
+                <div class="boc-title">撞客查詢</div>
+                <p style="font-size:.81rem;color:#888;line-height:1.75;margin-bottom:1.2rem">輸入客戶電話確認是否已被其他仲介登記，客戶保護期 60 天。</p>
+                <div class="bo-fg2"><label>選擇建案 *</label>
+                  <select id="boCfProj"><option value="">-- 請選擇 --</option>
+                    <option>譽誠沐光苑</option><option>譽誠和風居</option>
+                    <option>譽誠晴山苑</option><option>譽誠星曜</option><option>譽誠綠意村</option>
+                  </select>
+                </div>
+                <div class="bo-fg2"><label>客戶電話 *</label><input type="tel" id="boCfPhone" placeholder="09XX-XXX-XXX"/></div>
+                <div class="bo-fg2"><label>客戶姓名（選填）</label><input type="text" id="boCfName"/></div>
+                <button class="bb bb-primary" style="width:100%;justify-content:center;padding:.7rem" onclick="boCheckConflict()">立即查詢</button>
+                <div id="boCfResult" class="bo-cf-result"></div>
+              </div>
+              <div class="boc">
+                <div class="boc-title">保護規則說明</div>
+                <div style="border-left:3px solid #A8883A;padding:.6rem 1rem;background:#F9F7F3;margin-bottom:1.2rem">
+                  <div style="font-size:.8rem;font-weight:700;color:#1B3228;margin-bottom:.4rem">客戶歸屬原則</div>
+                  <p style="font-size:.77rem;color:#666;line-height:1.85">同一客戶同一建案，以第一次帶看登記之仲介為主。超過 60 天保護期後視為公開客戶。</p>
+                </div>
+              

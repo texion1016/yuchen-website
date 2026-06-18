@@ -2405,8 +2405,8 @@ table.bt2 tbody td{padding:.72rem 1rem;color:#555;white-space:nowrap}
     <button class="bov-close" onclick="closeBrokerOv()">✕</button>
   </div>
   <div class="bov-tabs" id="bovTabs">
-    <button class="bov-tab active" onclick="switchBovTab('login')">仲介登入</button>
-    <button class="bov-tab" onclick="switchBovTab('register')">申請合作</button>
+    <button class="bov-tab active" id="tabLogin" onclick="switchBovTab('login')">仲介登入</button>
+    <button class="bov-tab" id="tabRegister" onclick="switchBovTab('register')">申請合作</button>
     <button class="bov-tab" id="tabReport" style="display:none" onclick="switchBovTab('report')">客戶報備</button>
     <button class="bov-tab" id="tabMyReg" style="display:none" onclick="switchBovTab('myreg')">我的報備</button>
   </div>
@@ -2529,6 +2529,8 @@ function showBovMsg(id, msg, type) {
   setTimeout(() => { el.style.display = 'none'; }, 6000);
 }
 function showBovLoggedIn() {
+  document.getElementById('tabLogin').style.display = 'none';
+  document.getElementById('tabRegister').style.display = 'none';
   document.getElementById('tabReport').style.display = '';
   document.getElementById('tabMyReg').style.display = '';
   switchBovTab('report');
@@ -5850,15 +5852,44 @@ async function loadAdmRegs() {
   const { data } = await _sb.from('client_registrations').select('*').order('created_at',{ascending:false});
   if (!data||!data.length){el.innerHTML='<div class="adm-empty">尚無資料</div>';return;}
   el.innerHTML = `<table class="adm-table"><thead><tr>
-    <th>報備編號</th><th>仲介</th><th>公司</th><th>客戶</th><th>電話</th><th>建案</th><th>帶看時間</th><th>報備時間</th><th>狀態</th>
-    </tr></thead><tbody>${data.map(r=>`<tr>
+    <th>報備編號</th><th>仲介</th><th>公司</th><th>客戶</th><th>電話</th><th>建案</th><th>帶看時間</th><th>報備時間</th><th>狀態</th><th>操作</th>
+    </tr></thead><tbody>${data.map(r=>`<tr id="reg-row-${r.id}">
     <td style="font-family:monospace;font-size:.75rem;color:var(--ov-gold)">${r.registration_no}</td>
     <td>${r.broker_name||''}</td><td>${r.broker_company||''}</td>
     <td>${r.client_name}</td><td>${r.client_phone}</td><td>${r.project_name}</td>
-    <td>${r.view_date ? '<strong>' + r.view_date + '</strong>' + (r.view_time ? '<br><span style=\"font-size:.75rem;opacity:.7\">' + r.view_time + '</span>' : '') : '<span style=\"opacity:.4\">—</span>'}</td>
+    <td>${r.view_date ? '<strong>' + r.view_date + '</strong>' + (r.view_time ? ' ' + r.view_time : '') : '<span style="opacity:.4">—</span>'}</td>
     <td style="font-size:.78rem">${new Date(r.created_at).toLocaleString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false})}</td>
-    <td><span class="adm-badge ${r.status}">${{pending:'待確認',confirmed:'已確認',closed:'結案'}[r.status]||r.status}</span></td>
+    <td><span class="adm-badge ${r.status}" id="reg-status-${r.id}">${{pending:'待確認',confirmed:'已確認',closed:'結案'}[r.status]||r.status}</span></td>
+    <td>${r.status==='pending'
+      ? `<button onclick="admConfirmView('${r.id}')" style="background:var(--ov-navy);color:#fff;border:none;border-radius:6px;padding:.3rem .8rem;font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:opacity .2s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">確認帶看</button>`
+      : r.status==='confirmed'
+        ? `<button onclick="admCloseReg('${r.id}')" style="background:rgba(100,80,50,.12);color:#7A5A10;border:none;border-radius:6px;padding:.3rem .8rem;font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap">結案</button>`
+        : '<span style="color:#ccc;font-size:.75rem">—</span>'
+    }</td>
     </tr>`).join('')}</tbody></table>`;
+}
+
+async function admConfirmView(id) {
+  const { error } = await _sb.from('client_registrations').update({ status: 'confirmed' }).eq('id', id);
+  if (!error) {
+    const badge = document.getElementById('reg-status-' + id);
+    if (badge) { badge.textContent = '已確認'; badge.className = 'adm-badge confirmed'; }
+    const row = document.getElementById('reg-row-' + id);
+    if (row) {
+      const btn = row.querySelector('td:last-child button');
+      if (btn) btn.outerHTML = `<button onclick="admCloseReg('${id}')" style="background:rgba(100,80,50,.12);color:#7A5A10;border:none;border-radius:6px;padding:.3rem .8rem;font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap">結案</button>`;
+    }
+  }
+}
+
+async function admCloseReg(id) {
+  const { error } = await _sb.from('client_registrations').update({ status: 'closed' }).eq('id', id);
+  if (!error) {
+    const badge = document.getElementById('reg-status-' + id);
+    if (badge) { badge.textContent = '結案'; badge.className = 'adm-badge'; badge.style.cssText='background:rgba(80,80,80,.1);color:#666;font-size:.7rem;font-weight:700;padding:.22rem .7rem;border-radius:20px'; }
+    const row = document.getElementById('reg-row-' + id);
+    if (row) { const btn = row.querySelector('td:last-child button'); if (btn) btn.outerHTML = '<span style="color:#ccc;font-size:.75rem">—</span>'; }
+  }
 }
 
 async function loadAdmBookings() {

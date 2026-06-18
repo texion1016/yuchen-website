@@ -5869,28 +5869,32 @@ async function loadAdmRegs() {
     </tr>`).join('')}</tbody></table>`;
 }
 
-async function admConfirmView(id) {
-  const { error } = await _sb.from('client_registrations').update({ status: 'confirmed' }).eq('id', id);
-  if (!error) {
-    const badge = document.getElementById('reg-status-' + id);
-    if (badge) { badge.textContent = '已確認'; badge.className = 'adm-badge confirmed'; }
-    const row = document.getElementById('reg-row-' + id);
-    if (row) {
-      const btn = row.querySelector('td:last-child button');
-      if (btn) btn.outerHTML = `<button onclick="admCloseReg('${id}')" style="background:rgba(100,80,50,.12);color:#7A5A10;border:none;border-radius:6px;padding:.3rem .8rem;font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap">結案</button>`;
+async function admUpdateRegStatus(id, newStatus, btn) {
+  if (btn) { btn.disabled = true; btn.style.opacity = '.5'; }
+  const { error } = await _sb.from('client_registrations').update({ status: newStatus }).eq('id', id);
+  if (error) {
+    alert('更新失敗：' + error.message + '\n\n請至 Supabase → SQL Editor 執行：\nCREATE POLICY "adm upd" ON client_registrations FOR UPDATE USING (true) WITH CHECK (true);');
+    if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+    return;
+  }
+  const statusMap = { confirmed: '已確認', closed: '結案', pending: '待確認' };
+  const badgeClassMap = { confirmed: 'adm-badge confirmed', closed: 'adm-badge', pending: 'adm-badge pending' };
+  const badge = document.getElementById('reg-status-' + id);
+  if (badge) { badge.textContent = statusMap[newStatus]; badge.className = badgeClassMap[newStatus]; }
+  const row = document.getElementById('reg-row-' + id);
+  if (row) {
+    const cell = row.querySelector('td:last-child');
+    if (cell) {
+      if (newStatus === 'confirmed') {
+        cell.innerHTML = `<button onclick="admUpdateRegStatus('${id}','closed',this)" style="background:rgba(100,80,50,.12);color:#7A5A10;border:none;border-radius:6px;padding:.3rem .8rem;font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap">結案</button>`;
+      } else {
+        cell.innerHTML = '<span style="color:#bbb;font-size:.75rem">—</span>';
+      }
     }
   }
 }
-
-async function admCloseReg(id) {
-  const { error } = await _sb.from('client_registrations').update({ status: 'closed' }).eq('id', id);
-  if (!error) {
-    const badge = document.getElementById('reg-status-' + id);
-    if (badge) { badge.textContent = '結案'; badge.className = 'adm-badge'; badge.style.cssText='background:rgba(80,80,80,.1);color:#666;font-size:.7rem;font-weight:700;padding:.22rem .7rem;border-radius:20px'; }
-    const row = document.getElementById('reg-row-' + id);
-    if (row) { const btn = row.querySelector('td:last-child button'); if (btn) btn.outerHTML = '<span style="color:#ccc;font-size:.75rem">—</span>'; }
-  }
-}
+function admConfirmView(id) { admUpdateRegStatus(id, 'confirmed', event.target); }
+function admCloseReg(id)    { admUpdateRegStatus(id, 'closed',    event.target); }
 
 async function loadAdmBookings() {
   const el = document.getElementById('admBookContent');

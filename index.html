@@ -6983,9 +6983,73 @@ document.querySelectorAll('.btn').forEach(btn => {
 
 /* 仲介 overlay 背景微妙紋理 */
 #brokerOverlay {
-  background-image: radial-gradient(circle at 80% 20%, rgba(193,154,78,0.05) 0%, transparent 50%),
-                    radial-gradient(circle at 20% 80%, rgba(26,58,95,0.06) 0%, transparent 50%) !important;
+  background-color: #0D1E30 !important;
+  background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
 }
+/* 半透明深色遮罩讓表單清晰可讀 */
+#brokerOverlay::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 0;
+  background: linear-gradient(150deg, rgba(10,20,40,0.72) 0%, rgba(14,28,50,0.65) 100%);
+  pointer-events: none;
+}
+#brokerOverlay > * { position: relative; z-index: 1; }
+/* header 玻璃效果 */
+#brokerOverlay .bov-header {
+  background: rgba(255,255,255,0.10) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.12) !important;
+  backdrop-filter: blur(16px) !important;
+}
+#brokerOverlay .bov-logo { color: #fff !important; }
+#brokerOverlay .bov-close {
+  border-color: rgba(255,255,255,0.2) !important;
+  color: rgba(255,255,255,0.7) !important;
+}
+#brokerOverlay .bov-close:hover { background: rgba(255,255,255,0.15) !important; color: #fff !important; }
+/* tabs 玻璃效果 */
+#brokerOverlay .bov-tabs {
+  background: rgba(255,255,255,0.07) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+  backdrop-filter: blur(12px) !important;
+}
+#brokerOverlay .bov-tab:not(.active) {
+  background: rgba(255,255,255,0.08) !important;
+  color: rgba(255,255,255,0.7) !important;
+  border-color: rgba(255,255,255,0.15) !important;
+}
+#brokerOverlay .bov-tab.active {
+  background: #C19A4E !important;
+  color: #fff !important;
+  border-color: #C19A4E !important;
+  box-shadow: 0 3px 16px rgba(193,154,78,0.4) !important;
+}
+/* 表單面板：白色玻璃卡片 */
+#brokerOverlay .bov-body {
+  background: transparent !important;
+}
+#brokerOverlay #bovLogin,
+#brokerOverlay #bovRegister,
+#brokerOverlay #bovReport {
+  background: rgba(255,255,255,0.95) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important;
+  border: 1px solid rgba(255,255,255,0.6) !important;
+  margin-top: 2rem !important;
+  margin-bottom: 2rem !important;
+}
+/* myReg 面板半透明 */
+#brokerOverlay #bovMyReg {
+  background: rgba(255,255,255,0.96) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.2) !important;
+  margin: 1.5rem 2rem !important;
+  max-width: none !important;
+  width: calc(100% - 4rem) !important;
+}
+#brokerOverlay #myregContent { padding: 1.5rem !important; }
 
 /* 管理後台背景 */
 #adminOverlay .adm-content {

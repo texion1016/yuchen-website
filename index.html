@@ -6849,10 +6849,11 @@ document.querySelectorAll('.btn').forEach(btn => {
 
 /* ── 顏色衝突全面修正 ── */
 
-/* 主網站深色背景文字確認為白色 */
-.hero-slide, .hr-left, .hr-right, #hero { color: #fff !important; }
-.hr-title, .hr-eyebrow { color: #fff !important; }
-.hr-ghost { color: rgba(255,255,255,0.04) !important; }
+/* Hero 左側為淺色背景，文字必須深色 */
+.hr-title    { color: #0F1923 !important; }
+.hr-eyebrow  { color: #1E3A5F !important; }
+.hr-sub      { color: #3A4E63 !important; }
+.hr-ghost    { color: rgba(15,25,35,0.05) !important; }
 
 /* 修正暗色 section 中可能出現文字與背景相同的問題 */
 .section-dark, [style*="background:#0B2035"],
@@ -7065,10 +7066,12 @@ document.querySelectorAll('.btn').forEach(btn => {
    Rule: only color / text-shadow / opacity on text
 ══════════════════════════════════════════════════════ */
 
-/* ── Hero 區深色背景上的淡色文字 ── */
-.hr-stat-label   { color: #A8C0D8 !important; }
-.hr-stat-num     { color: #FFFFFF !important; }
-.hr-eyebrow      { color: rgba(255,255,255,0.75) !important; }
+/* ── Hero — 淺色背景，所有文字改深色 ── */
+.hr-stat-label   { color: #4A6280 !important; }
+.hr-stat-num     { color: #1E3A5F !important; }
+.hr-eyebrow      { color: #1E3A5F !important; }
+.hr-title        { color: #0F1923 !important; }
+.hr-sub          { color: #3A4E63 !important; }
 
 /* ── 主站各 section 深色背景上的小字 ── */
 /* pj = 建案、st = 特色、sc = 服務卡、bro = 仲介說明 */

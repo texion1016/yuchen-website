@@ -2473,14 +2473,8 @@ table.bt2 tbody td{padding:.72rem 1rem;color:#555;white-space:nowrap}
           <input type="date" id="rptViewDate" />
         </div>
         <div class="bov-field">
-          <label>帶看時段</label>
-          <select id="rptViewTime">
-            <option value="">— 請選擇 —</option>
-            <option value="上午 10:00–12:00">上午 10:00–12:00</option>
-            <option value="下午 14:00–17:00">下午 14:00–17:00</option>
-            <option value="傍晚 17:00–19:00">傍晚 17:00–19:00</option>
-            <option value="彈性協調">彈性協調（由顧問確認）</option>
-          </select>
+          <label>帶看時間</label>
+          <input type="time" id="rptViewTime" />
         </div>
       </div>
       <div class="bov-field"><label>備註</label><textarea id="rptNote" rows="3" placeholder="其他說明..."></textarea></div>
@@ -6984,7 +6978,7 @@ document.querySelectorAll('.btn').forEach(btn => {
 /* 仲介 overlay 背景微妙紋理 */
 #brokerOverlay {
   background-color: #0D1E30 !important;
-  background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80') !important;
+  background-image: url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1920&q=80') !important;
   background-size: cover !important;
   background-position: center !important;
   background-repeat: no-repeat !important;

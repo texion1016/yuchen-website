@@ -3600,31 +3600,7 @@ if (window.location.hash === '#booking') { setTimeout(openBookingOverlay, 400); 
 window.addEventListener('hashchange', function() {
   if (window.location.hash === '#booking') openBookingOverlay();
 });
-function openBookingOverlay() { return; /* removed */ 
-  if(false) {
-  // Close project detail overlay if open
-  const pd = document.getElementById('projDetailOverlay');
-  if (pd && pd.style.display !== 'none') pd.style.display = 'none';
-  // Close decoration overlay if open
-  const deco = document.getElementById('decoOverlay');
-  if (deco && deco.style.display !== 'none') deco.style.display = 'none';
-  // Reset form state
-  const form = document.getElementById('bkForm');
-  if (form) form.reset();
-  document.getElementById('bkFormWrap').style.display = '';
-  document.getElementById('bkSuccess').classList.remove('show');
-  // Set min date to today
-  const dateInput = document.getElementById('bkDate');
-  if (dateInput) {
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth()+1).padStart(2,'0');
-    const dd = String(today.getDate()+1).padStart(2,'0');
-    dateInput.min = yyyy+'-'+mm+'-'+dd;
-  }
-  document.getElementById('bookingOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
+function openBookingOverlay() { return; }
 // Auto-open on #booking hash
 if (window.location.hash === '#booking') { setTimeout(openBookingOverlay, 300); }
 window.addEventListener('hashchange', function() {

@@ -7091,7 +7091,7 @@ document.querySelectorAll('.btn').forEach(btn => {
 .st-desc  { color: #2A3E52 !important; }
 .sc-hint                            { color: rgba(255,255,255,0.68) !important; }
 .bro-desc2, .bro-note               { color: rgba(255,255,255,0.72) !important; }
-.tl-desc                            { color: rgba(255,255,255,0.72) !important; }
+.tl-desc                            { color: #3A4E63 !important; }
 .lcta-perk                          { color: rgba(255,255,255,0.80) !important; }
 
 /* ── Footer — 深色底上所有文字一律提亮 ── */
@@ -7162,7 +7162,7 @@ document.querySelectorAll('.btn').forEach(btn => {
 
 /* ── 一般深色 section 中 section-sub / section-desc ── */
 .section-sub, .section-desc { color: rgba(255,255,255,0.72) !important; }
-.tl-side-desc               { color: rgba(255,255,255,0.72) !important; }
+.tl-side-desc               { color: #3A4E63 !important; }
 
 /* ── 確保 bov-status badge 文字在淺色 badge 背景上可讀 ── */
 .bov-status.pending   { color: #7A5A10 !important; }
@@ -7172,6 +7172,19 @@ document.querySelectorAll('.btn').forEach(btn => {
 .adm-badge.pending    { color: #7A5A10 !important; }
 .adm-badge.active     { color: #0E2E4E !important; }
 .adm-badge.new        { color: #3A3080 !important; }
+
+/* ══════════════════════════════════════════════
+   建案詳情 頂部列 — 修復殘留深色主題覆蓋
+   舊 void 主題用 [style*=...] 高權重把頂列染深，
+   標題文字卻仍是深色 → 看不見。
+   用 #id #id 雙 ID 權重蓋回淺底深字。
+══════════════════════════════════════════════ */
+#projDetailOverlay #pdTopBar {
+  background: rgba(246,244,239,0.96) !important;
+}
+#projDetailOverlay #pdBarName { color: #0F1923 !important; }
+#projDetailOverlay #pdBarLoc  { color: #5A6E83 !important; }
+#projDetailOverlay #pdTopBar button:first-child { color: #3A4E63 !important; }
 
 /* ══════════════════════════════════════════════
    MOBILE — 裝潢風格 Overlay 垂直堆疊佈局

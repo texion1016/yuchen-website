@@ -5849,7 +5849,11 @@ async function admUpdateRegStatus(id, newStatus, btn) {
   if (btn) { btn.disabled = true; btn.style.opacity = '.5'; }
   const { error } = await _sb.from('client_registrations').update({ status: newStatus }).eq('id', id);
   if (error) {
-    alert('更新失敗：' + error.message + '\n\n請至 Supabase → SQL Editor 執行：\nCREATE POLICY "adm upd" ON client_registrations FOR UPDATE USING (true) WITH CHECK (true);');
+    const isGrant = /permission denied/i.test(error.message || '');
+    const hint = isGrant
+      ? '此為「資料表授權」不足（非 RLS policy）。\n請至 Supabase → SQL Editor 執行：\nGRANT UPDATE ON client_registrations TO anon, authenticated;'
+      : '若為 RLS 阻擋，請至 Supabase → SQL Editor 執行：\nCREATE POLICY "adm upd" ON client_registrations FOR UPDATE USING (true) WITH CHECK (true);';
+    alert('更新失敗：' + error.message + '\n\n' + hint);
     if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
     return;
   }

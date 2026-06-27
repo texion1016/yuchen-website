@@ -647,7 +647,7 @@ function togglePwd(id, el) {
 <nav class="mobile-nav" id="mobileNav">
   <button class="mobile-nav-close" onclick="closeMobileNav()">✕</button>
   <a href="#projects" onclick="closeMobileNav()">精選建案</a>
-  <a href="#broker" onclick="closeMobileNav()">仲介專區</a>
+  <a href="#" onclick="closeMobileNav();openBrokerOverlay();return false;">仲介專區</a>
   <div style="margin-top:1rem; display:flex; gap:1rem; flex-wrap:wrap; justify-content:center;">
     
     <a href="#" onclick="closeMobileNav();openBrokerOverlay();return false;" class="btn btn-white">仲介登入</a>
@@ -671,7 +671,7 @@ function togglePwd(id, el) {
   </a>
   <nav class="nav-links">
     <a href="#projects">精選建案</a>
-    <a href="#broker">仲介專區</a>
+    <a href="#" onclick="openBrokerOverlay();return false;">仲介專區</a>
   </nav>
   <div class="nav-cta">
     
@@ -1025,7 +1025,7 @@ function togglePwd(id, el) {
         從線上報備到成交領佣，全程透明、零撞單。
         即時掌握可售戶況，帶看更有效率、成交更快速。
       </p>
-      <a href="#broker" class="btn btn-primary">立即諮詢 · 仲介入口</a>
+      <a href="#" onclick="openBrokerOverlay();return false;" class="btn btn-primary">立即諮詢 · 仲介入口</a>
     </div>
     <div class="tl">
       <div class="tl-step">
@@ -1047,46 +1047,6 @@ function togglePwd(id, el) {
         <div class="tl-num">04</div>
         <div class="tl-title">成交結案</div>
         <p class="tl-desc">成交後系統自動結算傭金，撥款流程透明，最快當月入帳。</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ━━ 仲介專區 ━━ -->
-<section id="broker">
-  <div class="bro-inner">
-    <div class="fade-up">
-      <div class="section-label">Broker Portal</div>
-      <h2 class="section-title">仲介夥伴<br />客戶報備系統</h2>
-      <p class="bro-desc">
-        平台以建商與仲介合作為主軸，客戶資料完全歸屬於報備仲介，
-        平台不介入客戶關係，保障每位夥伴的業績權益。
-      </p>
-      <div class="bro-btns">
-        <a href="#" onclick="openBrokerOverlay();return false;" class="btn btn-white">仲介登入 / 報備客戶</a>
-        <a href="#" onclick="openBrokerOverlay();return false;" class="btn btn-outline" style="color:var(--paper);border-color:rgba(247,244,237,0.5);">申請成為合作仲介</a>
-      </div>
-    </div>
-    <div class="bro-grid">
-      <div class="bro-cell reveal">
-        <span class="bro-no">一</span>
-        <div class="bro-title">即時可售戶</div>
-        <p class="bro-desc2">即時更新在售戶別與狀態，避免帶看空跑</p>
-      </div>
-      <div class="bro-cell reveal reveal-delay-1">
-        <span class="bro-no">二</span>
-        <div class="bro-title">客戶報備</div>
-        <p class="bro-desc2">線上報備客戶，系統自動產生報備編號與時間戳記</p>
-      </div>
-      <div class="bro-cell reveal reveal-delay-2">
-        <span class="bro-no">三</span>
-        <div class="bro-title">客戶歸屬保障</div>
-        <p class="bro-desc2">報備成功後客戶永久歸屬，其他仲介不可查看，杜絕撞單</p>
-      </div>
-      <div class="bro-cell reveal reveal-delay-3">
-        <span class="bro-no">四</span>
-        <div class="bro-title">我的報備紀錄</div>
-        <p class="bro-desc2">隨時查看已報備客戶、報備日期、指定建案與處理狀態</p>
       </div>
     </div>
   </div>
@@ -1143,10 +1103,10 @@ function togglePwd(id, el) {
         <div class="footer-col-title">仲介服務</div>
         <ul class="footer-links">
           <li><a href="#" onclick="openBrokerOverlay();return false;">仲介登入</a></li>
-          <li><a href="#broker">申請合作</a></li>
-          <li><a href="#broker">素材下載</a></li>
-          <li><a href="#broker">帶看登記</a></li>
-          <li><a href="#broker">撞客查詢</a></li>
+          <li><a href="#" onclick="openBrokerOverlay();return false;">申請合作</a></li>
+          <li><a href="#" onclick="openBrokerOverlay();return false;">素材下載</a></li>
+          <li><a href="#" onclick="openBrokerOverlay();return false;">帶看登記</a></li>
+          <li><a href="#" onclick="openBrokerOverlay();return false;">撞客查詢</a></li>
         </ul>
       </div>
       <div>

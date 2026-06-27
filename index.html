@@ -3567,7 +3567,7 @@ function boToast(msg){
   compWidget.addEventListener('mousedown', e => { isDragging = true; setComp(getPct(e, compWidget.getBoundingClientRect())); });
   compWidget.addEventListener('touchstart', e => { isDragging = true; setComp(getPct(e, compWidget.getBoundingClientRect())); }, {passive:true});
   window.addEventListener('mousemove', e => { if (isDragging) setComp(getPct(e, compWidget.getBoundingClientRect())); });
-  window.addEventListener('touchmove', e => { if (isDragging) setComp(getPct(e, compWidget.getBoundingClientRect())); }, {passive:true});
+  window.addEventListener('touchmove', e => { if (isDragging) { e.preventDefault(); setComp(getPct(e, compWidget.getBoundingClientRect())); } }, {passive:false});
   window.addEventListener('mouseup', () => isDragging = false);
   window.addEventListener('touchend', () => isDragging = false);
 
@@ -7172,6 +7172,51 @@ document.querySelectorAll('.btn').forEach(btn => {
 .adm-badge.pending    { color: #7A5A10 !important; }
 .adm-badge.active     { color: #0E2E4E !important; }
 .adm-badge.new        { color: #3A3080 !important; }
+
+/* ══════════════════════════════════════════════
+   MOBILE — 裝潢風格 Overlay 垂直堆疊佈局
+   手機螢幕寬 ≤ 767px：左右欄改為上下排列
+══════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  /* Each slide card: switch from row to column */
+  #decoTrack > div {
+    flex-direction: column !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Info panel: full width, auto height */
+  #decoTrack > div > div:first-child {
+    width: 100% !important;
+    height: auto !important;
+    flex-shrink: 0 !important;
+    padding: 1.4rem 1.1rem 1.2rem !important;
+    border-right: none !important;
+    border-bottom: 1px solid #E5E1D2 !important;
+    overflow-y: visible !important;
+  }
+  /* Photos panel: full width, auto height */
+  #decoTrack > div > div:last-child {
+    width: 100% !important;
+    height: auto !important;
+    flex-shrink: 0 !important;
+    padding: 1rem !important;
+    overflow-y: visible !important;
+  }
+  /* Shrink large watermark number so it doesn't eat space */
+  #decoTrack [style*="5rem"][style*="Noto Serif TC"] {
+    font-size: 2.8rem !important;
+    margin-bottom: 0 !important;
+  }
+  /* Tighten heading */
+  #decoTrack h3 {
+    font-size: 1.6rem !important;
+  }
+  /* Photo grid: single column on very narrow screens */
+  #decoTrack > div > div:last-child > div[style*="grid-template-columns:1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+}
 
 </style>
 

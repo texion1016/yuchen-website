@@ -2382,8 +2382,32 @@ table.bt2 tbody td{padding:.72rem 1rem;color:#555;white-space:nowrap}
       <span class="pwd-eye" onclick="togglePwd('loginPwd',this)">👁</span>
     </div></div>
       <button class="bov-btn" onclick="doBrokerLogin()">登入</button>
+      <div class="bov-forgot"><a href="#" onclick="switchBovTab('reset');return false;">忘記密碼？</a></div>
       <div class="bov-divider">或</div>
       <button class="bov-btn bov-btn-sec" onclick="switchBovTab('register')">還沒有帳號？申請成為合作仲介</button>
+    </div>
+
+    <!-- 重設密碼 -->
+    <div class="bov-panel" id="bovReset">
+      <div class="bov-form-title">重設密碼</div>
+      <p class="bov-reset-hint">為確認您的身分，請填寫與「申請合作」時登記一致的資料，三項相符即可設定新密碼。</p>
+      <div id="resetMsg" class="bov-msg"></div>
+      <div class="bov-field"><label>電子信箱 *</label><input type="email" id="rsEmail" placeholder="broker@example.com" /></div>
+      <div class="bov-row">
+        <div class="bov-field"><label>經紀人證件號 *</label><input type="text" id="rsLicense" placeholder="例：B-01234567" /></div>
+        <div class="bov-field"><label>聯絡電話 *</label><input type="tel" id="rsPhone" placeholder="0912-345-678" /></div>
+      </div>
+      <div class="bov-field"><label>新密碼 *</label><div class="pwd-wrap">
+        <input type="password" id="rsPwd" placeholder="至少 8 個字元" />
+        <span class="pwd-eye" onclick="togglePwd('rsPwd',this)">👁</span>
+      </div></div>
+      <div class="bov-field"><label>確認新密碼 *</label><div class="pwd-wrap">
+        <input type="password" id="rsPwd2" placeholder="再輸入一次新密碼" />
+        <span class="pwd-eye" onclick="togglePwd('rsPwd2',this)">👁</span>
+      </div></div>
+      <button class="bov-btn" onclick="doBrokerReset()">重設密碼</button>
+      <div class="bov-divider">或</div>
+      <button class="bov-btn bov-btn-sec" onclick="switchBovTab('login')">返回登入</button>
     </div>
 
     <!-- 申請合作 -->
@@ -2578,7 +2602,7 @@ function closeBrokerOv() {
 function switchBovTab(tab) {
   document.querySelectorAll('.bov-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.bov-tab').forEach(t => t.classList.remove('active'));
-  const panelMap = { login:'bovLogin', register:'bovRegister', report:'bovReport', myreg:'bovMyReg', bonus:'bovBonus' };
+  const panelMap = { login:'bovLogin', register:'bovRegister', report:'bovReport', myreg:'bovMyReg', bonus:'bovBonus', reset:'bovReset' };
   const panel = document.getElementById(panelMap[tab]);
   if (panel) panel.classList.add('active');
   document.querySelectorAll('.bov-tab').forEach(t => {
@@ -2635,6 +2659,54 @@ async function doBrokerLogin() {
     showBovMsg('loginMsg','連線錯誤，請稍後再試','error');
   }
   btn.textContent = '登入'; btn.disabled = false;
+}
+
+// ── 重設密碼（以申請合作時的資料驗證身分）─────────────────────────────────
+async function doBrokerReset() {
+  const email = document.getElementById('rsEmail').value.trim().toLowerCase();
+  const license = document.getElementById('rsLicense').value.trim();
+  const phone = document.getElementById('rsPhone').value.trim();
+  const pwd = document.getElementById('rsPwd').value;
+  const pwd2 = document.getElementById('rsPwd2').value;
+  if (!email || !license || !phone || !pwd || !pwd2) { showBovMsg('resetMsg','請填寫所有欄位','error'); return; }
+  if (pwd.length < 8) { showBovMsg('resetMsg','新密碼至少需要 8 個字元','error'); return; }
+  if (pwd !== pwd2) { showBovMsg('resetMsg','兩次輸入的新密碼不一致','error'); return; }
+  const digits = s => (s||'').replace(/\D/g,'');
+  const norm = s => (s||'').replace(/[\s\-]/g,'').toUpperCase();
+  const btn = document.querySelector('#bovReset .bov-btn');
+  btn.textContent = '驗證中…'; btn.disabled = true;
+  try {
+    const { data, error } = await _sb.from('brokers')
+      .select('id,license_no,phone')
+      .eq('email', email)
+      .single();
+    if (error || !data) {
+      showBovMsg('resetMsg','資料不符，請確認與申請合作時填寫的一致','error');
+    } else if (!data.license_no) {
+      showBovMsg('resetMsg','此帳號未登記證件號，無法自助重設，請來信 service@yucheng.com.tw 由管理員協助','error');
+    } else if (norm(data.license_no) !== norm(license) || digits(data.phone) !== digits(phone)) {
+      showBovMsg('resetMsg','資料不符，請確認與申請合作時填寫的一致','error');
+    } else {
+      const hash = await hashPwd(pwd);
+      const { error: e2 } = await _sb.from('brokers').update({ password_hash: hash }).eq('id', data.id);
+      if (e2) {
+        if (/permission denied/i.test(e2.message || '')) {
+          showBovMsg('resetMsg','系統尚未開通重設權限，請聯絡管理員','error');
+          console.error('需在 Supabase SQL Editor 執行：GRANT UPDATE (password_hash) ON brokers TO anon, authenticated;');
+        } else {
+          showBovMsg('resetMsg','重設失敗：' + e2.message,'error');
+        }
+      } else {
+        showBovMsg('resetMsg','密碼已重設，請用新密碼登入','success');
+        document.getElementById('rsPwd').value = '';
+        document.getElementById('rsPwd2').value = '';
+        setTimeout(() => { switchBovTab('login'); document.getElementById('loginEmail').value = email; }, 1500);
+      }
+    }
+  } catch(e) {
+    showBovMsg('resetMsg','連線錯誤，請稍後再試','error');
+  }
+  btn.textContent = '重設密碼'; btn.disabled = false;
 }
 
 // ── 申請合作 ──────────────────────────────────────────────────────────────
@@ -6919,7 +6991,7 @@ document.querySelectorAll('.btn').forEach(btn => {
 
 /* ── 我的報備紀錄：全寬修正 ── */
 /* 登入/申請/報備面板保持窄版 */
-#bovLogin, #bovRegister, #bovReport {
+#bovLogin, #bovRegister, #bovReport, #bovReset {
   max-width: 560px !important;
   margin-left: auto !important;
   margin-right: auto !important;
@@ -7114,7 +7186,8 @@ document.querySelectorAll('.btn').forEach(btn => {
 }
 #brokerOverlay #bovLogin,
 #brokerOverlay #bovRegister,
-#brokerOverlay #bovReport {
+#brokerOverlay #bovReport,
+#brokerOverlay #bovReset {
   background: rgba(255,255,255,0.95) !important;
   border-radius: 16px !important;
   box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important;
@@ -7344,6 +7417,15 @@ html, body { overflow-x: clip; }
 
 /* ── 仲介登入分頁：金底上改深字 ── */
 #brokerOverlay .bov-tab.active { color: #14202E !important; }
+
+/* ── 忘記密碼 / 重設密碼 ── */
+.bov-forgot { text-align: right; margin-top: .7rem; }
+.bov-forgot a {
+  font-size: .8rem; color: #1A3A5F; text-decoration: underline;
+  text-underline-offset: 3px; text-decoration-color: rgba(26,58,95,.35);
+}
+.bov-forgot a:hover { color: #8A6516; text-decoration-color: rgba(138,101,22,.5); }
+.bov-reset-hint { font-size: .82rem; line-height: 1.9; color: #55687E; margin: -0.6rem 0 1.2rem; }
 
 /* ══════════════════════════════════════════════════════
    合作仲介獎金辦法（bovBonus 分頁）

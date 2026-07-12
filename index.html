@@ -170,11 +170,11 @@
       background: linear-gradient(120deg, var(--cyan) 0%, var(--cyan-2) 55%, var(--cyan-deep) 100%);
       color: #03121A;
       font-weight: 700;
-      box-shadow: 0 0 0 1px rgba(91,232,255,0.5) inset, 0 8px 26px rgba(56,198,240,0.4), 0 0 40px rgba(91,232,255,0.25);
+      box-shadow: 0 0 0 1px rgba(193,154,78,0.45) inset, 0 8px 26px rgba(26,58,95,0.35);
     }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 0 1px rgba(91,232,255,0.7) inset, 0 12px 34px rgba(56,198,240,0.55), 0 0 56px rgba(91,232,255,0.45); }
-    .btn-outline { background: rgba(91,232,255,0.04); color: var(--cyan); border: 1px solid rgba(91,232,255,0.4); backdrop-filter: blur(6px); }
-    .btn-outline:hover { background: rgba(91,232,255,0.12); transform: translateY(-2px); box-shadow: 0 0 24px rgba(91,232,255,0.3); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 0 1px rgba(193,154,78,0.6) inset, 0 12px 34px rgba(26,58,95,0.45); }
+    .btn-outline { background: rgba(193,154,78,0.05); color: var(--gold); border: 1px solid rgba(193,154,78,0.45); backdrop-filter: blur(6px); }
+    .btn-outline:hover { background: rgba(193,154,78,0.12); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,58,95,0.25); }
     .btn-gold {
       background: linear-gradient(120deg, #F0CE7E 0%, var(--gold) 50%, var(--gold-2) 100%);
       color: #1A1206;
@@ -1155,14 +1155,14 @@ function togglePwd(id, el) {
 .bo-login-box{background:#fff;width:100%;max-width:400px;padding:2.8rem 2.5rem;border-top:3px solid #B07733;}
 .bo-login-brand{font-family:'Noto Serif TC',serif;font-size:1.3rem;font-weight:700;color:#2F4A3E;letter-spacing:.06em;text-align:center;margin-bottom:.2rem}
 .bo-login-sub{font-size:.7rem;color:#aaa;text-align:center;letter-spacing:.15em;text-transform:uppercase;margin-bottom:2rem}
-.bo-login-err{display:none;padding:.5rem .9rem;background:#FEF2F2;border-left:3px solid #DC2626;font-size:.78rem;color:#DC2626;margin-bottom:1rem}
+.bo-login-err{display:none;padding:.5rem .9rem;background:#FEF2F2;border:1px solid rgba(220,38,38,.35);border-radius:6px;font-size:.78rem;color:#DC2626;margin-bottom:1rem}
 .bo-fg{display:flex;flex-direction:column;gap:.3rem;margin-bottom:.9rem}
 .bo-fg label{font-size:.7rem;font-weight:700;color:#666;letter-spacing:.08em;text-transform:uppercase}
 .bo-fg input{padding:.65rem .9rem;border:1px solid #D8D4CC;font-size:.88rem;color:#111;outline:none;transition:.2s;font-family:'Noto Sans TC',sans-serif}
 .bo-fg input:focus{border-color:#2F4A3E;box-shadow:0 0 0 3px rgba(47,74,62,.08)}
 .bo-login-btn{width:100%;padding:.82rem;background:#2F4A3E;color:#fff;border:none;font-size:.9rem;font-weight:600;letter-spacing:.1em;cursor:pointer;transition:.2s;margin-top:.4rem}
 .bo-login-btn:hover{background:#3C5C4C}
-.bo-demo{margin-top:1.4rem;padding:.9rem;background:#F2F0E6;border-left:3px solid #B07733;font-size:.76rem;color:#666;line-height:1.8}
+.bo-demo{margin-top:1.4rem;padding:.9rem;background:#F2F0E6;border:1px solid rgba(176,119,51,.3);border-radius:6px;font-size:.76rem;color:#666;line-height:1.8}
 .bo-demo strong{color:#2F4A3E}
 .bo-back{position:absolute;top:1.4rem;left:1.8rem;display:flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.45);font-size:.78rem;cursor:pointer;border:none;background:none;letter-spacing:.04em;transition:.2s}
 .bo-back:hover{color:#fff}
@@ -1317,7 +1317,7 @@ table.bt2 tbody td{padding:.72rem 1rem;color:#555;white-space:nowrap}
 
 /* NEWS */
 .bo-news-item{background:#fff;border:1px solid #DDD9D3;padding:1.1rem 1.5rem;margin-bottom:.8rem;display:flex;gap:1.1rem;cursor:pointer;transition:.2s}
-.bo-news-item:hover{border-left-color:#B07733;border-left-width:3px}
+.bo-news-item:hover{border-color:#B07733}
 .bo-news-date{flex-shrink:0;width:44px;text-align:center;border-right:1px solid #E5E1D2;padding-right:1rem}
 .bnd-d{font-size:1.1rem;font-weight:700;color:#2F4A3E;line-height:1}
 .bnd-m{font-size:.62rem;color:#bbb}
@@ -1327,7 +1327,7 @@ table.bt2 tbody td{padding:.72rem 1rem;color:#555;white-space:nowrap}
 .bo-news-tags{display:flex;gap:.35rem;margin-top:.45rem;flex-wrap:wrap}
 
 /* COMMISSION */
-.bo-comm-banner{background:#2F4A3E;padding:1.4rem 2rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.4rem;color:#fff;border-left:4px solid #B07733;flex-wrap:wrap;gap:1rem}
+.bo-comm-banner{background:#2F4A3E;padding:1.4rem 2rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.4rem;color:#fff;border:1px solid rgba(176,119,51,.5);border-radius:8px;flex-wrap:wrap;gap:1rem}
 
 /* CONTACT */
 .bo-ct-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:1.5rem}
@@ -1339,7 +1339,7 @@ table.bt2 tbody td{padding:.72rem 1rem;color:#555;white-space:nowrap}
 .bo-ct-ico{width:28px;height:28px;background:#F2F0E6;border:1px solid #DDD9D3;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0}
 
 /* TOAST */
-.bo-toast{position:fixed;bottom:2rem;right:2rem;z-index:4000;background:#2F4A3E;color:#fff;padding:.75rem 1.4rem;font-size:.82rem;letter-spacing:.03em;box-shadow:0 6px 20px rgba(0,0,0,.2);display:none;align-items:center;gap:.5rem;border-left:3px solid #B07733}
+.bo-toast{position:fixed;bottom:2rem;right:2rem;z-index:4000;background:#2F4A3E;color:#fff;padding:.75rem 1.4rem;font-size:.82rem;letter-spacing:.03em;box-shadow:0 6px 20px rgba(0,0,0,.2);display:none;align-items:center;gap:.5rem;border:1px solid rgba(176,119,51,.5);border-radius:8px}
 
 @media(max-width:900px){
   .bo-stat-grid{grid-template-columns:repeat(2,1fr)}
@@ -1640,7 +1640,7 @@ table.bt2 tbody td{padding:.72rem 1rem;color:#555;white-space:nowrap}
   font-size: 2rem;
   margin-bottom: 1.8rem;
   box-shadow: 0 8px 30px rgba(47,74,62,0.25);
-  animation: bkPop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  animation: bkPop 0.5s cubic-bezier(0.22,1,0.36,1) forwards;
 }
 @keyframes bkPop {
   from { transform: scale(0); opacity: 0; }
@@ -2368,6 +2368,7 @@ table.bt2 tbody td{padding:.72rem 1rem;color:#555;white-space:nowrap}
     <button class="bov-tab" id="tabRegister" onclick="switchBovTab('register')">申請合作</button>
     <button class="bov-tab" id="tabReport" style="display:none" onclick="switchBovTab('report')">客戶報備</button>
     <button class="bov-tab" id="tabMyReg" style="display:none" onclick="switchBovTab('myreg')">我的報備</button>
+    <button class="bov-tab" id="tabBonus" onclick="switchBovTab('bonus')">獎金辦法</button>
   </div>
   <div class="bov-body">
 
@@ -2448,6 +2449,110 @@ table.bt2 tbody td{padding:.72rem 1rem;color:#555;white-space:nowrap}
       </div>
     </div>
 
+    <!-- 合作仲介獎金辦法 -->
+    <div class="bov-panel" id="bovBonus">
+      <div class="bonus-doc">
+
+        <header class="bonus-head">
+          <h2 class="bonus-title">合作仲介獎金辦法</h2>
+          <p class="bonus-motto">共享案源｜共享客源｜共享成交｜共享獲利</p>
+          <p class="bonus-sub">打造建商、仲介、平台三方共贏的聯合銷售生態系</p>
+        </header>
+
+        <!-- 菁英夥伴階梯（第六、七條視覺摘要） -->
+        <div class="bonus-ladder" role="img" aria-label="菁英夥伴獎金比例：標準50%、銀牌53%、金牌55%、白金57%、鑽石60%">
+          <div class="bl-tier"><div class="bl-name">標準夥伴</div><div class="bl-pct">50<span>%</span></div><div class="bl-rank">基本比例</div></div>
+          <div class="bl-tier"><div class="bl-name">銀牌夥伴</div><div class="bl-pct">53<span>%</span></div><div class="bl-rank">季度第 4 名</div></div>
+          <div class="bl-tier"><div class="bl-name">金牌夥伴</div><div class="bl-pct">55<span>%</span></div><div class="bl-rank">季度第 3 名</div></div>
+          <div class="bl-tier"><div class="bl-name">白金夥伴</div><div class="bl-pct">57<span>%</span></div><div class="bl-rank">季度第 2 名</div></div>
+          <div class="bl-tier bl-top"><div class="bl-name">鑽石夥伴</div><div class="bl-pct">60<span>%</span></div><div class="bl-rank">季度第 1 名</div></div>
+        </div>
+        <p class="bonus-ladder-note">獎金比例為平台實收佣金之分配比例，每季依實際結算成交佣金總額排名，次季生效。</p>
+
+        <!-- 條文全文 -->
+        <div class="bonus-articles">
+
+          <section class="ba"><h3><i>第一條</i>辦法目的</h3>
+            <p>為鼓勵合作仲介積極推廣平台銷售案件，建立公平、透明及長期合作之獎勵制度，特訂定本辦法。</p></section>
+
+          <section class="ba"><h3><i>第二條</i>適用對象</h3>
+            <p>凡與譽誠聯合銷售平台完成合作登錄之仲介公司、經紀人員、業務夥伴及聯合銷售合作人員，均適用本辦法。</p></section>
+
+          <section class="ba"><h3><i>第三條</i>成交佣金分配原則</h3>
+            <ol><li>平台銷售案件之成交佣金，依建設公司實際支付平台之銷售佣金計算。</li>
+            <li>合作仲介之基本獎金比例為平台實收佣金之 50%。</li>
+            <li>獎金比例依平台菁英夥伴制度進行調整。</li>
+            <li>所有獎金均以實際收款金額為計算基礎。</li></ol></section>
+
+          <section class="ba"><h3><i>第四條</i>成交認定標準</h3>
+            <p class="ba-lead">符合下列條件後始認定為有效成交案件：</p>
+            <ol><li>買賣契約完成簽署。</li><li>買方完成約定付款。</li><li>貸款核准及對保完成。</li>
+            <li>銀行完成撥款。</li><li>完成交屋程序。</li><li>建設公司確認成交成立。</li>
+            <li>平台取得建設公司佣金結算資料。</li></ol></section>
+
+          <section class="ba"><h3><i>第五條</i>佣金發放原則</h3>
+            <ol><li>平台佣金來源為建設公司支付之銷售佣金。</li>
+            <li>建設公司完成佣金支付後，平台始進行合作仲介佣金結算。</li>
+            <li>原則於平台收到建設公司佣金後次月完成發放。</li>
+            <li>若建設公司尚未完成佣金支付或核銷程序，平台得順延發放時間。</li>
+            <li>仲介應依規定提供請款資料、發票或相關憑證後始得辦理領款。</li></ol></section>
+
+          <section class="ba"><h3><i>第六條</i>菁英夥伴獎勵制度 <span class="ba-and">暨</span> <i>第七條</i>季度排名制度</h3>
+            <p class="ba-lead">每季依實際結算成交佣金總額進行排名，等級與獎金比例如下：</p>
+            <table class="bonus-table">
+              <thead><tr><th>等級</th><th>季度排名</th><th>獎金比例</th></tr></thead>
+              <tbody>
+                <tr><td>鑽石夥伴</td><td>第 1 名</td><td class="bt-pct">60%</td></tr>
+                <tr><td>白金夥伴</td><td>第 2 名</td><td class="bt-pct">57%</td></tr>
+                <tr><td>金牌夥伴</td><td>第 3 名</td><td class="bt-pct">55%</td></tr>
+                <tr><td>銀牌夥伴</td><td>第 4 名</td><td class="bt-pct">53%</td></tr>
+                <tr><td>標準夥伴</td><td>—</td><td class="bt-pct">50%</td></tr>
+              </tbody>
+            </table></section>
+
+          <section class="ba"><h3><i>第八條</i>等級適用期間</h3>
+            <ol><li>每季統計一次業績排名。</li><li>次季起適用新的獎金比例。</li>
+            <li>等級有效期間為一個季度。</li>
+            <li>新加入合作夥伴於首次排名公告前均適用標準夥伴資格。</li></ol></section>
+
+          <section class="ba"><h3><i>第九條</i>年度榮譽獎勵</h3>
+            <p class="ba-lead">年度累積成交業績前三名者，可獲得：</p>
+            <ol><li>年度績優夥伴表揚。</li><li>特別獎勵金。</li><li>海外參訪或旅遊獎勵。</li>
+            <li>區域合夥人優先資格。</li><li>新案優先銷售資格。</li></ol>
+            <p class="ba-note">實際獎勵內容由平台另行公告。</p></section>
+
+          <section class="ba"><h3><i>第十條</i>客戶歸屬原則</h3>
+            <ol><li>客戶須完成平台報備程序。</li><li>客戶歸屬以平台系統紀錄為準。</li>
+            <li>未完成報備者不列入佣金認定。</li>
+            <li>客戶歸屬發生爭議時，以平台紀錄及相關證明文件作為最終認定依據。</li></ol></section>
+
+          <section class="ba"><h3><i>第十一條</i>解約案件處理</h3>
+            <p class="ba-lead">有下列情形之一者，不列入成交獎金計算：</p>
+            <ol><li>買方主動解約。</li><li>買方違約。</li><li>貸款未核准且無法補足差額。</li>
+            <li>建設公司依法解除契約。</li><li>其他導致交易無法完成之情形。</li></ol>
+            <p class="ba-note">如已發放獎金，平台有權追回已發放之佣金。</p></section>
+
+          <section class="ba"><h3><i>第十二條</i>違規處理</h3>
+            <p class="ba-lead">合作仲介如有下列情形之一，平台得取消獎金資格：</p>
+            <ol><li>不實報備客戶。</li><li>惡意搶客。</li><li>私下成交。</li>
+            <li>散布不實資訊。</li><li>損害平台或建設公司商譽。</li><li>違反合作規範。</li></ol>
+            <p class="ba-note">情節重大者，平台得終止合作資格。</p></section>
+
+          <section class="ba"><h3><i>第十三條</i>附則</h3>
+            <ol><li>本辦法如有未盡事宜，由譽誠聯合銷售平台另行公告補充。</li>
+            <li>平台保留獎勵制度調整及最終解釋權。</li>
+            <li>合作夥伴加入平台即視為同意本辦法全部內容。</li></ol></section>
+
+        </div>
+
+        <footer class="bonus-foot">
+          <span>譽誠聯合銷售平台</span>
+          <button class="bov-btn bonus-cta" onclick="switchBovTab('register')">申請成為合作仲介</button>
+        </footer>
+
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -2473,7 +2578,7 @@ function closeBrokerOv() {
 function switchBovTab(tab) {
   document.querySelectorAll('.bov-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.bov-tab').forEach(t => t.classList.remove('active'));
-  const panelMap = { login:'bovLogin', register:'bovRegister', report:'bovReport', myreg:'bovMyReg' };
+  const panelMap = { login:'bovLogin', register:'bovRegister', report:'bovReport', myreg:'bovMyReg', bonus:'bovBonus' };
   const panel = document.getElementById(panelMap[tab]);
   if (panel) panel.classList.add('active');
   document.querySelectorAll('.bov-tab').forEach(t => {
@@ -2490,6 +2595,7 @@ function showBovMsg(id, msg, type) {
 function showBovLoggedIn() {
   document.getElementById('tabLogin').style.display = 'none';
   document.getElementById('tabRegister').style.display = 'none';
+  const bcta = document.querySelector('.bonus-cta'); if (bcta) bcta.style.display = 'none';
   document.getElementById('tabReport').style.display = '';
   document.getElementById('tabMyReg').style.display = '';
   switchBovTab('report');
@@ -2858,7 +2964,7 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
               <div class="boc">
                 <div class="boc-title">保護規則說明</div>
-                <div style="border-left:3px solid #B07733;padding:.6rem 1rem;background:#F2F7FD;margin-bottom:1.2rem">
+                <div style="border:1px solid rgba(176,119,51,.35);border-radius:8px;padding:.6rem 1rem;background:#F2F7FD;margin-bottom:1.2rem">
                   <div style="font-size:.8rem;font-weight:700;color:#2F4A3E;margin-bottom:.4rem">客戶歸屬原則</div>
                   <p style="font-size:.77rem;color:#666;line-height:1.85">同一客戶同一建案，以第一次帶看登記之仲介為主。超過 60 天保護期後視為公開客戶。</p>
                 </div>
@@ -3182,12 +3288,12 @@ function boShowProj(name,el){
       </div>
     </div>
     <div class="boc" style="margin-bottom:1.2rem">
-      <div style="font-size:.68rem;font-weight:700;color:#aaa;letter-spacing:.12em;text-transform:uppercase;border-left:3px solid #B07733;padding-left:.7rem;margin-bottom:.9rem">建案說明</div>
+      <div style="font-size:.68rem;font-weight:700;color:#8A6516;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.9rem">建案說明</div>
       <p style="font-size:.84rem;color:#555;line-height:1.9">${d.desc}</p>
     </div>
     <div class="boc">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.1rem">
-        <div style="font-size:.68rem;font-weight:700;color:#aaa;letter-spacing:.12em;text-transform:uppercase;border-left:3px solid #B07733;padding-left:.7rem">戶別一覽</div>
+        <div style="font-size:.68rem;font-weight:700;color:#8A6516;letter-spacing:.12em;text-transform:uppercase">戶別一覽</div>
         <button class="bb bb-primary bb-sm" onclick="openAddUnit()">＋ 新增戶別</button>
       </div>
       <div class="bo-table-wrap"><table class="bt2">
@@ -4469,7 +4575,7 @@ function decoConsult() {
 .bk-step-num { border-color: rgba(91,232,255,0.5) !important; box-shadow: 0 0 14px rgba(91,232,255,0.25); }
 .bk-close { color: var(--ink-dim) !important; }
 .bk-close:hover { color: var(--cyan) !important; }
-.bk-form-title { background: linear-gradient(120deg, var(--cyan), #9A86FF) !important; -webkit-background-clip: text !important; background-clip: text !important; -webkit-text-fill-color: transparent !important; }
+.bk-form-title { color: var(--cyan) !important; }
 .bk-form-sub { color: var(--ink-dim) !important; }
 .bk-form-sub span { color: var(--cyan) !important; }
 .bk-fg label { color: var(--ink) !important; }
@@ -4517,7 +4623,7 @@ function decoConsult() {
 .bo-fg input:focus { border-color: var(--cyan) !important; box-shadow: 0 0 0 3px rgba(91,232,255,0.12) !important; }
 .bo-login-btn { background: linear-gradient(120deg, var(--cyan), var(--cyan-deep)) !important; color: #03121A !important; }
 .bo-login-btn:hover { box-shadow: 0 0 28px rgba(91,232,255,0.4); }
-.bo-demo { background: rgba(91,232,255,0.06) !important; border-left: 3px solid var(--cyan) !important; color: var(--ink-dim) !important; }
+.bo-demo { background: rgba(91,232,255,0.06) !important; border: 1px solid rgba(91,232,255,0.3) !important; color: var(--ink-dim) !important; }
 .bo-demo strong { color: var(--cyan) !important; }
 .bo-sb { background: #070B16 !important; border-right: 1px solid var(--line); }
 .bo-sb-av { background: linear-gradient(135deg, var(--cyan), var(--cyan-deep)) !important; color: #03121A !important; }
@@ -4588,14 +4694,14 @@ table.bt2 tbody td { color: var(--ink-dim) !important; }
 .bnd-m { color: var(--ink-faint) !important; }
 .bo-news-title { color: var(--ink) !important; }
 .bo-news-exc { color: var(--ink-dim) !important; }
-.bo-comm-banner { background: rgba(91,232,255,0.07) !important; border-left: 4px solid var(--cyan) !important; color: var(--ink) !important; }
+.bo-comm-banner { background: rgba(91,232,255,0.07) !important; border: 1px solid rgba(91,232,255,0.3) !important; color: var(--ink) !important; }
 .bo-ct-person { border-bottom: 1px solid var(--line) !important; }
 .bo-ct-av { background: linear-gradient(135deg, var(--cyan), var(--cyan-deep)) !important; color: #03121A !important; }
 .bo-ct-name { color: var(--ink) !important; }
 .bo-ct-role { color: var(--ink-faint) !important; }
 .bo-ct-item { color: var(--ink-dim) !important; }
 .bo-ct-ico { background: rgba(91,232,255,0.06) !important; border: 1px solid var(--line) !important; }
-.bo-toast { background: rgba(14,21,38,0.95) !important; border-left: 3px solid var(--cyan) !important; color: var(--ink) !important; box-shadow: 0 6px 24px rgba(0,0,0,0.5), 0 0 30px rgba(91,232,255,0.2) !important; }
+.bo-toast { background: rgba(14,21,38,0.95) !important; border: 1px solid rgba(91,232,255,0.35) !important; color: var(--ink) !important; box-shadow: 0 6px 24px rgba(0,0,0,0.5) !important; }
 /* 半透明狀態標籤微調為冷色系 */
 .bt-b { background: rgba(91,232,255,0.12) !important; color: var(--cyan) !important; border-color: rgba(91,232,255,0.35) !important; }
 .cb-status.confirmed { background: rgba(91,232,255,0.14) !important; color: var(--cyan) !important; }
@@ -7238,6 +7344,110 @@ html, body { overflow-x: clip; }
 
 /* ── 仲介登入分頁：金底上改深字 ── */
 #brokerOverlay .bov-tab.active { color: #14202E !important; }
+
+/* ══════════════════════════════════════════════════════
+   合作仲介獎金辦法（bovBonus 分頁）
+══════════════════════════════════════════════════════ */
+#bovBonus { max-width: none !important; width: 100% !important; padding: 1.8rem 1.2rem 2.5rem !important; }
+.bonus-doc {
+  max-width: 880px; margin: 0 auto;
+  background: rgba(255,255,255,0.96);
+  border-radius: 18px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  padding: clamp(1.6rem, 4vw, 3rem);
+  color: #2A3E52;
+}
+.bonus-head { text-align: center; margin-bottom: 2.2rem; }
+.bonus-title {
+  font-family: 'Noto Serif TC', serif; font-size: clamp(1.5rem, 3.4vw, 2.1rem);
+  font-weight: 800; color: #14202E; letter-spacing: .06em; margin: 0 0 .9rem;
+}
+.bonus-motto {
+  display: inline-block; font-size: .82rem; font-weight: 700; letter-spacing: .18em;
+  color: #8A6516; margin: 0 0 .45rem; padding: .45rem 1.1rem;
+  border-top: 1px solid rgba(193,154,78,.45); border-bottom: 1px solid rgba(193,154,78,.45);
+}
+.bonus-sub { font-size: .8rem; color: #55687E; letter-spacing: .1em; margin: .4rem 0 0; }
+
+/* 五級夥伴階梯 */
+.bonus-ladder {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: .7rem; align-items: end; margin-bottom: .8rem;
+}
+.bl-tier {
+  text-align: center; border: 1px solid #E3DFD3; border-radius: 12px;
+  padding: 1rem .5rem .9rem; background: #FDFCF9;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.bl-tier:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(20,32,46,.1); }
+/* 階梯遞增：越高等級底色越暖、數字越沉 */
+.bl-tier:nth-child(2) { background: #FBF7EE; }
+.bl-tier:nth-child(3) { background: #F8F2E3; border-color: rgba(193,154,78,.4); }
+.bl-tier:nth-child(4) { background: #F4EBD5; border-color: rgba(193,154,78,.55); }
+.bl-tier.bl-top {
+  background: linear-gradient(160deg, #1A3A5F, #14304F); border-color: #C19A4E;
+  box-shadow: 0 12px 32px rgba(26,58,95,.35);
+  padding-top: 1.35rem; padding-bottom: 1.25rem;
+}
+.bl-name { font-size: .74rem; font-weight: 700; letter-spacing: .1em; color: #55677D; margin-bottom: .3rem; }
+.bl-pct {
+  font-family: 'Noto Serif TC', serif; font-size: 1.9rem; font-weight: 800;
+  color: #8A6516; line-height: 1.1; font-variant-numeric: tabular-nums;
+}
+.bl-pct span { font-size: .95rem; margin-left: 1px; }
+.bl-rank { font-size: .68rem; color: #7A8CA0; margin-top: .35rem; letter-spacing: .05em; }
+.bl-top .bl-name { color: #D5B577; }
+.bl-top .bl-pct { color: #E8C980; font-size: 2.2rem; }
+.bl-top .bl-rank { color: rgba(255,255,255,.75); }
+.bonus-ladder-note { font-size: .76rem; color: #55687E; text-align: center; margin: 0 0 2.4rem; line-height: 1.9; }
+
+/* 條文排版 */
+.bonus-articles { max-width: 66ch; margin: 0 auto; }
+.ba { margin-bottom: 1.9rem; }
+.ba h3 {
+  font-family: 'Noto Serif TC', serif; font-size: 1.02rem; font-weight: 700;
+  color: #14202E; margin: 0 0 .6rem; padding-bottom: .45rem;
+  border-bottom: 1px solid #EAE6DA; letter-spacing: .03em;
+}
+.ba h3 i {
+  font-style: normal; font-size: .78rem; font-weight: 700; color: #8A6516;
+  letter-spacing: .14em; margin-right: .7rem; vertical-align: 1px;
+}
+.ba h3 .ba-and { font-size: .8rem; color: #7A8CA0; font-weight: 400; margin: 0 .3rem; }
+.ba p, .ba ol { font-size: .86rem; line-height: 2.05; color: #2A3E52; margin: 0; }
+.ba-lead { margin-bottom: .3rem !important; }
+.ba ol { padding-left: 1.6rem; }
+.ba ol li { margin-bottom: .1rem; }
+.ba ol li::marker { color: #8A6516; font-weight: 700; font-size: .8rem; }
+.ba-note { margin-top: .45rem !important; font-size: .78rem !important; color: #55687E !important; }
+
+/* 第六、七條表格 */
+.bonus-table { width: 100%; border-collapse: collapse; margin-top: .7rem; font-size: .85rem; }
+.bonus-table th {
+  background: #1A3A5F; color: #E8D5AC; font-weight: 700; letter-spacing: .1em;
+  padding: .55rem .9rem; text-align: left; font-size: .76rem;
+}
+.bonus-table td { padding: .55rem .9rem; border-bottom: 1px solid #EAE6DA; color: #2A3E52; }
+.bonus-table tbody tr:first-child td { background: #F8F2E3; font-weight: 700; }
+.bonus-table .bt-pct { font-weight: 800; color: #1A3A5F; font-variant-numeric: tabular-nums; }
+
+/* 結尾 */
+.bonus-foot {
+  margin-top: 2.4rem; padding-top: 1.6rem; border-top: 1px solid #EAE6DA;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+}
+.bonus-foot span { font-family: 'Noto Serif TC', serif; font-size: .85rem; font-weight: 700; color: #55677D; letter-spacing: .1em; }
+.bonus-cta { width: auto !important; padding: .7rem 1.6rem !important; }
+
+@media (max-width: 640px) {
+  #bovBonus { padding: 1rem .6rem 2rem !important; }
+  .bonus-ladder { grid-template-columns: repeat(2, 1fr); }
+  .bl-tier.bl-top { grid-column: 1 / -1; }
+  .bonus-foot { justify-content: center; text-align: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bl-tier, .bl-tier:hover { transform: none; transition: none; }
+}
 
 /* ══════════════════════════════════════════════
    MOBILE — 裝潢風格 Overlay 垂直堆疊佈局

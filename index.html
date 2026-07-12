@@ -2387,15 +2387,19 @@ table.bt2 tbody td{padding:.72rem 1rem;color:#555;white-space:nowrap}
       <button class="bov-btn bov-btn-sec" onclick="switchBovTab('register')">還沒有帳號？申請成為合作仲介</button>
     </div>
 
-    <!-- 重設密碼 -->
+    <!-- 重設密碼（信箱驗證碼） -->
     <div class="bov-panel" id="bovReset">
       <div class="bov-form-title">重設密碼</div>
-      <p class="bov-reset-hint">為確認您的身分，請填寫與「申請合作」時登記一致的資料，三項相符即可設定新密碼。</p>
+      <p class="bov-reset-hint">輸入您註冊的電子信箱，我們會寄送 6 位數驗證碼；驗證通過即可設定新密碼。</p>
       <div id="resetMsg" class="bov-msg"></div>
-      <div class="bov-field"><label>電子信箱 *</label><input type="email" id="rsEmail" placeholder="broker@example.com" /></div>
-      <div class="bov-row">
-        <div class="bov-field"><label>經紀人證件號 *</label><input type="text" id="rsLicense" placeholder="例：B-01234567" /></div>
-        <div class="bov-field"><label>聯絡電話 *</label><input type="tel" id="rsPhone" placeholder="0912-345-678" /></div>
+      <div class="bov-field"><label>電子信箱 *</label>
+        <div class="rs-email-row">
+          <input type="email" id="rsEmail" placeholder="broker@example.com" />
+          <button type="button" class="rs-send-btn" id="rsSendBtn" onclick="sendResetCode()">寄送驗證碼</button>
+        </div>
+      </div>
+      <div class="bov-field"><label>驗證碼 *</label>
+        <input type="text" id="rsCode" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="信箱收到的 6 位數字" />
       </div>
       <div class="bov-field"><label>新密碼 *</label><div class="pwd-wrap">
         <input type="password" id="rsPwd" placeholder="至少 8 個字元" />
@@ -2405,7 +2409,7 @@ table.bt2 tbody td{padding:.72rem 1rem;color:#555;white-space:nowrap}
         <input type="password" id="rsPwd2" placeholder="再輸入一次新密碼" />
         <span class="pwd-eye" onclick="togglePwd('rsPwd2',this)">👁</span>
       </div></div>
-      <button class="bov-btn" onclick="doBrokerReset()">重設密碼</button>
+      <button class="bov-btn" onclick="doBrokerReset()">驗證並重設密碼</button>
       <div class="bov-divider">或</div>
       <button class="bov-btn bov-btn-sec" onclick="switchBovTab('login')">返回登入</button>
     </div>
@@ -2661,34 +2665,68 @@ async function doBrokerLogin() {
   btn.textContent = '登入'; btn.disabled = false;
 }
 
-// ── 重設密碼（以申請合作時的資料驗證身分）─────────────────────────────────
+// ── 重設密碼（信箱 6 位數驗證碼）──────────────────────────────────────────
+let _rsTimer = null;
+
+async function sendResetCode() {
+  const email = document.getElementById('rsEmail').value.trim().toLowerCase();
+  if (!email || !/^\S+@\S+\.\S+$/.test(email)) { showBovMsg('resetMsg','請輸入正確的電子信箱','error'); return; }
+  const btn = document.getElementById('rsSendBtn');
+  btn.disabled = true; btn.textContent = '確認中…';
+  try {
+    // 先確認是註冊過的合作仲介，避免浪費寄信額度
+    const { data } = await _sb.from('brokers').select('id').eq('email', email).maybeSingle();
+    if (!data) {
+      showBovMsg('resetMsg','此信箱尚未註冊為合作仲介','error');
+      btn.disabled = false; btn.textContent = '寄送驗證碼';
+      return;
+    }
+    const { error } = await _sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+    if (error) {
+      if (error.status === 429 || /rate/i.test(error.message || '')) {
+        showBovMsg('resetMsg','寄送太頻繁，請稍候幾分鐘再試','error');
+      } else {
+        showBovMsg('resetMsg','寄送失敗：' + error.message,'error');
+      }
+      btn.disabled = false; btn.textContent = '寄送驗證碼';
+      return;
+    }
+    showBovMsg('resetMsg','驗證碼已寄出，請查收信箱（也請檢查垃圾郵件夾），驗證碼 1 小時內有效','success');
+    // 60 秒後才能重寄
+    let sec = 60;
+    btn.textContent = '重寄（60s）';
+    clearInterval(_rsTimer);
+    _rsTimer = setInterval(() => {
+      sec--;
+      if (sec <= 0) { clearInterval(_rsTimer); btn.disabled = false; btn.textContent = '重寄驗證碼'; }
+      else btn.textContent = '重寄（' + sec + 's）';
+    }, 1000);
+  } catch(e) {
+    showBovMsg('resetMsg','連線錯誤，請稍後再試','error');
+    btn.disabled = false; btn.textContent = '寄送驗證碼';
+  }
+}
+
 async function doBrokerReset() {
   const email = document.getElementById('rsEmail').value.trim().toLowerCase();
-  const license = document.getElementById('rsLicense').value.trim();
-  const phone = document.getElementById('rsPhone').value.trim();
+  const code = document.getElementById('rsCode').value.trim();
   const pwd = document.getElementById('rsPwd').value;
   const pwd2 = document.getElementById('rsPwd2').value;
-  if (!email || !license || !phone || !pwd || !pwd2) { showBovMsg('resetMsg','請填寫所有欄位','error'); return; }
+  if (!email || !code || !pwd || !pwd2) { showBovMsg('resetMsg','請填寫所有欄位','error'); return; }
+  if (!/^\d{6}$/.test(code)) { showBovMsg('resetMsg','驗證碼為 6 位數字','error'); return; }
   if (pwd.length < 8) { showBovMsg('resetMsg','新密碼至少需要 8 個字元','error'); return; }
   if (pwd !== pwd2) { showBovMsg('resetMsg','兩次輸入的新密碼不一致','error'); return; }
-  const digits = s => (s||'').replace(/\D/g,'');
-  const norm = s => (s||'').replace(/[\s\-]/g,'').toUpperCase();
   const btn = document.querySelector('#bovReset .bov-btn');
   btn.textContent = '驗證中…'; btn.disabled = true;
   try {
-    const { data, error } = await _sb.from('brokers')
-      .select('id,license_no,phone')
-      .eq('email', email)
-      .single();
-    if (error || !data) {
-      showBovMsg('resetMsg','資料不符，請確認與申請合作時填寫的一致','error');
-    } else if (!data.license_no) {
-      showBovMsg('resetMsg','此帳號未登記證件號，無法自助重設，請來信 service@yucheng.com.tw 由管理員協助','error');
-    } else if (norm(data.license_no) !== norm(license) || digits(data.phone) !== digits(phone)) {
-      showBovMsg('resetMsg','資料不符，請確認與申請合作時填寫的一致','error');
+    const { error: ve } = await _sb.auth.verifyOtp({ email, token: code, type: 'email' });
+    if (ve) {
+      showBovMsg('resetMsg','驗證碼錯誤或已過期，請重新寄送','error');
     } else {
       const hash = await hashPwd(pwd);
-      const { error: e2 } = await _sb.from('brokers').update({ password_hash: hash }).eq('id', data.id);
+      const { error: e2 } = await _sb.from('brokers').update({ password_hash: hash }).eq('email', email);
+      // 驗證用的臨時登入階段用完即丟
+      _sb.auth.signOut().catch(() => {});
       if (e2) {
         if (/permission denied/i.test(e2.message || '')) {
           showBovMsg('resetMsg','系統尚未開通重設權限，請聯絡管理員','error');
@@ -2698,6 +2736,7 @@ async function doBrokerReset() {
         }
       } else {
         showBovMsg('resetMsg','密碼已重設，請用新密碼登入','success');
+        document.getElementById('rsCode').value = '';
         document.getElementById('rsPwd').value = '';
         document.getElementById('rsPwd2').value = '';
         setTimeout(() => { switchBovTab('login'); document.getElementById('loginEmail').value = email; }, 1500);
@@ -2706,7 +2745,7 @@ async function doBrokerReset() {
   } catch(e) {
     showBovMsg('resetMsg','連線錯誤，請稍後再試','error');
   }
-  btn.textContent = '重設密碼'; btn.disabled = false;
+  btn.textContent = '驗證並重設密碼'; btn.disabled = false;
 }
 
 // ── 申請合作 ──────────────────────────────────────────────────────────────
@@ -7426,6 +7465,17 @@ html, body { overflow-x: clip; }
 }
 .bov-forgot a:hover { color: #8A6516; text-decoration-color: rgba(138,101,22,.5); }
 .bov-reset-hint { font-size: .82rem; line-height: 1.9; color: #55687E; margin: -0.6rem 0 1.2rem; }
+.rs-email-row { display: flex; gap: .55rem; }
+.rs-email-row input { flex: 1; min-width: 0; }
+.rs-send-btn {
+  flex-shrink: 0; padding: 0 1.1rem; border: none; border-radius: 10px;
+  background: #1A3A5F; color: #fff; font-size: .82rem; font-weight: 600;
+  font-family: inherit; cursor: pointer; letter-spacing: .03em;
+  transition: background .2s, opacity .2s; white-space: nowrap;
+}
+.rs-send-btn:hover:not(:disabled) { background: #C19A4E; }
+.rs-send-btn:disabled { opacity: .55; cursor: default; }
+#rsCode { letter-spacing: .35em; font-variant-numeric: tabular-nums; }
 
 /* ══════════════════════════════════════════════════════
    合作仲介獎金辦法（bovBonus 分頁）

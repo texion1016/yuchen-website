@@ -7962,6 +7962,53 @@ function closeBookingOverlay(){return;}
   .dvp-anim { animation: none; }
   .bd-floor, .bd-face, .dev-unit, .dev-rate-fill { transition: none; }
 }
+
+/* ── 戶別詳情 / 明細列表 彈窗 ── */
+.dev-unit { cursor: pointer; }
+.dev-stat.st-clickable { cursor: pointer; transition: transform .15s, box-shadow .15s; }
+.dev-stat.st-clickable:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(15,25,35,.1); border-color: #C19A4E; }
+.dvm-bg {
+  display: none; position: fixed; inset: 0; z-index: 9700;
+  background: rgba(10,18,30,.5); backdrop-filter: blur(3px);
+  align-items: center; justify-content: center; padding: 1.2rem;
+}
+.dvm-bg.open { display: flex; }
+.dvm-card {
+  width: 100%; max-width: 420px; max-height: 84vh; overflow-y: auto;
+  background: #fff; border-radius: 14px; box-shadow: 0 24px 70px rgba(6,14,26,.4);
+  animation: devViewIn .28s cubic-bezier(.22,1,.36,1);
+}
+.dvm-card.dvm-wide { max-width: 640px; }
+.dvm-head {
+  position: sticky; top: 0; background: #1A3A5F; color: #fff;
+  padding: .85rem 1.2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+}
+.dvm-head b { font-family: 'Noto Serif TC', serif; font-size: 1rem; letter-spacing: .04em; }
+.dvm-head .dvm-st { font-size: .66rem; font-weight: 700; letter-spacing: .08em; padding: .2rem .55rem; border-radius: 5px; }
+.dvm-st.s-sold { background: rgba(78,153,115,.95); color: #fff; }
+.dvm-st.s-view { background: rgba(214,166,48,.95); color: #3A2C08; }
+.dvm-st.s-open { background: rgba(255,255,255,.2); color: #fff; }
+.dvm-x { width: 30px; height: 30px; border-radius: 50%; border: none; background: rgba(255,255,255,.14); color: #fff; cursor: pointer; font-size: .9rem; flex-shrink: 0; }
+.dvm-x:hover { background: rgba(255,255,255,.3); }
+.dvm-body { padding: 1.1rem 1.3rem 1.3rem; }
+.dvm-row { display: flex; justify-content: space-between; gap: 1rem; padding: .5rem 0; border-bottom: 1px solid #F0EDE3; font-size: .84rem; }
+.dvm-row:last-of-type { border-bottom: none; }
+.dvm-row .k { color: #55687E; flex-shrink: 0; }
+.dvm-row .v { color: #14202E; font-weight: 600; text-align: right; }
+.dvm-row .v.big { font-size: 1.05rem; font-weight: 800; color: #1A3A5F; }
+.dvm-diff { display: inline-block; margin-left: .45rem; font-size: .68rem; font-weight: 700; padding: .12rem .4rem; border-radius: 4px; }
+.dvm-diff.down { background: rgba(62,124,91,.15); color: #2F6B4F; }
+.dvm-diff.up { background: rgba(176,48,48,.12); color: #A03030; }
+.dvm-diff.flat { background: #F0EEE6; color: #55687E; }
+.dvm-note {
+  margin-top: 1rem; padding: .65rem .8rem; border: 1px solid rgba(193,154,78,.3); border-radius: 8px;
+  background: #FAF6EC; font-size: .7rem; color: #6A5A32; line-height: 1.8;
+}
+.dvm-table { width: 100%; border-collapse: collapse; font-size: .8rem; }
+.dvm-table th { background: #F4F1E8; color: #55687E; font-size: .7rem; letter-spacing: .06em; padding: .5rem .6rem; text-align: left; white-space: nowrap; }
+.dvm-table td { padding: .55rem .6rem; border-bottom: 1px solid #F0EDE3; color: #2A3E52; white-space: nowrap; }
+.dvm-table td.u { font-weight: 800; color: #14202E; font-variant-numeric: tabular-nums; }
+.dvm-table-wrap { overflow-x: auto; }
 </style>
 
 <div id="devOverlay">
@@ -8030,6 +8077,22 @@ function closeBookingOverlay(){return;}
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- 戶別詳情彈窗 -->
+  <div id="devUnitModal" class="dvm-bg" onclick="if(event.target===this)closeDevUnitModal()">
+    <div class="dvm-card">
+      <div class="dvm-head"><b id="dvmTitle"></b><span style="display:flex;align-items:center;gap:.6rem"><span class="dvm-st" id="dvmSt"></span><button class="dvm-x" onclick="closeDevUnitModal()" aria-label="關閉">✕</button></span></div>
+      <div class="dvm-body" id="dvmBody"></div>
+    </div>
+  </div>
+
+  <!-- 明細列表彈窗 -->
+  <div id="devListModal" class="dvm-bg" onclick="if(event.target===this)closeDevListModal()">
+    <div class="dvm-card dvm-wide">
+      <div class="dvm-head"><b id="dvlTitle"></b><button class="dvm-x" onclick="closeDevListModal()" aria-label="關閉">✕</button></div>
+      <div class="dvm-body" id="dvlBody"></div>
     </div>
   </div>
 </div>
@@ -8161,8 +8224,8 @@ function renderDevDash() {
   const total = sold + view + open;
   document.getElementById('devStats').innerHTML =
     '<div class="dev-stat"><b>' + total + '</b><span>總戶數</span></div>' +
-    '<div class="dev-stat st-sold"><b>' + sold + '</b><span>已成交</span></div>' +
-    '<div class="dev-stat st-view"><b>' + view + '</b><span>帶看中</span></div>' +
+    '<div class="dev-stat st-sold st-clickable" role="button" tabindex="0" onclick="openDevList(\'s\')" title="點擊查看成交明細"><b>' + sold + '</b><span>已成交</span></div>' +
+    '<div class="dev-stat st-view st-clickable" role="button" tabindex="0" onclick="openDevList(\'v\')" title="點擊查看帶看明細"><b>' + view + '</b><span>帶看中</span></div>' +
     '<div class="dev-stat"><b>' + open + '</b><span>未售出</span></div>';
   const rate = Math.round(sold / total * 100);
   document.getElementById('devRateTxt').innerHTML = '目前去化率 <b>' + rate + '%</b>（' + sold + ' / ' + total + ' 戶）';
@@ -8235,7 +8298,7 @@ function renderDevFloor(f) {
   const cell = (i, area, balPos) => {
     const u = p.unitTypes[i], s = DEV_ST[st[i]];
     const bal = '<div class="du-balcony">陽台</div>';
-    return '<div class="dev-unit ' + s.cls + ' dev-' + area + '">'
+    return '<div class="dev-unit ' + s.cls + ' dev-' + area + '" onclick="openDevUnit(' + f + ',' + i + ')" title="點擊查看詳情">'
       + (balPos === 'top' ? bal : '')
       + '<div class="dev-unit-no">' + (f < 10 ? '0' + f : f) + '-' + u.no + '</div>'
       + '<div class="dev-unit-spec">' + u.type + '｜' + u.size + '</div>'
@@ -8271,8 +8334,125 @@ function renderDevFloor(f) {
   document.getElementById('devPlanBox').innerHTML = planHtml;
 }
 
+// ── 戶別詳情（示範資料由確定性規則生成，正式版接 Supabase 成交/報備紀錄）──
+const DEV_BUYERS = ['陳○宏','林○蓁','王○哲','張○婷','李○軒','黃○芸','吳○翰','劉○安','蔡○琪','鄭○廷','許○晴','洪○鈞'];
+const DEV_STAGES = ['已完成交屋','銀行已撥款','簽約完成，對保中'];
+const DEV_VIEW_TIMES = ['2026-07-16 14:30','2026-07-17 10:00','2026-07-18 15:30','2026-07-19 11:00','2026-07-20 16:30','2026-07-21 14:00','2026-07-22 10:30','2026-07-23 15:00','2026-07-24 13:30'];
+const DEV_REG_SUFFIX = ['A7K2','B3M9','C5Q1','D8R4','E2T6','F9W3','G4X8','H6Z5','J1N7','K4P2','L8S6','M3V9'];
+
+// 該戶在全案「同狀態戶」中的序號（由低樓層排起，確定性）
+function devStatusIndex(p, f, ui, statusChar) {
+  let idx = 0;
+  for (let i = 0; i < p.floors.length; i++) {
+    for (let j = 0; j < p.floors[i].length; j++) {
+      if (i === f - 1 && j === ui) return idx;
+      if (p.floors[i][j] === statusChar) idx++;
+    }
+  }
+  return idx;
+}
+function devParsePrice(s) { return parseInt(String(s).replace(/[^\d]/g, ''), 10); }
+function devFmtPrice(n) { return n.toLocaleString('en-US') + '萬'; }
+
+// 成交檔案
+function devDealInfo(p, f, ui) {
+  const idx = devStatusIndex(p, f, ui, 's');
+  const list = devParsePrice(p.unitTypes[ui].price);
+  const factors = [-0.035, -0.02, -0.012, 0, 0.012];
+  const deal = Math.round(list * (1 + factors[(f + ui) % 5]));
+  const start = new Date(p.plan === 'tower' ? '2026-05-20' : '2026-01-10');
+  start.setDate(start.getDate() + idx * 6);
+  const d = start.toISOString().slice(0, 10);
+  return {
+    date: d,
+    listPrice: list,
+    dealPrice: deal,
+    buyer: DEV_BUYERS[(f * 3 + ui) % DEV_BUYERS.length],
+    stage: DEV_STAGES[idx % DEV_STAGES.length]
+  };
+}
+// 帶看安排
+function devViewInfo(p, f, ui) {
+  const idx = devStatusIndex(p, f, ui, 'v');
+  return {
+    when: DEV_VIEW_TIMES[idx % DEV_VIEW_TIMES.length],
+    regNo: 'YC-2607' + String(10 + idx) + '-' + DEV_REG_SUFFIX[(f + ui) % DEV_REG_SUFFIX.length],
+    status: idx % 3 === 0 ? '已確認' : '待確認'
+  };
+}
+
+// 點戶別 → 詳情彈窗（建商唯讀：無任何操作按鈕）
+function openDevUnit(f, ui) {
+  const p = DEV_PROJECTS[devCurrentProject];
+  const u = p.unitTypes[ui];
+  const stChar = p.floors[f - 1][ui];
+  const s = DEV_ST[stChar];
+  const unitNo = (f < 10 ? '0' + f : f) + '-' + u.no;
+  document.getElementById('dvmTitle').innerText = devCurrentProject + '　' + unitNo;
+  const stEl = document.getElementById('dvmSt');
+  stEl.className = 'dvm-st ' + s.cls;
+  stEl.innerText = s.label;
+  const row = (k, v) => '<div class="dvm-row"><span class="k">' + k + '</span><span class="v">' + v + '</span></div>';
+  let html = row('戶型', u.type) + row('坪數', u.size) + row('開價', u.price);
+  if (stChar === 's') {
+    const d = devDealInfo(p, f, ui);
+    const diff = d.dealPrice - d.listPrice;
+    const pct = Math.abs(diff / d.listPrice * 100).toFixed(1);
+    const badge = diff < 0
+      ? '<span class="dvm-diff down">−' + pct + '%</span>'
+      : diff > 0 ? '<span class="dvm-diff up">+' + pct + '%</span>' : '<span class="dvm-diff flat">平開價</span>';
+    html += '<div class="dvm-row"><span class="k">成交價</span><span class="v big">' + devFmtPrice(d.dealPrice) + badge + '</span></div>'
+      + row('成交日期', d.date)
+      + row('買方', d.buyer)
+      + row('結算階段', d.stage)
+      + '<div class="dvm-note">成交資料由平台結算系統提供；買方資訊於契約成立後揭露予建設公司。</div>';
+  } else if (stChar === 'v') {
+    const v = devViewInfo(p, f, ui);
+    html += row('預約帶看時間', v.when)
+      + row('報備編號', v.regNo)
+      + row('帶看狀態', v.status)
+      + '<div class="dvm-note">為保障合作仲介權益，帶看階段不揭露客戶與仲介資訊；成交後將提供買方資料。帶看確認與結案由平台管理員處理，建商端為唯讀。</div>';
+  } else {
+    html += '<div class="dvm-row"><span class="k">目前狀態</span><span class="v">可售中，尚無帶看與成交紀錄</span></div>';
+  }
+  document.getElementById('dvmBody').innerHTML = html;
+  document.getElementById('devUnitModal').classList.add('open');
+}
+function closeDevUnitModal() { document.getElementById('devUnitModal').classList.remove('open'); }
+
+// 統計卡 → 全案明細列表（帶看中 / 已成交）
+function openDevList(kind) {
+  const p = DEV_PROJECTS[devCurrentProject];
+  const rows = [];
+  for (let f = 1; f <= p.floors.length; f++) {
+    p.floors[f - 1].forEach((st, ui) => {
+      if (st !== kind) return;
+      const unitNo = (f < 10 ? '0' + f : f) + '-' + p.unitTypes[ui].no;
+      if (kind === 'v') {
+        const v = devViewInfo(p, f, ui);
+        rows.push('<tr><td class="u">' + unitNo + '</td><td>' + p.unitTypes[ui].type + '</td><td>' + v.when + '</td><td>' + v.regNo + '</td><td>' + v.status + '</td></tr>');
+      } else {
+        const d = devDealInfo(p, f, ui);
+        rows.push('<tr><td class="u">' + unitNo + '</td><td>' + d.date + '</td><td>' + devFmtPrice(d.dealPrice) + '</td><td>' + d.buyer + '</td><td>' + d.stage + '</td></tr>');
+      }
+    });
+  }
+  const head = kind === 'v'
+    ? '<tr><th>戶別</th><th>戶型</th><th>帶看時間</th><th>報備編號</th><th>狀態</th></tr>'
+    : '<tr><th>戶別</th><th>成交日期</th><th>成交價</th><th>買方</th><th>結算階段</th></tr>';
+  document.getElementById('dvlTitle').innerText = devCurrentProject + '　' + (kind === 'v' ? '帶看中明細（' : '成交明細（') + rows.length + ' 戶）';
+  document.getElementById('dvlBody').innerHTML =
+    '<div class="dvm-table-wrap"><table class="dvm-table"><thead>' + head + '</thead><tbody>' + rows.join('') + '</tbody></table></div>'
+    + (kind === 'v' ? '<div class="dvm-note">帶看階段不揭露客戶與仲介資訊；帶看確認與結案由平台管理員處理，建商端為唯讀。</div>' : '');
+  document.getElementById('devListModal').classList.add('open');
+}
+function closeDevListModal() { document.getElementById('devListModal').classList.remove('open'); }
+
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape' && document.getElementById('devOverlay').classList.contains('open')) closeDevOverlay();
+  if (e.key !== 'Escape') return;
+  if (document.getElementById('devUnitModal').classList.contains('open')) { closeDevUnitModal(); return; }
+  if (document.getElementById('devListModal').classList.contains('open')) { closeDevListModal(); return; }
+  if (document.getElementById('devOverlay').classList.contains('open')) closeDevOverlay();
 });
 </script>
 <!-- ══ 法務條款 Modal ══ -->

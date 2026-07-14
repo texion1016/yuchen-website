@@ -648,6 +648,7 @@ function togglePwd(id, el) {
   <button class="mobile-nav-close" onclick="closeMobileNav()">✕</button>
   <a href="#projects" onclick="closeMobileNav()">精選建案</a>
   <a href="#" onclick="closeMobileNav();openLegal('coop');return false;">建商合作</a>
+  <a href="#" onclick="closeMobileNav();openDevOverlay();return false;">建商專區</a>
   <a href="#" onclick="closeMobileNav();openBrokerOverlay();return false;">仲介專區</a>
   <div style="margin-top:1rem; display:flex; gap:1rem; flex-wrap:wrap; justify-content:center;">
     
@@ -673,6 +674,7 @@ function togglePwd(id, el) {
   <nav class="nav-links">
     <a href="#projects">精選建案</a>
     <a href="#" onclick="openLegal('coop');return false;">建商合作</a>
+    <a href="#" onclick="openDevOverlay();return false;">建商專區</a>
     <a href="#" onclick="openBrokerOverlay();return false;">仲介專區</a>
   </nav>
   <div class="nav-cta">
@@ -7667,6 +7669,388 @@ function closeBookingOverlay(){return;}
   // Click to skip
   spl.addEventListener('click', dismiss);
 })();
+</script>
+
+<!-- ══════════════════════════════════════════════
+     建商專區 — 建案戶況追蹤
+══════════════════════════════════════════════ -->
+<style>
+#devOverlay {
+  display: none; position: fixed; inset: 0; z-index: 9600;
+  background: #F2F1EC; overflow-y: auto; overflow-x: clip;
+}
+#devOverlay.open { display: block; }
+
+/* 頂列 */
+.dev-header {
+  position: sticky; top: 0; z-index: 30;
+  background: #1A3A5F; color: #fff;
+  padding: .8rem 1.6rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+}
+.dev-logo { font-family: 'Noto Serif TC', serif; font-size: .98rem; font-weight: 700; letter-spacing: .05em; color: #E8D5AC; }
+.dev-logo small { display: block; font-family: 'Noto Sans TC', sans-serif; font-size: .64rem; font-weight: 400; color: rgba(255,255,255,.55); letter-spacing: .2em; margin-top: .15rem; }
+.dev-close {
+  width: 34px; height: 34px; border-radius: 50%; border: none; cursor: pointer;
+  background: rgba(255,255,255,.12); color: #fff; font-size: 1rem; transition: background .2s;
+}
+.dev-close:hover { background: rgba(255,255,255,.25); }
+
+/* 登入卡 */
+#devLogin {
+  min-height: calc(100vh - 60px); display: flex; align-items: center; justify-content: center;
+  padding: 2rem 1.2rem;
+  background:
+    linear-gradient(160deg, rgba(16,30,50,.82), rgba(20,48,79,.78)),
+    url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+}
+.dev-login-card {
+  width: 100%; max-width: 400px; background: rgba(255,255,255,.96);
+  border-radius: 16px; padding: 2.6rem 2.4rem;
+  box-shadow: 0 24px 70px rgba(6,14,26,.45);
+}
+.dev-login-title { font-family: 'Noto Serif TC', serif; font-size: 1.35rem; font-weight: 800; color: #14202E; text-align: center; margin: 0 0 .4rem; }
+.dev-login-sub { font-size: .78rem; color: #55687E; text-align: center; margin: 0 0 1.8rem; letter-spacing: .05em; }
+.dev-field { margin-bottom: 1.1rem; }
+.dev-field label { display: block; font-size: .78rem; color: #46607A; margin-bottom: .35rem; letter-spacing: .05em; }
+.dev-field input {
+  width: 100%; box-sizing: border-box; padding: .72rem 1rem; border: 1px solid #D8D5CB; border-radius: 10px;
+  font-size: .9rem; font-family: inherit; color: #14202E; outline: none; transition: border .2s, box-shadow .2s;
+  background: #fff;
+}
+.dev-field input:focus { border-color: #1A3A5F; box-shadow: 0 0 0 3px rgba(26,58,95,.12); }
+.dev-login-btn {
+  width: 100%; padding: .8rem; border: none; border-radius: 10px; cursor: pointer;
+  background: #1A3A5F; color: #fff; font-size: .92rem; font-weight: 700; font-family: inherit;
+  letter-spacing: .08em; transition: background .2s, transform .15s;
+}
+.dev-login-btn:hover { background: #C19A4E; transform: translateY(-1px); }
+.dev-login-err { display: none; margin-bottom: 1rem; padding: .55rem .9rem; border: 1px solid rgba(196,74,74,.4); border-radius: 8px; background: #FDF2F2; color: #B03030; font-size: .78rem; }
+.dev-login-note { margin-top: 1.3rem; padding: .8rem .95rem; border: 1px solid rgba(193,154,78,.35); border-radius: 8px; background: #FAF6EC; font-size: .74rem; color: #6A5A32; line-height: 1.8; }
+
+/* 儀表板 */
+#devDash { display: none; padding: 1.6rem clamp(1rem, 3.5vw, 2.6rem) 3.5rem; max-width: 1180px; margin: 0 auto; }
+
+.dev-proj-head { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.4rem; }
+.dev-proj-name { font-family: 'Noto Serif TC', serif; font-size: clamp(1.4rem, 3vw, 1.9rem); font-weight: 800; color: #14202E; margin: 0; }
+.dev-proj-name .dev-demo-tag {
+  display: inline-block; vertical-align: 4px; margin-left: .6rem; padding: .18rem .55rem;
+  border: 1px solid rgba(193,154,78,.5); border-radius: 6px;
+  font-family: 'Noto Sans TC', sans-serif; font-size: .62rem; font-weight: 700; letter-spacing: .12em; color: #8A6516;
+}
+.dev-proj-meta { font-size: .78rem; color: #55687E; margin-top: .35rem; }
+
+/* 統計列 */
+.dev-stats { display: flex; gap: .6rem; flex-wrap: wrap; }
+.dev-stat {
+  background: #fff; border: 1px solid #E5E1D5; border-radius: 12px;
+  padding: .6rem 1.05rem; text-align: center; min-width: 84px;
+}
+.dev-stat b { display: block; font-family: 'Noto Serif TC', serif; font-size: 1.35rem; font-weight: 800; color: #14202E; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.dev-stat span { font-size: .68rem; color: #55687E; letter-spacing: .08em; }
+.dev-stat.st-sold b { color: #2F6B4F; }
+.dev-stat.st-view b { color: #A07E1C; }
+
+/* 去化率 */
+.dev-rate { margin: 0 0 1.6rem; }
+.dev-rate-bar { height: 8px; border-radius: 4px; background: #E8E4D8; overflow: hidden; }
+.dev-rate-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #2F6B4F, #4E9973); transition: width .8s cubic-bezier(.22,1,.36,1); }
+.dev-rate-txt { font-size: .74rem; color: #55687E; margin-top: .4rem; }
+.dev-rate-txt b { color: #2F6B4F; }
+
+/* 主格局 */
+.dev-main { display: grid; grid-template-columns: minmax(300px, 5fr) 7fr; gap: clamp(1rem, 3vw, 2.4rem); align-items: start; }
+
+/* ── 立體樓層堆疊 ── */
+.dev-iso-wrap { background: #fff; border: 1px solid #E5E1D5; border-radius: 16px; padding: 1.3rem 1rem 1rem; }
+.dev-iso-title { font-size: .78rem; font-weight: 700; color: #46607A; letter-spacing: .1em; text-align: center; margin: 0 0 .4rem; }
+.dev-iso-hint { font-size: .68rem; color: #8A97A8; text-align: center; margin: 0 0 .8rem; }
+.dev-iso {
+  position: relative; margin: 0 auto; width: 280px;
+  height: calc(var(--floors) * 26px + 150px);
+}
+.dev-floor {
+  position: absolute; left: 50%; width: 280px; height: 150px; margin-left: -140px;
+  bottom: calc((var(--i) - 1) * 26px);
+  z-index: var(--i);
+  cursor: pointer;
+  transition: transform .22s cubic-bezier(.22,1,.36,1), filter .22s;
+  filter: drop-shadow(0 5px 4px rgba(15,25,35,.10));
+}
+.dev-floor:hover { transform: translateY(-5px); filter: drop-shadow(0 10px 10px rgba(15,25,35,.16)); }
+.dev-floor.active { transform: translateY(-9px); filter: drop-shadow(0 0 14px rgba(193,154,78,.55)) drop-shadow(0 10px 10px rgba(15,25,35,.18)); }
+.dev-slab {
+  position: absolute; inset: 0;
+  transform: rotateX(56deg) rotateZ(-45deg) scale(.72);
+  border: 1.5px solid #B9C2CC; border-radius: 6px;
+  background: #FBFAF6;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr .38fr 1fr;
+  grid-template-areas: "u1 u2 u3" "co co co" "u4 cr u5";
+  gap: 3px; padding: 5px; box-sizing: border-box;
+}
+.dev-floor.active .dev-slab { border-color: #C19A4E; }
+.dev-slab i { border-radius: 3px; border: 1px solid rgba(20,32,46,.14); background: #fff; }
+.dev-slab i.co { grid-area: co; background: #EDEAE0; border-style: dashed; }
+.dev-slab i.cr { grid-area: cr; background: #D9D4C6; }
+.dev-slab i.s-sold { background: rgba(62,124,91,.32); border-color: rgba(47,107,79,.55); }
+.dev-slab i.s-view { background: rgba(214,164,46,.38); border-color: rgba(160,126,28,.6); }
+.dev-fl-tag {
+  position: absolute; right: -6px; top: 50%; margin-top: -11px;
+  min-width: 30px; height: 22px; line-height: 22px; text-align: center;
+  border-radius: 6px; font-size: .66rem; font-weight: 700; letter-spacing: .04em;
+  background: rgba(255,255,255,.92); color: #46607A; border: 1px solid #DCD8CC;
+  pointer-events: none; font-variant-numeric: tabular-nums;
+}
+.dev-floor.active .dev-fl-tag { background: #1A3A5F; color: #E8D5AC; border-color: #1A3A5F; }
+
+/* ── 樓層平面圖 ── */
+.dev-plan-wrap { background: #fff; border: 1px solid #E5E1D5; border-radius: 16px; padding: 1.5rem clamp(1rem, 2.5vw, 1.8rem) 1.6rem; }
+.dev-plan-head { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.1rem; }
+.dev-plan-title { font-family: 'Noto Serif TC', serif; font-size: 1.25rem; font-weight: 800; color: #14202E; margin: 0; }
+.dev-plan-sub { font-size: .74rem; color: #55687E; }
+.dev-plan {
+  display: grid; gap: 8px;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: minmax(112px, auto) 34px minmax(112px, auto);
+  grid-template-areas: "u1 u2 u3" "co co co" "u4 cr u5";
+  animation: devPlanIn .3s cubic-bezier(.22,1,.36,1);
+}
+@keyframes devPlanIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.dev-unit {
+  border: 1.5px solid #D8D2C4; border-radius: 10px; background: #fff;
+  padding: .65rem .75rem; display: flex; flex-direction: column; justify-content: space-between; gap: .3rem;
+  transition: transform .18s, box-shadow .18s;
+}
+.dev-unit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(15,25,35,.08); }
+.dev-unit.s-sold { background: rgba(62,124,91,.16); border-color: rgba(47,107,79,.5); }
+.dev-unit.s-view { background: rgba(214,164,46,.18); border-color: rgba(160,126,28,.55); }
+.dev-unit-no { font-weight: 800; font-size: .95rem; color: #14202E; font-variant-numeric: tabular-nums; }
+.dev-unit-spec { font-size: .72rem; color: #46607A; line-height: 1.6; }
+.dev-unit-st { align-self: flex-start; font-size: .66rem; font-weight: 700; letter-spacing: .08em; padding: .2rem .5rem; border-radius: 5px; }
+.dev-unit.s-open .dev-unit-st { background: #F0EEE6; color: #55687E; }
+.dev-unit.s-sold .dev-unit-st { background: rgba(47,107,79,.9); color: #fff; }
+.dev-unit.s-view .dev-unit-st { background: rgba(160,126,28,.92); color: #fff; }
+.dev-corridor {
+  grid-area: co; border: 1.5px dashed #D8D2C4; border-radius: 8px; background: #F7F5EE;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .64rem; color: #8A97A8; letter-spacing: .35em;
+}
+.dev-core {
+  grid-area: cr; border: 1.5px solid #CBC5B4; border-radius: 10px; background: #EDEAE0;
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  font-size: .68rem; color: #6A7688; letter-spacing: .15em; line-height: 1.7;
+}
+.dev-u1 { grid-area: u1; } .dev-u2 { grid-area: u2; } .dev-u3 { grid-area: u3; }
+.dev-u4 { grid-area: u4; } .dev-u5 { grid-area: u5; }
+
+/* 圖例 + 隱私說明 */
+.dev-legend { display: flex; gap: 1.1rem; flex-wrap: wrap; margin-top: 1.2rem; }
+.dev-legend span { display: inline-flex; align-items: center; gap: .4rem; font-size: .72rem; color: #46607A; }
+.dev-legend i { width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid #D8D2C4; background: #fff; }
+.dev-legend i.lg-sold { background: rgba(62,124,91,.28); border-color: rgba(47,107,79,.55); }
+.dev-legend i.lg-view { background: rgba(214,164,46,.3); border-color: rgba(160,126,28,.6); }
+.dev-privacy-note {
+  margin-top: 1rem; font-size: .7rem; color: #7A8CA0; line-height: 1.8;
+}
+
+@media (max-width: 900px) {
+  .dev-main { grid-template-columns: 1fr; }
+  .dev-iso { transform: scale(.92); transform-origin: top center; }
+  .dev-proj-head { flex-direction: column; align-items: flex-start; }
+}
+@media (max-width: 560px) {
+  .dev-plan { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto 30px auto; grid-template-areas: "u1 u2" "u3 u4" "co co" "u5 cr"; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dev-floor, .dev-unit, .dev-rate-fill { transition: none; }
+  .dev-plan { animation: none; }
+}
+</style>
+
+<div id="devOverlay">
+  <div class="dev-header">
+    <div class="dev-logo">譽誠聯合銷售平台 — 建商專區<small>DEVELOPER PORTAL</small></div>
+    <button class="dev-close" onclick="closeDevOverlay()" aria-label="關閉">✕</button>
+  </div>
+
+  <!-- 登入 -->
+  <div id="devLogin">
+    <div class="dev-login-card">
+      <h2 class="dev-login-title">建商登入</h2>
+      <p class="dev-login-sub">追蹤您建案的帶看與成交戶況</p>
+      <div class="dev-login-err" id="devLoginErr">帳號或密碼錯誤</div>
+      <div class="dev-field"><label>公司帳號</label><input type="text" id="devAcc" placeholder="公司帳號" /></div>
+      <div class="dev-field"><label>密碼</label><input type="password" id="devPwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doDevLogin()" /></div>
+      <button class="dev-login-btn" onclick="doDevLogin()">登入</button>
+      <div class="dev-login-note">測試帳號：<b>yucheng</b>／密碼：<b>mu2026</b><br />正式帳號由平台管理員開通，每家建商僅能查看自己的建案。</div>
+    </div>
+  </div>
+
+  <!-- 儀表板 -->
+  <div id="devDash">
+    <div class="dev-proj-head">
+      <div>
+        <h1 class="dev-proj-name" id="devProjName">譽誠沐光苑 <span class="dev-demo-tag">示範資料</span></h1>
+        <div class="dev-proj-meta" id="devProjMeta">桃園市中壢區 ・ 地上 12 層 ・ 每層 5 戶 ・ 共 60 戶</div>
+      </div>
+      <div class="dev-stats" id="devStats"></div>
+    </div>
+
+    <div class="dev-rate">
+      <div class="dev-rate-bar"><div class="dev-rate-fill" id="devRateFill" style="width:0%"></div></div>
+      <div class="dev-rate-txt" id="devRateTxt"></div>
+    </div>
+
+    <div class="dev-main">
+      <div class="dev-iso-wrap">
+        <p class="dev-iso-title">全棟戶況總覽</p>
+        <p class="dev-iso-hint">點擊任一樓層查看該層平面圖</p>
+        <div class="dev-iso" id="devIso" style="--floors:12"></div>
+        <div class="dev-legend">
+          <span><i></i>未售出</span>
+          <span><i class="lg-view"></i>帶看中</span>
+          <span><i class="lg-sold"></i>已成交</span>
+        </div>
+        <p class="dev-privacy-note">為保障合作仲介權益，本頁僅顯示戶別銷售狀態，不揭露客戶與報備仲介資訊。</p>
+      </div>
+
+      <div class="dev-plan-wrap">
+        <div class="dev-plan-head">
+          <h3 class="dev-plan-title" id="devPlanTitle">8F 平面圖</h3>
+          <span class="dev-plan-sub" id="devPlanSub"></span>
+        </div>
+        <div id="devPlanBox"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── 建商專區 ────────────────────────────────────────────────
+// 示範帳號（正式版將移至 Supabase developers 表，由管理員開通）
+const DEV_ACCOUNTS = {
+  'yucheng': { pwd: 'mu2026', company: '譽誠建設', projects: ['譽誠沐光苑'] }
+};
+
+// 沐光苑戶型（每層相同格局，5 戶）
+const DEV_UNIT_TYPES = [
+  { no: '01', type: '2房2廳1衛', size: '26.5坪' },
+  { no: '02', type: '2房2廳1衛', size: '28.5坪' },
+  { no: '03', type: '3房2廳2衛', size: '34.0坪' },
+  { no: '04', type: '3房2廳2衛', size: '35.5坪' },
+  { no: '05', type: '2房1廳1衛', size: '22.0坪' }
+];
+// 各樓層戶況（示範資料）s=已成交 v=帶看中 o=未售出，由 1F 到 12F
+const DEV_FLOOR_STATUS = [
+  ['s','s','s','s','s'],  // 1F
+  ['s','s','s','v','s'],  // 2F
+  ['s','s','o','s','s'],  // 3F
+  ['s','v','s','s','o'],  // 4F
+  ['s','s','o','v','s'],  // 5F
+  ['o','s','s','o','v'],  // 6F
+  ['s','o','v','s','o'],  // 7F
+  ['o','s','o','o','s'],  // 8F
+  ['v','o','s','o','o'],  // 9F
+  ['o','o','v','o','s'],  // 10F
+  ['o','v','o','o','o'],  // 11F
+  ['o','o','o','o','v']   // 12F
+];
+const DEV_ST = { s: { cls: 's-sold', label: '已成交' }, v: { cls: 's-view', label: '帶看中' }, o: { cls: 's-open', label: '未售出' } };
+let devSelectedFloor = 8;
+
+function openDevOverlay() {
+  document.getElementById('devOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeDevOverlay() {
+  document.getElementById('devOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function doDevLogin() {
+  const acc = document.getElementById('devAcc').value.trim().toLowerCase();
+  const pwd = document.getElementById('devPwd').value;
+  const a = DEV_ACCOUNTS[acc];
+  if (!a || a.pwd !== pwd) {
+    document.getElementById('devLoginErr').style.display = 'block';
+    return;
+  }
+  document.getElementById('devLoginErr').style.display = 'none';
+  document.getElementById('devLogin').style.display = 'none';
+  document.getElementById('devDash').style.display = 'block';
+  renderDevDash();
+}
+
+function renderDevDash() {
+  // 統計
+  let sold = 0, view = 0, open = 0;
+  DEV_FLOOR_STATUS.forEach(f => f.forEach(s => { if (s === 's') sold++; else if (s === 'v') view++; else open++; }));
+  const total = sold + view + open;
+  document.getElementById('devStats').innerHTML =
+    '<div class="dev-stat"><b>' + total + '</b><span>總戶數</span></div>' +
+    '<div class="dev-stat st-sold"><b>' + sold + '</b><span>已成交</span></div>' +
+    '<div class="dev-stat st-view"><b>' + view + '</b><span>帶看中</span></div>' +
+    '<div class="dev-stat"><b>' + open + '</b><span>未售出</span></div>';
+  const rate = Math.round(sold / total * 100);
+  document.getElementById('devRateTxt').innerHTML = '目前去化率 <b>' + rate + '%</b>（' + sold + ' / ' + total + ' 戶）';
+  requestAnimationFrame(() => { document.getElementById('devRateFill').style.width = rate + '%'; });
+
+  // 立體樓層
+  const iso = document.getElementById('devIso');
+  let html = '';
+  for (let f = 1; f <= DEV_FLOOR_STATUS.length; f++) {
+    const st = DEV_FLOOR_STATUS[f - 1];
+    html += '<div class="dev-floor' + (f === devSelectedFloor ? ' active' : '') + '" style="--i:' + f + '" onclick="selectDevFloor(' + f + ')" title="' + f + 'F">'
+      + '<div class="dev-slab">'
+      + '<i class="' + (st[0] === 's' ? 's-sold' : st[0] === 'v' ? 's-view' : '') + '"></i>'
+      + '<i class="' + (st[1] === 's' ? 's-sold' : st[1] === 'v' ? 's-view' : '') + '"></i>'
+      + '<i class="' + (st[2] === 's' ? 's-sold' : st[2] === 'v' ? 's-view' : '') + '"></i>'
+      + '<i class="co"></i>'
+      + '<i class="' + (st[3] === 's' ? 's-sold' : st[3] === 'v' ? 's-view' : '') + '"></i>'
+      + '<i class="cr"></i>'
+      + '<i class="' + (st[4] === 's' ? 's-sold' : st[4] === 'v' ? 's-view' : '') + '"></i>'
+      + '</div>'
+      + '<span class="dev-fl-tag">' + f + 'F</span>'
+      + '</div>';
+  }
+  iso.innerHTML = html;
+
+  renderDevPlan(devSelectedFloor);
+}
+
+function selectDevFloor(f) {
+  devSelectedFloor = f;
+  document.querySelectorAll('.dev-floor').forEach(el => el.classList.toggle('active', +el.style.getPropertyValue('--i') === f));
+  renderDevPlan(f);
+}
+
+function renderDevPlan(f) {
+  const st = DEV_FLOOR_STATUS[f - 1];
+  document.getElementById('devPlanTitle').innerText = f + 'F 平面圖';
+  const counts = { s: 0, v: 0, o: 0 };
+  st.forEach(x => counts[x]++);
+  document.getElementById('devPlanSub').innerText = '本層：已成交 ' + counts.s + '｜帶看中 ' + counts.v + '｜未售出 ' + counts.o;
+  const cell = (i, area) => {
+    const u = DEV_UNIT_TYPES[i], s = DEV_ST[st[i]];
+    return '<div class="dev-unit ' + s.cls + ' dev-' + area + '">'
+      + '<div class="dev-unit-no">' + (f < 10 ? '0' + f : f) + '-' + u.no + '</div>'
+      + '<div class="dev-unit-spec">' + u.type + '<br>' + u.size + '</div>'
+      + '<span class="dev-unit-st">' + s.label + '</span>'
+      + '</div>';
+  };
+  document.getElementById('devPlanBox').innerHTML =
+    '<div class="dev-plan">'
+    + cell(0, 'u1') + cell(1, 'u2') + cell(2, 'u3')
+    + '<div class="dev-corridor">走　道</div>'
+    + cell(3, 'u4')
+    + '<div class="dev-core">電梯<br>樓梯</div>'
+    + cell(4, 'u5')
+    + '</div>';
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && document.getElementById('devOverlay').classList.contains('open')) closeDevOverlay();
+});
 </script>
 
 <!-- ══ 法務條款 Modal ══ -->

@@ -1134,6 +1134,7 @@ function togglePwd(id, el) {
       <div class="footer-legal">
         <a href="#" onclick="openLegal('privacy');return false;">隱私權政策</a>
         <a href="#" onclick="openLegal('terms');return false;">服務條款</a>
+        <a href="#" onclick="openLegal('coop');return false;">建商合作條款</a>
         <a href="#" onclick="openAdmin();return false;" style="color:#E8C16A !important;border:1px solid #E8C16A;padding:.2rem .6rem;border-radius:6px;font-size:.72rem;">⚙ 管理員</a>
       </div>
     </div>
@@ -7696,16 +7697,108 @@ function closeBookingOverlay(){return;}
         <p style="margin:0 0 .4rem;font-weight:700;color:#1A3A5F;">四、條款修訂</p>
         <p style="margin:0;">本平台得視營運需要修訂本條款，修訂後公告於本頁面。如有疑問請洽 yuchen.web.service@gmail.com。</p>
       </div>
+      <div id="legalCoop" style="display:none;">
+        <p style="margin:0 0 1.2rem;text-align:center;font-weight:700;color:#8A6516;letter-spacing:.12em;">共享案源｜共享客源｜共享成交｜共享獲利</p>
+
+        <p style="margin:0 0 .4rem;font-weight:700;color:#1A3A5F;">第一條　合作目的</p>
+        <p style="margin:0 0 1rem;">建設公司為提升銷售效率、擴大銷售通路、縮短銷售週期及增加市場曝光度，委由譽誠聯合銷售平台整合仲介通路及銷售資源，共同推動建案銷售，特訂定本合作條款。</p>
+
+        <p style="margin:0 0 .4rem;font-weight:700;color:#1A3A5F;">第二條　合作方式</p>
+        <p style="margin:0 0 .5rem;">雙方同意以下列方式之一進行合作：</p>
+        <p style="margin:0 0 .3rem;font-weight:700;color:#2A3E52;">第一項　專任委託銷售</p>
+        <ol style="margin:0 0 .8rem;padding-left:1.6rem;">
+          <li>建設公司委託譽誠聯合銷售平台為本案唯一銷售單位。</li>
+          <li>合作期間內，建設公司不得再委託其他代銷公司、聯合銷售平台、仲介公司或第三方銷售機構銷售本案。</li>
+          <li>建設公司自行成交之客戶，亦應依雙方約定辦理客戶認定及佣金計算。</li>
+          <li>平台享有本案專任銷售權。</li>
+        </ol>
+        <p style="margin:0 0 .3rem;font-weight:700;color:#2A3E52;">第二項　專任聯合銷售合作 <span style="color:#8A6516;font-size:.78rem;">（建議採用）</span></p>
+        <ol style="margin:0 0 1rem;padding-left:1.6rem;">
+          <li>建設公司保留接待中心、自有客戶及親友客戶之銷售權利。</li>
+          <li>建設公司同意將所有外部仲介通路、聯合銷售通路及跨品牌銷售通路統一由譽誠聯合銷售平台管理。</li>
+          <li>合作期間內，建設公司不得再委託其他聯合銷售平台、代銷公司或跨店聯賣組織辦理相同產品之聯合銷售。</li>
+          <li>平台享有本案對外聯合銷售之專任合作權。</li>
+        </ol>
+
+        <p style="margin:0 0 .4rem;font-weight:700;color:#1A3A5F;">第三條　合作期間</p>
+        <ol style="margin:0 0 1rem;padding-left:1.6rem;">
+          <li>合作期間以六個月至十二個月為原則。</li>
+          <li>合作期間內，雙方應善盡合作義務。</li>
+          <li>合作期滿得經雙方同意續約。</li>
+        </ol>
+
+        <p style="margin:0 0 .4rem;font-weight:700;color:#1A3A5F;">第四條　履約保證專戶佣金提撥機制</p>
+        <ol style="margin:0 0 1rem;padding-left:1.6rem;">
+          <li>本合作案必須採用履約保證專戶佣金提撥制度。</li>
+          <li>建設公司同意授權履約保證機構、指定代書或相關履約單位辦理佣金提撥作業。</li>
+          <li>買方完成銀行撥款時，依約定比例直接提撥銷售佣金至譽誠廣告有限公司指定帳戶。</li>
+          <li>建設公司應配合簽署相關授權文件。</li>
+          <li>建設公司不得拒絕或延遲辦理佣金提撥。</li>
+          <li>履約保證專戶佣金提撥機制為雙方合作之必要條件。</li>
+        </ol>
+
+        <p style="margin:0 0 .4rem;font-weight:700;color:#1A3A5F;">第五條　客戶報備及保護制度</p>
+        <ol style="margin:0 0 1rem;padding-left:1.6rem;">
+          <li>平台得建立客戶報備制度。</li>
+          <li>平台合作仲介、區域合夥人及平台自有廣告客戶均應完成報備程序。</li>
+          <li>客戶歸屬以平台系統紀錄為準。</li>
+          <li>客戶保護期間由雙方約定，建議為 90 日至 180 日。</li>
+          <li>保護期間內成交之客戶均應認列為平台成交案件。</li>
+        </ol>
+
+        <p style="margin:0 0 .4rem;font-weight:700;color:#1A3A5F;">第六條　成交認定標準</p>
+        <p style="margin:0 0 .5rem;">符合下列條件後即視為成交案件：</p>
+        <ol style="margin:0 0 .5rem;padding-left:1.6rem;">
+          <li>買賣契約完成簽署。</li>
+          <li>買方完成應付款項。</li>
+          <li>貸款核准及對保完成。</li>
+          <li>銀行完成撥款。</li>
+          <li>完成交屋程序。</li>
+        </ol>
+        <p style="margin:0 0 1rem;font-size:.78rem;color:#55687E;">符合上述條件即應辦理佣金提撥及結算。</p>
+
+        <p style="margin:0 0 .4rem;font-weight:700;color:#1A3A5F;">第七條　平台客戶保護條款</p>
+        <ol style="margin:0 0 1rem;padding-left:1.6rem;">
+          <li>平台報備客戶不得轉由其他通路成交。</li>
+          <li>平台廣告取得之客戶不得規避平台成交認定。</li>
+          <li>平台安排帶看之客戶不得轉由第三方接手成交。</li>
+          <li>建設公司不得以自行成交名義規避平台應得佣金。</li>
+        </ol>
+
+        <p style="margin:0 0 .4rem;font-weight:700;color:#1A3A5F;">第八條　專任合作限制條款</p>
+        <p style="margin:0 0 .5rem;">合作期間內，建設公司不得：</p>
+        <ol style="margin:0 0 .5rem;padding-left:1.6rem;">
+          <li>委託其他聯合銷售平台。</li>
+          <li>委託其他跨品牌聯賣組織。</li>
+          <li>委託其他代銷公司進行相同產品聯賣。</li>
+          <li>以其他名義規避本合作契約。</li>
+        </ol>
+        <p style="margin:0 0 1rem;font-size:.78rem;color:#55687E;">如有違反，平台得要求終止合作並保留相關求償權利。</p>
+
+        <p style="margin:0 0 .4rem;font-weight:700;color:#1A3A5F;">第九條　合作終止後之客戶保護</p>
+        <ol style="margin:0 0 1rem;padding-left:1.6rem;">
+          <li>合作終止前已完成報備之客戶，仍受客戶保護條款保障。</li>
+          <li>合作終止後六個月內成交之已報備客戶，仍應認列為平台成交案件。</li>
+          <li>建設公司仍應依約辦理佣金提撥及結算。</li>
+        </ol>
+
+        <p style="margin:0 0 .4rem;font-weight:700;color:#1A3A5F;">第十條　合作精神</p>
+        <p style="margin:0 0 .5rem;">譽誠聯合銷售平台秉持「共享案源、共享客源、共享成交、共享獲利」，透過專任聯合銷售制度、客戶報備制度及履約保證專戶佣金提撥制度，建立建設公司、仲介夥伴及平台三方共贏之合作模式。</p>
+        <p style="margin:0;font-size:.78rem;color:#55687E;">合作洽詢：yuchen.web.service@gmail.com</p>
+      </div>
     </div>
   </div>
 </div>
 <script>
 function openLegal(which) {
+  const titles = { privacy: '隱私權政策', terms: '服務條款', coop: '專任聯合銷售合作條款' };
   document.getElementById('legalPrivacy').style.display = which === 'privacy' ? '' : 'none';
   document.getElementById('legalTerms').style.display   = which === 'terms'   ? '' : 'none';
-  document.getElementById('legalTitle').innerText = which === 'privacy' ? '隱私權政策' : '服務條款';
+  document.getElementById('legalCoop').style.display    = which === 'coop'    ? '' : 'none';
+  document.getElementById('legalTitle').innerText = titles[which] || '條款';
   document.getElementById('legalModal').style.display = 'flex';
   document.body.style.overflow = 'hidden';
+  document.querySelector('#legalModal [style*="overflow-y"]').scrollTop = 0;
 }
 function closeLegal() {
   document.getElementById('legalModal').style.display = 'none';

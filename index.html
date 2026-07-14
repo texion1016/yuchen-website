@@ -2764,9 +2764,9 @@ async function doBrokerRegister() {
   btn.textContent = '送出中…'; btn.disabled = true;
   try {
     const hash = await hashPwd(pwd);
-    const { error } = await _sb.from('brokers').insert({
+    const { data: newBroker, error } = await _sb.from('brokers').insert({
       name, company, phone, email, license_no: licenseNo, password_hash: hash, status: 'active'
-    });
+    }).select('id').single();
     if (error) {
       if (error.code === '23505') {
         showBovMsg('registerMsg','此信箱已註冊，請直接登入','error');
@@ -2774,8 +2774,8 @@ async function doBrokerRegister() {
         showBovMsg('registerMsg','送出失敗：'+error.message,'error');
       }
     } else {
-      // 自動登入
-      bovCurrentUser = { name, company, email };
+      // 自動登入（帶上 id，報備時才關聯得到帳號）
+      bovCurrentUser = { id: newBroker ? newBroker.id : null, name, company, email };
       localStorage.setItem('bov_user', JSON.stringify(bovCurrentUser));
       showBovMsg('registerMsg','申請成功！歡迎加入譽誠聯合銷售平台','success');
       setTimeout(() => showBovLoggedIn(), 1200);

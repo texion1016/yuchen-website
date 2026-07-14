@@ -647,6 +647,7 @@ function togglePwd(id, el) {
 <nav class="mobile-nav" id="mobileNav">
   <button class="mobile-nav-close" onclick="closeMobileNav()">✕</button>
   <a href="#projects" onclick="closeMobileNav()">精選建案</a>
+  <a href="#" onclick="closeMobileNav();openLegal('coop');return false;">建商合作</a>
   <a href="#" onclick="closeMobileNav();openBrokerOverlay();return false;">仲介專區</a>
   <div style="margin-top:1rem; display:flex; gap:1rem; flex-wrap:wrap; justify-content:center;">
     
@@ -671,6 +672,7 @@ function togglePwd(id, el) {
   </a>
   <nav class="nav-links">
     <a href="#projects">精選建案</a>
+    <a href="#" onclick="openLegal('coop');return false;">建商合作</a>
     <a href="#" onclick="openBrokerOverlay();return false;">仲介專區</a>
   </nav>
   <div class="nav-cta">

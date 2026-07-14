@@ -7765,7 +7765,14 @@ function closeBookingOverlay(){return;}
 .dev-stage-hint { font-size: .68rem; color: #8A97A8; text-align: center; margin: .3rem 0 0; }
 
 /* ── 3D 全棟 ── */
-.bd-scene { display: flex; justify-content: center; padding: 2.4rem 0 1.2rem; perspective: 1500px; animation: bdRise .9s cubic-bezier(.22,1,.36,1); }
+#devBuildingView { position: relative; }
+.bv-aside {
+  position: absolute; left: clamp(.2rem, 3vw, 2.4rem); top: 52%; transform: translateY(-50%);
+  width: min(210px, 30vw); display: flex; flex-direction: column; gap: 1.1rem; z-index: 3;
+}
+.bv-aside .dev-legend { flex-direction: column; gap: .55rem; margin: 0; justify-content: flex-start; align-items: flex-start; }
+.bv-aside .dev-privacy-note { margin: 0; text-align: left; }
+.bd-scene { display: flex; justify-content: center; padding: 2.4rem 0 2.8rem; perspective: 1500px; animation: bdRise .9s cubic-bezier(.22,1,.36,1); }
 @keyframes bdRise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
 .bd-world {
   position: relative; width: 220px; height: 452px;
@@ -7784,44 +7791,66 @@ function closeBookingOverlay(){return;}
 .f-front {
   width: 220px; height: 34px; margin: -17px 0 0 -110px;
   transform: translateZ(65px);
-  background: #F6F3EA; border: 1px solid #C6BFAC; border-bottom-color: #B5AD97;
-  display: flex; gap: 4px; padding: 5px 7px 6px 30px; align-items: stretch;
+  background: linear-gradient(180deg, #E4DCCB 0%, #D8CEB9 62%, #C9BEA6 100%);
+  border: 1px solid #A99E86; border-bottom-color: #8F8469;
+  box-shadow: inset 0 2px 0 rgba(255,252,244,.55), inset 0 -3px 5px rgba(74,64,44,.22);
+  display: flex; gap: 4px; padding: 6px 7px 7px 30px; align-items: stretch;
   transition: box-shadow .2s, border-color .2s;
 }
-.bd-floor:hover .f-front, .bd-floor.active .f-front { border-color: #C19A4E; box-shadow: 0 0 0 1px #C19A4E, 0 0 16px rgba(193,154,78,.45); }
+.bd-floor:hover .f-front, .bd-floor.active .f-front { border-color: #C19A4E; box-shadow: inset 0 2px 0 rgba(255,252,244,.55), inset 0 -3px 5px rgba(74,64,44,.22), 0 0 0 1px #C19A4E, 0 0 16px rgba(193,154,78,.5); }
 .fl-no {
   position: absolute; left: 4px; top: 50%; transform: translateY(-50%);
   width: 22px; text-align: center;
-  font-size: .58rem; font-weight: 700; color: #6A6450; font-variant-numeric: tabular-nums;
+  font-size: .58rem; font-weight: 700; color: #5C523C; font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 0 rgba(255,252,244,.5);
 }
-.wu { flex: 1; border-radius: 2px; border: 1px solid rgba(20,32,46,.16); background: rgba(255,255,255,.92); }
-.wu.s-sold { background: rgba(62,124,91,.5); border-color: rgba(38,88,64,.55); }
-.wu.s-view { background: rgba(216,166,48,.55); border-color: rgba(150,116,24,.55); }
+.wu {
+  flex: 1; border-radius: 2px;
+  border: 1px solid rgba(52,62,72,.4);
+  background: linear-gradient(160deg, #F2F7FA 0%, #D9E4EB 55%, #C3D2DB 100%);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.7), inset 0 -1px 2px rgba(52,62,72,.18);
+}
+.wu.s-sold { background: linear-gradient(160deg, #7FB899 0%, #4E9070 55%, #356B50 100%); border-color: rgba(30,66,48,.6); }
+.wu.s-view { background: linear-gradient(160deg, #F0CE7C 0%, #DCAE44 55%, #BE9028 100%); border-color: rgba(120,88,16,.6); }
 .f-right {
   width: 130px; height: 34px; margin: -17px 0 0 -65px;
   transform: rotateY(90deg) translateZ(110px);
-  background: #DDD5C2;
-  background-image: repeating-linear-gradient(90deg, transparent 0 15px, rgba(90,84,66,.16) 15px 21px);
-  border: 1px solid #B8B09A;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 14px, rgba(52,62,72,.35) 14px 22px, transparent 22px 26px),
+    linear-gradient(90deg, #A79C82 0%, #B4A98F 60%, #BFB49A 100%);
+  border: 1px solid #8F8469;
+  box-shadow: inset 0 2px 0 rgba(255,252,244,.25), inset 0 -3px 5px rgba(60,52,36,.3);
 }
 /* 屋頂 */
 .bd-roof { position: absolute; left: 0; width: 220px; height: 12px; bottom: calc(var(--floors) * 34px); transform-style: preserve-3d; pointer-events: none; }
-.r-front { width: 220px; height: 12px; margin: -6px 0 0 -110px; transform: translateZ(65px); background: #E8E2CF; border: 1px solid #BCB49D; }
-.r-right { width: 130px; height: 12px; margin: -6px 0 0 -65px; transform: rotateY(90deg) translateZ(110px); background: #D3CBB4; border: 1px solid #ADA58D; }
-.r-top { width: 220px; height: 130px; margin: -65px 0 0 -110px; transform: rotateX(90deg) translateZ(6px); background: #EFEADA; border: 1px solid #BCB49D; }
-.r-top::after { content: ''; position: absolute; left: 50%; top: 50%; width: 44px; height: 30px; margin: -15px 0 0 -22px; background: #DDD5C0; border: 1px solid #B3AA90; border-radius: 3px; }
-/* 一樓入口 */
+.r-front { width: 220px; height: 12px; margin: -6px 0 0 -110px; transform: translateZ(65px); background: linear-gradient(180deg, #CFC5AD, #B8AC8F); border: 1px solid #948868; }
+.r-right { width: 130px; height: 12px; margin: -6px 0 0 -65px; transform: rotateY(90deg) translateZ(110px); background: #A2967A; border: 1px solid #8A7E60; }
+.r-top { width: 220px; height: 130px; margin: -65px 0 0 -110px; transform: rotateX(90deg) translateZ(6px); background: linear-gradient(135deg, #D7CFBC 0%, #C6BCA4 100%); border: 1px solid #948868; }
+.r-top::after { content: ''; position: absolute; left: 24%; top: 30%; width: 46px; height: 34px; background: #B3A78C; border: 1px solid #8A7E60; border-radius: 3px; box-shadow: 60px 14px 0 -6px #ADA184, 0 3px 5px rgba(60,52,36,.35); }
+/* 一樓入口（大廳玻璃門面） */
 .bd-door {
-  position: absolute; left: 50%; bottom: 0; width: 26px; height: 20px; margin-left: -13px;
-  background: rgba(26,58,95,.85); border: 2px solid #C19A4E; border-bottom: none; border-radius: 4px 4px 0 0;
+  position: absolute; left: 50%; bottom: 1px; width: 34px; height: 23px; margin-left: -17px;
+  background: linear-gradient(180deg, rgba(56,74,94,.9), rgba(30,44,60,.95));
+  border: 2px solid #C19A4E; border-bottom: none; border-radius: 5px 5px 0 0;
+  box-shadow: inset 0 2px 3px rgba(255,255,255,.25);
 }
-/* 基地地坪 */
+.bd-door::after { content: ''; position: absolute; left: 50%; top: 3px; bottom: 0; width: 1px; background: rgba(193,154,78,.7); }
+/* 一樓基座（石材大廳） */
+.bd-floor.bf-1 .f-front {
+  background: linear-gradient(180deg, #C7BBA1 0%, #B3A588 60%, #9E9070 100%);
+  border-color: #837654;
+}
+/* 基地地坪（鋪裝廣場） */
 .bd-ground { position: absolute; left: 0; bottom: 0; width: 220px; height: 0; transform-style: preserve-3d; pointer-events: none; }
 .g-plate {
   position: absolute; left: 50%; top: 0; width: 360px; height: 260px; margin: -130px 0 0 -180px;
   transform: rotateX(90deg) translateZ(-1px);
-  background: radial-gradient(ellipse 55% 55% at 50% 50%, rgba(20,32,46,.16), transparent 65%), #EAE5D6;
-  border: 1px solid #D5CFBC; border-radius: 10px;
+  background:
+    radial-gradient(ellipse 52% 52% at 50% 50%, rgba(20,32,46,.22), transparent 62%),
+    repeating-linear-gradient(0deg, transparent 0 31px, rgba(90,80,60,.14) 31px 32px),
+    repeating-linear-gradient(90deg, transparent 0 31px, rgba(90,80,60,.14) 31px 32px),
+    linear-gradient(135deg, #D9D2C0, #CCC4AE);
+  border: 1px solid #B5AB92; border-radius: 10px;
 }
 
 /* ── 樓層平面視圖 ── */
@@ -7905,6 +7934,14 @@ function closeBookingOverlay(){return;}
   .dev-proj-head { flex-direction: column; align-items: flex-start; }
   .bd-world { transform: rotateX(-18deg) rotateY(-34deg) scale(.9); }
 }
+@media (max-width: 760px) {
+  .bv-aside { position: static; transform: none; width: auto; margin-top: .8rem; order: 2; align-items: center; }
+  .bv-aside .dev-legend { flex-direction: row; justify-content: center; }
+  .bv-aside .dev-privacy-note { text-align: center; }
+  #devBuildingView { display: flex; flex-direction: column; }
+  #devBuildingView .bd-scene { order: 1; }
+  #devBuildingView .dev-stage-title { order: 0; }
+}
 @media (max-width: 560px) {
   .bd-world { transform: rotateX(-16deg) rotateY(-32deg) scale(.76); }
   .dev-plan { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto 30px auto; grid-template-areas: "u1 u2" "u3 u4" "co co" "u5 cr"; }
@@ -7955,13 +7992,16 @@ function closeBookingOverlay(){return;}
       <div id="devBuildingView">
         <p class="dev-stage-title">全棟戶況總覽</p>
         <p class="dev-stage-hint">外牆每格窗色即該戶狀態 ・ 點擊樓層進入平面圖</p>
+        <div class="bv-aside">
+          <div class="dev-legend">
+            <span><i></i>未售出</span>
+            <span><i class="lg-view"></i>帶看中</span>
+            <span><i class="lg-sold"></i>已成交</span>
+          </div>
+          <p class="dev-privacy-note">為保障合作仲介權益，本頁僅顯示戶別銷售狀態，不揭露客戶與報備仲介資訊。</p>
+        </div>
         <div class="bd-scene">
           <div class="bd-world" id="bdWorld"></div>
-        </div>
-        <div class="dev-legend">
-          <span><i></i>未售出</span>
-          <span><i class="lg-view"></i>帶看中</span>
-          <span><i class="lg-sold"></i>已成交</span>
         </div>
       </div>
       <!-- 視圖二：樓層平面圖 -->
@@ -7981,8 +8021,8 @@ function closeBookingOverlay(){return;}
           <span><i class="lg-view"></i>帶看中</span>
           <span><i class="lg-sold"></i>已成交</span>
         </div>
+        <p class="dev-privacy-note">為保障合作仲介權益，本頁僅顯示戶別銷售狀態，不揭露客戶與報備仲介資訊。</p>
       </div>
-      <p class="dev-privacy-note">為保障合作仲介權益，本頁僅顯示戶別銷售狀態，不揭露客戶與報備仲介資訊。</p>
     </div>
   </div>
 </div>
@@ -8067,7 +8107,7 @@ function renderDevBuilding() {
   for (let f = 1; f <= DEV_FLOOR_STATUS.length; f++) {
     const st = DEV_FLOOR_STATUS[f - 1];
     const panes = st.map(s => '<i class="wu' + (s === 's' ? ' s-sold' : s === 'v' ? ' s-view' : '') + '"></i>').join('');
-    html += '<div class="bd-floor' + (f === devSelectedFloor ? ' active' : '') + '" style="--i:' + f + '" onclick="openDevFloor(' + f + ')" title="' + f + 'F　點擊查看平面圖">'
+    html += '<div class="bd-floor' + (f === 1 ? ' bf-1' : '') + (f === devSelectedFloor ? ' active' : '') + '" style="--i:' + f + '" onclick="openDevFloor(' + f + ')" title="' + f + 'F　點擊查看平面圖">'
       + '<div class="bd-face f-front"><span class="fl-no">' + f + 'F</span>' + panes + (f === 1 ? '<span class="bd-door"></span>' : '') + '</div>'
       + '<div class="bd-face f-right"></div>'
       + '</div>';
@@ -8091,7 +8131,7 @@ function openDevFloor(f) {
 function devBackToBuilding() {
   document.getElementById('devFloorView').style.display = 'none';
   const bv = document.getElementById('devBuildingView');
-  bv.style.display = 'block';
+  bv.style.display = '';
   bv.classList.remove('dev-view-anim'); void bv.offsetWidth; bv.classList.add('dev-view-anim');
   renderDevBuilding();
 }

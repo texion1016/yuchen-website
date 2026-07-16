@@ -7762,8 +7762,8 @@ function closeBookingOverlay(){return;}
 .dev-stat b { display: block; font-family: 'Noto Serif TC', serif; font-size: 1.35rem; font-weight: 800; color: #14202E; line-height: 1.2; font-variant-numeric: tabular-nums; }
 .dev-stat span { font-size: .68rem; color: #55687E; letter-spacing: .08em; }
 .dev-stat.st-sold b { color: #A02F26; }
-.dev-stat.st-view b { color: #A07E1C; }
-.dev-stat.st-hold b { color: #C06890; }
+.dev-stat.st-view b { color: #3A6E96; }
+.dev-stat.st-hold b { color: #35744C; }
 
 /* 去化率 */
 .dev-rate { margin: 0 0 1.6rem; }
@@ -7780,7 +7780,7 @@ function closeBookingOverlay(){return;}
 .dvx-left { min-width: 0; }
 .dev-stage-title { font-size: .8rem; font-weight: 700; color: #46607A; letter-spacing: .1em; text-align: center; margin: 0; }
 .dev-stage-hint { font-size: .68rem; color: #8A97A8; text-align: center; margin: .3rem 0 0; }
-.bd-scene { display: flex; justify-content: center; padding: 2rem 0 2.4rem; perspective: 1500px; animation: bdRise .9s cubic-bezier(.22,1,.36,1); }
+.bd-scene { display: flex; justify-content: center; padding: 2rem 0 5.5rem; perspective: 1500px; animation: bdRise .9s cubic-bezier(.22,1,.36,1); }
 @keyframes bdRise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
 .bd-world {
   position: relative; width: 220px;
@@ -7821,8 +7821,8 @@ function closeBookingOverlay(){return;}
   box-shadow: inset 0 1px 1px rgba(255,255,255,.7), inset 0 -1px 2px rgba(52,62,72,.18);
 }
 .wu.s-sold { background: linear-gradient(160deg, #E4776C 0%, #CC5044 55%, #A83A30 100%); border-color: rgba(118,32,24,.7); }
-.wu.s-view { background: linear-gradient(160deg, #F0CE7C 0%, #DCAE44 55%, #BE9028 100%); border-color: rgba(120,88,16,.6); }
-.wu.s-hold { background: linear-gradient(160deg, #FBE3EC 0%, #F5C6D9 55%, #EAABC7 100%); border-color: rgba(186,116,148,.5); }
+.wu.s-view { background: linear-gradient(160deg, #D9EAF7 0%, #AFD2EA 55%, #84B4D6 100%); border-color: rgba(58,106,142,.55); }
+.wu.s-hold { background: linear-gradient(160deg, #E2F2E5 0%, #BCDCC5 55%, #94C4A4 100%); border-color: rgba(66,118,84,.5); }
 .f-right {
   width: 130px; height: 34px; margin: -17px 0 0 -65px;
   transform: rotateY(90deg) translateZ(110px);
@@ -7869,8 +7869,8 @@ function closeBookingOverlay(){return;}
 .dev-legend span { display: inline-flex; align-items: center; gap: .4rem; font-size: .72rem; color: #46607A; }
 .dev-legend i { width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid #D8D2C4; background: #fff; }
 .dev-legend i.lg-sold { background: rgba(196,64,52,.35); border-color: rgba(150,44,36,.6); }
-.dev-legend i.lg-view { background: rgba(214,164,46,.3); border-color: rgba(160,126,28,.6); }
-.dev-legend i.lg-hold { background: rgba(242,176,205,.4); border-color: rgba(210,140,170,.55); }
+.dev-legend i.lg-view { background: rgba(150,195,228,.4); border-color: rgba(84,134,172,.55); }
+.dev-legend i.lg-hold { background: rgba(165,212,180,.45); border-color: rgba(96,152,116,.55); }
 .dev-flow-hint { margin-top: .55rem; font-size: .66rem; color: #8A97A8; text-align: center; letter-spacing: .04em; }
 .dev-privacy-note { margin-top: .8rem; font-size: .7rem; color: #7A8CA0; line-height: 1.8; text-align: center; }
 
@@ -7889,8 +7889,8 @@ function closeBookingOverlay(){return;}
 .fv-chip .fc-bar { display: flex; height: 4px; border-radius: 2px; overflow: hidden; margin-top: .3rem; background: #EFECE2; }
 .fv-chip .fc-bar i { height: 100%; }
 .fv-chip .fc-bar .b-s { background: #A83A30; }
-.fv-chip .fc-bar .b-v { background: #D6A630; }
-.fv-chip .fc-bar .b-d { background: #EAABC7; }
+.fv-chip .fc-bar .b-v { background: #84B4D6; }
+.fv-chip .fc-bar .b-d { background: #94C4A4; }
 .fv-chip:hover { border-color: #C19A4E; }
 .fv-chip.active { background: #1A3A5F; border-color: #1A3A5F; }
 .fv-chip.active b { color: #E8D5AC; }
@@ -7934,8 +7934,8 @@ function closeBookingOverlay(){return;}
 }
 .dev-unit:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(15,25,35,.1); }
 .dev-unit.s-sold { background: rgba(196,64,52,.2); border-color: rgba(150,44,36,.6); }
-.dev-unit.s-view { background: rgba(214,164,46,.16); border-color: rgba(160,126,28,.55); }
-.dev-unit.s-hold { background: rgba(242,176,205,.14); border-color: rgba(210,140,170,.45); }
+.dev-unit.s-view { background: rgba(126,176,214,.16); border-color: rgba(84,134,172,.5); }
+.dev-unit.s-hold { background: rgba(138,196,158,.16); border-color: rgba(96,152,116,.5); }
 .du-balcony { border: 1.5px dashed #BFB8A4; border-radius: 4px; font-size: .58rem; color: #8F8873; text-align: center; padding: 1px 0; letter-spacing: .4em; text-indent: .4em; }
 .dev-unit-no { font-weight: 800; font-size: .98rem; color: #14202E; font-variant-numeric: tabular-nums; }
 .dev-unit-spec { font-size: .71rem; color: #46607A; line-height: 1.55; }
@@ -7943,8 +7943,8 @@ function closeBookingOverlay(){return;}
 .dev-unit-st { align-self: flex-start; font-size: .64rem; font-weight: 700; letter-spacing: .08em; padding: .18rem .5rem; border-radius: 5px; margin-top: auto; }
 .dev-unit.s-open .dev-unit-st { background: #F0EEE6; color: #55687E; }
 .dev-unit.s-sold .dev-unit-st { background: rgba(150,44,36,.94); color: #fff; }
-.dev-unit.s-view .dev-unit-st { background: rgba(160,126,28,.92); color: #fff; }
-.dev-unit.s-hold .dev-unit-st { background: rgba(238,160,192,.95); color: #4A1228; }
+.dev-unit.s-view .dev-unit-st { background: rgba(50,102,142,.92); color: #fff; }
+.dev-unit.s-hold .dev-unit-st { background: rgba(178,220,190,.96); color: #143A22; }
 .dev-corridor { border: 1.5px dashed #C9C2B0; border-radius: 6px; background: #F7F5EE; display: flex; align-items: center; justify-content: center; font-size: .62rem; color: #98A2B0; letter-spacing: .4em; text-indent: .4em; }
 .dev-co { grid-area: co; }
 .dev-c1 { grid-area: c1; } .dev-c2 { grid-area: c2; } .dev-c3 { grid-area: c3; } .dev-c4 { grid-area: c4; }
@@ -7996,8 +7996,8 @@ function closeBookingOverlay(){return;}
 .dvm-head b { font-family: 'Noto Serif TC', serif; font-size: 1rem; letter-spacing: .04em; }
 .dvm-head .dvm-st { font-size: .66rem; font-weight: 700; letter-spacing: .08em; padding: .2rem .55rem; border-radius: 5px; }
 .dvm-st.s-sold { background: rgba(168,54,44,.95); color: #fff; }
-.dvm-st.s-view { background: rgba(214,166,48,.95); color: #3A2C08; }
-.dvm-st.s-hold { background: rgba(244,190,213,.97); color: #4A1228; }
+.dvm-st.s-view { background: rgba(120,170,208,.95); color: #0E2438; }
+.dvm-st.s-hold { background: rgba(178,220,190,.97); color: #143A22; }
 .dvm-st.s-open { background: rgba(255,255,255,.2); color: #fff; }
 .dvm-x { width: 30px; height: 30px; border-radius: 50%; border: none; background: rgba(255,255,255,.14); color: #fff; cursor: pointer; font-size: .9rem; flex-shrink: 0; }
 .dvm-x:hover { background: rgba(255,255,255,.3); }

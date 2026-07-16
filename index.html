@@ -7760,6 +7760,7 @@ function closeBookingOverlay(){return;}
 .dev-stat span { font-size: .68rem; color: #55687E; letter-spacing: .08em; }
 .dev-stat.st-sold b { color: #2F6B4F; }
 .dev-stat.st-view b { color: #A07E1C; }
+.dev-stat.st-hold b { color: #34688F; }
 
 /* 去化率 */
 .dev-rate { margin: 0 0 1.6rem; }
@@ -7818,6 +7819,7 @@ function closeBookingOverlay(){return;}
 }
 .wu.s-sold { background: linear-gradient(160deg, #7FB899 0%, #4E9070 55%, #356B50 100%); border-color: rgba(30,66,48,.6); }
 .wu.s-view { background: linear-gradient(160deg, #F0CE7C 0%, #DCAE44 55%, #BE9028 100%); border-color: rgba(120,88,16,.6); }
+.wu.s-hold { background: linear-gradient(160deg, #A9D0E8 0%, #7CAECE 55%, #5A8FB2 100%); border-color: rgba(42,86,116,.6); }
 .f-right {
   width: 130px; height: 34px; margin: -17px 0 0 -65px;
   transform: rotateY(90deg) translateZ(110px);
@@ -7865,6 +7867,8 @@ function closeBookingOverlay(){return;}
 .dev-legend i { width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid #D8D2C4; background: #fff; }
 .dev-legend i.lg-sold { background: rgba(62,124,91,.28); border-color: rgba(47,107,79,.55); }
 .dev-legend i.lg-view { background: rgba(214,164,46,.3); border-color: rgba(160,126,28,.6); }
+.dev-legend i.lg-hold { background: rgba(96,152,192,.3); border-color: rgba(62,116,156,.6); }
+.dev-flow-hint { margin-top: .55rem; font-size: .66rem; color: #8A97A8; text-align: center; letter-spacing: .04em; }
 .dev-privacy-note { margin-top: .8rem; font-size: .7rem; color: #7A8CA0; line-height: 1.8; text-align: center; }
 
 /* 右欄：樓層平面 */
@@ -7883,6 +7887,7 @@ function closeBookingOverlay(){return;}
 .fv-chip .fc-bar i { height: 100%; }
 .fv-chip .fc-bar .b-s { background: #3E7C5B; }
 .fv-chip .fc-bar .b-v { background: #D6A630; }
+.fv-chip .fc-bar .b-d { background: #5A8FB2; }
 .fv-chip:hover { border-color: #C19A4E; }
 .fv-chip.active { background: #1A3A5F; border-color: #1A3A5F; }
 .fv-chip.active b { color: #E8D5AC; }
@@ -7927,6 +7932,7 @@ function closeBookingOverlay(){return;}
 .dev-unit:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(15,25,35,.1); }
 .dev-unit.s-sold { background: rgba(62,124,91,.15); border-color: rgba(47,107,79,.55); }
 .dev-unit.s-view { background: rgba(214,164,46,.16); border-color: rgba(160,126,28,.55); }
+.dev-unit.s-hold { background: rgba(96,152,192,.16); border-color: rgba(62,116,156,.55); }
 .du-balcony { border: 1.5px dashed #BFB8A4; border-radius: 4px; font-size: .58rem; color: #8F8873; text-align: center; padding: 1px 0; letter-spacing: .4em; text-indent: .4em; }
 .dev-unit-no { font-weight: 800; font-size: .98rem; color: #14202E; font-variant-numeric: tabular-nums; }
 .dev-unit-spec { font-size: .71rem; color: #46607A; line-height: 1.55; }
@@ -7935,6 +7941,7 @@ function closeBookingOverlay(){return;}
 .dev-unit.s-open .dev-unit-st { background: #F0EEE6; color: #55687E; }
 .dev-unit.s-sold .dev-unit-st { background: rgba(47,107,79,.9); color: #fff; }
 .dev-unit.s-view .dev-unit-st { background: rgba(160,126,28,.92); color: #fff; }
+.dev-unit.s-hold .dev-unit-st { background: rgba(52,104,144,.92); color: #fff; }
 .dev-corridor { border: 1.5px dashed #C9C2B0; border-radius: 6px; background: #F7F5EE; display: flex; align-items: center; justify-content: center; font-size: .62rem; color: #98A2B0; letter-spacing: .4em; text-indent: .4em; }
 .dev-co { grid-area: co; }
 .dev-c1 { grid-area: c1; } .dev-c2 { grid-area: c2; } .dev-c3 { grid-area: c3; } .dev-c4 { grid-area: c4; }
@@ -7987,6 +7994,7 @@ function closeBookingOverlay(){return;}
 .dvm-head .dvm-st { font-size: .66rem; font-weight: 700; letter-spacing: .08em; padding: .2rem .55rem; border-radius: 5px; }
 .dvm-st.s-sold { background: rgba(78,153,115,.95); color: #fff; }
 .dvm-st.s-view { background: rgba(214,166,48,.95); color: #3A2C08; }
+.dvm-st.s-hold { background: rgba(122,174,206,.95); color: #0E2438; }
 .dvm-st.s-open { background: rgba(255,255,255,.2); color: #fff; }
 .dvm-x { width: 30px; height: 30px; border-radius: 50%; border: none; background: rgba(255,255,255,.14); color: #fff; cursor: pointer; font-size: .9rem; flex-shrink: 0; }
 .dvm-x:hover { background: rgba(255,255,255,.3); }
@@ -8059,8 +8067,10 @@ function closeBookingOverlay(){return;}
           <div class="dev-legend">
             <span><i></i>未售出</span>
             <span><i class="lg-view"></i>帶看中</span>
+            <span><i class="lg-hold"></i>已付定金</span>
             <span><i class="lg-sold"></i>已成交</span>
           </div>
+          <p class="dev-flow-hint">流程：帶看 → 付定金 → 確認成交（退定則恢復可售）</p>
           <p class="dev-privacy-note">為保障合作仲介權益，本頁僅顯示戶別銷售狀態，不揭露客戶與報備仲介資訊。</p>
         </div>
 
@@ -8122,12 +8132,12 @@ const DEV_PROJECTS = {
       ['s','s','o','s','s'],
       ['s','v','s','s','o'],
       ['s','s','o','v','s'],
-      ['o','s','s','o','v'],
+      ['o','s','s','o','d'],
       ['s','o','v','s','o'],
-      ['o','s','o','o','s'],
-      ['v','o','s','o','o'],
+      ['o','s','d','o','s'],
+      ['d','o','s','o','o'],
       ['o','o','v','o','s'],
-      ['o','v','o','o','o'],
+      ['o','v','o','d','o'],
       ['o','o','o','o','v']
     ]
   },
@@ -8142,11 +8152,11 @@ const DEV_PROJECTS = {
     ],
     floors: [
       ['s','s','v','s'],
-      ['s','v','s','o'],
+      ['s','v','s','d'],
       ['o','s','o','s'],
-      ['v','o','o','s'],
+      ['v','d','o','s'],
       ['o','o','s','o'],
-      ['o','v','o','o'],
+      ['o','d','o','o'],
       ['o','o','o','o'],
       ['o','o','v','o'],
       ['o','o','o','o'],
@@ -8159,7 +8169,7 @@ const DEV_PROJECTS = {
     ]
   }
 };
-const DEV_ST = { s: { cls: 's-sold', label: '已成交' }, v: { cls: 's-view', label: '帶看中' }, o: { cls: 's-open', label: '未售出' } };
+const DEV_ST = { s: { cls: 's-sold', label: '已成交' }, v: { cls: 's-view', label: '帶看中' }, d: { cls: 's-hold', label: '已付定金' }, o: { cls: 's-open', label: '未售出' } };
 
 let devViewer = null;          // { projects: [...], isAdmin }
 let devCurrentProject = null;
@@ -8219,16 +8229,18 @@ function renderDevDash() {
   }
 
   // 統計
-  let sold = 0, view = 0, open = 0;
-  p.floors.forEach(f => f.forEach(s => { if (s === 's') sold++; else if (s === 'v') view++; else open++; }));
-  const total = sold + view + open;
+  let sold = 0, view = 0, hold = 0, open = 0;
+  p.floors.forEach(f => f.forEach(s => { if (s === 's') sold++; else if (s === 'v') view++; else if (s === 'd') hold++; else open++; }));
+  const total = sold + view + hold + open;
   document.getElementById('devStats').innerHTML =
     '<div class="dev-stat"><b>' + total + '</b><span>總戶數</span></div>' +
     '<div class="dev-stat st-sold st-clickable" role="button" tabindex="0" onclick="openDevList(\'s\')" title="點擊查看成交明細"><b>' + sold + '</b><span>已成交</span></div>' +
+    '<div class="dev-stat st-hold st-clickable" role="button" tabindex="0" onclick="openDevList(\'d\')" title="點擊查看付定明細"><b>' + hold + '</b><span>已付定金</span></div>' +
     '<div class="dev-stat st-view st-clickable" role="button" tabindex="0" onclick="openDevList(\'v\')" title="點擊查看帶看明細"><b>' + view + '</b><span>帶看中</span></div>' +
     '<div class="dev-stat"><b>' + open + '</b><span>未售出</span></div>';
   const rate = Math.round(sold / total * 100);
-  document.getElementById('devRateTxt').innerHTML = '目前去化率 <b>' + rate + '%</b>（' + sold + ' / ' + total + ' 戶）';
+  document.getElementById('devRateTxt').innerHTML = '目前去化率 <b>' + rate + '%</b>（' + sold + ' / ' + total + ' 戶）'
+    + (hold ? '，另有 ' + hold + ' 戶已付定待簽約' : '');
   requestAnimationFrame(() => { document.getElementById('devRateFill').style.transform = 'scaleX(' + (rate / 100) + ')'; });
 
   renderDevBuilding();
@@ -8251,7 +8263,7 @@ function renderDevBuilding() {
   let html = '<div class="bd-ground"><div class="bd-face g-plate"></div></div>';
   for (let f = 1; f <= nF; f++) {
     const st = p.floors[f - 1];
-    const panes = st.map(s => '<i class="wu' + (s === 's' ? ' s-sold' : s === 'v' ? ' s-view' : '') + '"></i>').join('');
+    const panes = st.map(s => '<i class="wu' + (s === 's' ? ' s-sold' : s === 'v' ? ' s-view' : s === 'd' ? ' s-hold' : '') + '"></i>').join('');
     html += '<div class="bd-floor' + (f === 1 ? ' bf-1' : '') + (f === devSelectedFloor ? ' active' : '') + '" style="--i:' + f + '" onclick="selectDevFloor(' + f + ')" title="' + f + 'F　點擊查看平面圖">'
       + '<div class="bd-face f-front"><span class="fl-no">' + f + 'F</span>' + panes + (f === 1 ? '<span class="bd-door"></span>' : '') + '</div>'
       + '<div class="bd-face f-right"></div>'
@@ -8276,18 +8288,19 @@ function renderDevFloor(f) {
   const p = DEV_PROJECTS[devCurrentProject];
   const st = p.floors[f - 1];
   document.getElementById('devPlanTitle').innerText = f + 'F 平面圖';
-  const c = { s: 0, v: 0, o: 0 };
+  const c = { s: 0, v: 0, d: 0, o: 0 };
   st.forEach(x => c[x]++);
-  document.getElementById('devPlanSub').innerText = '已成交 ' + c.s + '｜帶看中 ' + c.v + '｜未售出 ' + c.o;
+  document.getElementById('devPlanSub').innerText = '已成交 ' + c.s + '｜已付定 ' + c.d + '｜帶看中 ' + c.v + '｜未售出 ' + c.o;
 
   // 樓層快切列（高樓層在前，附各層狀態比例條）
   let chips = '';
   for (let i = p.floors.length; i >= 1; i--) {
-    const cs = { s: 0, v: 0, o: 0 };
+    const cs = { s: 0, v: 0, d: 0, o: 0 };
     p.floors[i - 1].forEach(x => cs[x]++);
     chips += '<button class="fv-chip' + (i === f ? ' active' : '') + '" onclick="selectDevFloor(' + i + ')"><b>' + i + 'F</b>'
       + '<span class="fc-bar">'
       + (cs.s ? '<i class="b-s" style="flex:' + cs.s + '"></i>' : '')
+      + (cs.d ? '<i class="b-d" style="flex:' + cs.d + '"></i>' : '')
       + (cs.v ? '<i class="b-v" style="flex:' + cs.v + '"></i>' : '')
       + (cs.o ? '<i style="flex:' + cs.o + '"></i>' : '')
       + '</span></button>';
@@ -8380,6 +8393,18 @@ function devViewInfo(p, f, ui) {
     status: idx % 3 === 0 ? '已確認' : '待確認'
   };
 }
+// 付定資訊（定金約開價 2%，付定後 14 天內簽約）
+function devHoldInfo(p, f, ui) {
+  const idx = devStatusIndex(p, f, ui, 'd');
+  const list = devParsePrice(p.unitTypes[ui].price);
+  const deposit = Math.max(10, Math.round(list * 0.02 / 5) * 5);
+  const base = new Date('2026-07-06');
+  base.setDate(base.getDate() + (idx * 3) % 9);
+  const payDate = base.toISOString().slice(0, 10);
+  const due = new Date(base);
+  due.setDate(due.getDate() + 14);
+  return { payDate, deposit: deposit + '萬', signDue: due.toISOString().slice(0, 10) };
+}
 
 // 點戶別 → 詳情彈窗（建商唯讀：無任何操作按鈕）
 function openDevUnit(f, ui) {
@@ -8412,6 +8437,13 @@ function openDevUnit(f, ui) {
       + row('報備編號', v.regNo)
       + row('帶看狀態', v.status)
       + '<div class="dvm-note">為保障合作仲介權益，帶看階段不揭露客戶與仲介資訊；成交後將提供買方資料。帶看確認與結案由平台管理員處理，建商端為唯讀。</div>';
+  } else if (stChar === 'd') {
+    const h = devHoldInfo(p, f, ui);
+    html += row('付定日期', h.payDate)
+      + row('定金金額', h.deposit)
+      + row('預計簽約期限', h.signDue)
+      + row('後續流程', '確認成交 → 轉「已成交」<br>退定 → 恢復「未售出」')
+      + '<div class="dvm-note">付定期間本戶暫停銷售。買方資訊於正式簽約後揭露；狀態變更由平台管理員處理，建商端為唯讀。</div>';
   } else {
     html += '<div class="dvm-row"><span class="k">目前狀態</span><span class="v">可售中，尚無帶看與成交紀錄</span></div>';
   }
@@ -8431,6 +8463,9 @@ function openDevList(kind) {
       if (kind === 'v') {
         const v = devViewInfo(p, f, ui);
         rows.push('<tr><td class="u">' + unitNo + '</td><td>' + p.unitTypes[ui].type + '</td><td>' + v.when + '</td><td>' + v.regNo + '</td><td>' + v.status + '</td></tr>');
+      } else if (kind === 'd') {
+        const h = devHoldInfo(p, f, ui);
+        rows.push('<tr><td class="u">' + unitNo + '</td><td>' + p.unitTypes[ui].type + '</td><td>' + h.payDate + '</td><td>' + h.deposit + '</td><td>' + h.signDue + '</td></tr>');
       } else {
         const d = devDealInfo(p, f, ui);
         rows.push('<tr><td class="u">' + unitNo + '</td><td>' + d.date + '</td><td>' + devFmtPrice(d.dealPrice) + '</td><td>' + d.buyer + '</td><td>' + d.stage + '</td></tr>');
@@ -8439,11 +8474,15 @@ function openDevList(kind) {
   }
   const head = kind === 'v'
     ? '<tr><th>戶別</th><th>戶型</th><th>帶看時間</th><th>報備編號</th><th>狀態</th></tr>'
+    : kind === 'd'
+    ? '<tr><th>戶別</th><th>戶型</th><th>付定日期</th><th>定金</th><th>預計簽約</th></tr>'
     : '<tr><th>戶別</th><th>成交日期</th><th>成交價</th><th>買方</th><th>結算階段</th></tr>';
-  document.getElementById('dvlTitle').innerText = devCurrentProject + '　' + (kind === 'v' ? '帶看中明細（' : '成交明細（') + rows.length + ' 戶）';
+  const kindName = kind === 'v' ? '帶看中明細（' : kind === 'd' ? '已付定明細（' : '成交明細（';
+  document.getElementById('dvlTitle').innerText = devCurrentProject + '　' + kindName + rows.length + ' 戶）';
   document.getElementById('dvlBody').innerHTML =
     '<div class="dvm-table-wrap"><table class="dvm-table"><thead>' + head + '</thead><tbody>' + rows.join('') + '</tbody></table></div>'
-    + (kind === 'v' ? '<div class="dvm-note">帶看階段不揭露客戶與仲介資訊；帶看確認與結案由平台管理員處理，建商端為唯讀。</div>' : '');
+    + (kind === 'v' ? '<div class="dvm-note">帶看階段不揭露客戶與仲介資訊；帶看確認與結案由平台管理員處理，建商端為唯讀。</div>' : '')
+    + (kind === 'd' ? '<div class="dvm-note">付定戶暫停銷售；確認成交轉「已成交」，退定恢復「未售出」。狀態變更由平台管理員處理。</div>' : '');
   document.getElementById('devListModal').classList.add('open');
 }
 function closeDevListModal() { document.getElementById('devListModal').classList.remove('open'); }

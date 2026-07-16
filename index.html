@@ -2447,7 +2447,7 @@ table.bt2 tbody td{padding:.72rem 1rem;color:#555;white-space:nowrap}
       <div id="reportMsg" class="bov-msg"></div>
       <div class="bov-row">
         <div class="bov-field"><label>客戶姓名 *</label><input type="text" id="rptClientName" placeholder="陳小姐" /></div>
-        <div class="bov-field"><label>客戶電話 *</label><input type="tel" id="rptClientPhone" placeholder="0912-345-678" /></div>
+        <div class="bov-field"><label>客戶電話後 5 碼 *</label><input type="tel" id="rptClientPhone" inputmode="numeric" maxlength="5" placeholder="45678" /></div>
       </div>
       <div class="bov-field">
         <label>指定建案 *</label>
@@ -2800,7 +2800,10 @@ async function doClientReport() {
   const viewTime = document.getElementById('rptViewTime').value;
   const note = document.getElementById('rptNote').value.trim();
   if (!clientName||!clientPhone||!project) {
-    showBovMsg('reportMsg','請填寫客戶姓名、電話與指定建案','error'); return;
+    showBovMsg('reportMsg','請填寫客戶姓名、電話後 5 碼與指定建案','error'); return;
+  }
+  if (!/^\d{5}$/.test(clientPhone)) {
+    showBovMsg('reportMsg','客戶電話請填「後 5 碼」共 5 位數字','error'); return;
   }
   const btn = document.querySelector('#bovReport .bov-btn');
   btn.textContent = '送出中…'; btn.disabled = true;
@@ -6017,7 +6020,7 @@ async function loadAdmRegs() {
   const { data } = await _sb.from('client_registrations').select('*').order('created_at',{ascending:false});
   if (!data||!data.length){el.innerHTML='<div class="adm-empty">尚無資料</div>';return;}
   el.innerHTML = `<table class="adm-table"><thead><tr>
-    <th>報備編號</th><th>仲介</th><th>公司</th><th>客戶</th><th>電話</th><th>建案</th><th>帶看時間</th><th>報備時間</th><th>狀態</th><th>操作</th>
+    <th>報備編號</th><th>仲介</th><th>公司</th><th>客戶</th><th>電話末5碼</th><th>建案</th><th>帶看時間</th><th>報備時間</th><th>狀態</th><th>操作</th>
     </tr></thead><tbody>${data.map(r=>`<tr id="reg-row-${r.id}">
     <td style="font-family:monospace;font-size:.75rem;color:var(--ov-gold)">${r.registration_no}</td>
     <td>${r.broker_name||''}</td><td>${r.broker_company||''}</td>
@@ -7758,9 +7761,9 @@ function closeBookingOverlay(){return;}
 }
 .dev-stat b { display: block; font-family: 'Noto Serif TC', serif; font-size: 1.35rem; font-weight: 800; color: #14202E; line-height: 1.2; font-variant-numeric: tabular-nums; }
 .dev-stat span { font-size: .68rem; color: #55687E; letter-spacing: .08em; }
-.dev-stat.st-sold b { color: #B2483E; }
+.dev-stat.st-sold b { color: #A02F26; }
 .dev-stat.st-view b { color: #A07E1C; }
-.dev-stat.st-hold b { color: #B25C82; }
+.dev-stat.st-hold b { color: #C06890; }
 
 /* 去化率 */
 .dev-rate { margin: 0 0 1.6rem; }
@@ -7817,9 +7820,9 @@ function closeBookingOverlay(){return;}
   background: linear-gradient(160deg, #F2F7FA 0%, #D9E4EB 55%, #C3D2DB 100%);
   box-shadow: inset 0 1px 1px rgba(255,255,255,.7), inset 0 -1px 2px rgba(52,62,72,.18);
 }
-.wu.s-sold { background: linear-gradient(160deg, #F2A69E 0%, #E07E74 55%, #C65F55 100%); border-color: rgba(150,54,46,.6); }
+.wu.s-sold { background: linear-gradient(160deg, #E4776C 0%, #CC5044 55%, #A83A30 100%); border-color: rgba(118,32,24,.7); }
 .wu.s-view { background: linear-gradient(160deg, #F0CE7C 0%, #DCAE44 55%, #BE9028 100%); border-color: rgba(120,88,16,.6); }
-.wu.s-hold { background: linear-gradient(160deg, #F7CBDA 0%, #EBA6C2 55%, #D989AC 100%); border-color: rgba(164,86,118,.55); }
+.wu.s-hold { background: linear-gradient(160deg, #FBE3EC 0%, #F5C6D9 55%, #EAABC7 100%); border-color: rgba(186,116,148,.5); }
 .f-right {
   width: 130px; height: 34px; margin: -17px 0 0 -65px;
   transform: rotateY(90deg) translateZ(110px);
@@ -7865,9 +7868,9 @@ function closeBookingOverlay(){return;}
 .dvx-left .dev-legend { display: flex; gap: .9rem; flex-wrap: wrap; justify-content: center; margin-top: .2rem; }
 .dev-legend span { display: inline-flex; align-items: center; gap: .4rem; font-size: .72rem; color: #46607A; }
 .dev-legend i { width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid #D8D2C4; background: #fff; }
-.dev-legend i.lg-sold { background: rgba(214,96,86,.26); border-color: rgba(178,70,60,.55); }
+.dev-legend i.lg-sold { background: rgba(196,64,52,.35); border-color: rgba(150,44,36,.6); }
 .dev-legend i.lg-view { background: rgba(214,164,46,.3); border-color: rgba(160,126,28,.6); }
-.dev-legend i.lg-hold { background: rgba(230,140,175,.3); border-color: rgba(190,100,135,.6); }
+.dev-legend i.lg-hold { background: rgba(242,176,205,.4); border-color: rgba(210,140,170,.55); }
 .dev-flow-hint { margin-top: .55rem; font-size: .66rem; color: #8A97A8; text-align: center; letter-spacing: .04em; }
 .dev-privacy-note { margin-top: .8rem; font-size: .7rem; color: #7A8CA0; line-height: 1.8; text-align: center; }
 
@@ -7885,9 +7888,9 @@ function closeBookingOverlay(){return;}
 .fv-chip b { display: block; font-size: .74rem; color: #2A3E52; font-weight: 700; font-variant-numeric: tabular-nums; }
 .fv-chip .fc-bar { display: flex; height: 4px; border-radius: 2px; overflow: hidden; margin-top: .3rem; background: #EFECE2; }
 .fv-chip .fc-bar i { height: 100%; }
-.fv-chip .fc-bar .b-s { background: #C65F55; }
+.fv-chip .fc-bar .b-s { background: #A83A30; }
 .fv-chip .fc-bar .b-v { background: #D6A630; }
-.fv-chip .fc-bar .b-d { background: #D989AC; }
+.fv-chip .fc-bar .b-d { background: #EAABC7; }
 .fv-chip:hover { border-color: #C19A4E; }
 .fv-chip.active { background: #1A3A5F; border-color: #1A3A5F; }
 .fv-chip.active b { color: #E8D5AC; }
@@ -7930,18 +7933,18 @@ function closeBookingOverlay(){return;}
   transition: transform .18s, box-shadow .18s; position: relative;
 }
 .dev-unit:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(15,25,35,.1); }
-.dev-unit.s-sold { background: rgba(214,96,86,.14); border-color: rgba(178,70,60,.5); }
+.dev-unit.s-sold { background: rgba(196,64,52,.2); border-color: rgba(150,44,36,.6); }
 .dev-unit.s-view { background: rgba(214,164,46,.16); border-color: rgba(160,126,28,.55); }
-.dev-unit.s-hold { background: rgba(230,140,175,.16); border-color: rgba(190,100,135,.5); }
+.dev-unit.s-hold { background: rgba(242,176,205,.14); border-color: rgba(210,140,170,.45); }
 .du-balcony { border: 1.5px dashed #BFB8A4; border-radius: 4px; font-size: .58rem; color: #8F8873; text-align: center; padding: 1px 0; letter-spacing: .4em; text-indent: .4em; }
 .dev-unit-no { font-weight: 800; font-size: .98rem; color: #14202E; font-variant-numeric: tabular-nums; }
 .dev-unit-spec { font-size: .71rem; color: #46607A; line-height: 1.55; }
 .du-price { font-size: .74rem; font-weight: 800; color: #1A3A5F; font-variant-numeric: tabular-nums; }
 .dev-unit-st { align-self: flex-start; font-size: .64rem; font-weight: 700; letter-spacing: .08em; padding: .18rem .5rem; border-radius: 5px; margin-top: auto; }
 .dev-unit.s-open .dev-unit-st { background: #F0EEE6; color: #55687E; }
-.dev-unit.s-sold .dev-unit-st { background: rgba(178,70,60,.92); color: #fff; }
+.dev-unit.s-sold .dev-unit-st { background: rgba(150,44,36,.94); color: #fff; }
 .dev-unit.s-view .dev-unit-st { background: rgba(160,126,28,.92); color: #fff; }
-.dev-unit.s-hold .dev-unit-st { background: rgba(186,92,130,.92); color: #fff; }
+.dev-unit.s-hold .dev-unit-st { background: rgba(238,160,192,.95); color: #4A1228; }
 .dev-corridor { border: 1.5px dashed #C9C2B0; border-radius: 6px; background: #F7F5EE; display: flex; align-items: center; justify-content: center; font-size: .62rem; color: #98A2B0; letter-spacing: .4em; text-indent: .4em; }
 .dev-co { grid-area: co; }
 .dev-c1 { grid-area: c1; } .dev-c2 { grid-area: c2; } .dev-c3 { grid-area: c3; } .dev-c4 { grid-area: c4; }
@@ -7992,9 +7995,9 @@ function closeBookingOverlay(){return;}
 }
 .dvm-head b { font-family: 'Noto Serif TC', serif; font-size: 1rem; letter-spacing: .04em; }
 .dvm-head .dvm-st { font-size: .66rem; font-weight: 700; letter-spacing: .08em; padding: .2rem .55rem; border-radius: 5px; }
-.dvm-st.s-sold { background: rgba(206,96,86,.95); color: #fff; }
+.dvm-st.s-sold { background: rgba(168,54,44,.95); color: #fff; }
 .dvm-st.s-view { background: rgba(214,166,48,.95); color: #3A2C08; }
-.dvm-st.s-hold { background: rgba(224,132,168,.95); color: #38101F; }
+.dvm-st.s-hold { background: rgba(244,190,213,.97); color: #4A1228; }
 .dvm-st.s-open { background: rgba(255,255,255,.2); color: #fff; }
 .dvm-x { width: 30px; height: 30px; border-radius: 50%; border: none; background: rgba(255,255,255,.14); color: #fff; cursor: pointer; font-size: .9rem; flex-shrink: 0; }
 .dvm-x:hover { background: rgba(255,255,255,.3); }

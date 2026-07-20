@@ -1,0 +1,15 @@
+{
+  "name": "譽誠聯合銷售平台",
+  "short_name": "譽誠平台",
+  "description": "建商成屋 × 仲介共享案源｜客戶報備與戶況追蹤",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F6F4EF",
+  "theme_color": "#1A3A5F",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

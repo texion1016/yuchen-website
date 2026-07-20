@@ -4,6 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>譽誠聯合銷售平台｜成屋聯合銷售 × 建商合作 × 仲介共享案源</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#1A3A5F" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-title" content="譽誠平台" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=Orbitron:wght@500;700;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -2482,6 +2487,19 @@ table.bt2 tbody td{padding:.72rem 1rem;color:#555;white-space:nowrap}
       </div>
     </div>
 
+    <!-- 改期彈窗 -->
+    <div id="regEditModal" class="dvm-bg" onclick="if(event.target===this)bovCloseReschedule()">
+      <div class="dvm-card" style="max-width:360px;">
+        <div class="dvm-head"><b>變更帶看時間</b><button class="dvm-x" onclick="bovCloseReschedule()" aria-label="關閉">✕</button></div>
+        <div class="dvm-body">
+          <div class="bov-field"><label>新的帶看日期 *</label><input type="date" id="rgeDate" /></div>
+          <div class="bov-field"><label>新的帶看時間 *</label><input type="time" id="rgeTime" /></div>
+          <button class="bov-btn" id="rgeSaveBtn" onclick="bovSaveReschedule()">儲存變更</button>
+          <div class="dvm-note" style="margin-top:.9rem;">改期後狀態將重設為「待確認」，並會在新時間前 24 小時重新寄送提醒。</div>
+        </div>
+      </div>
+    </div>
+
     <!-- 合作仲介獎金辦法 -->
     <div class="bov-panel" id="bovBonus">
       <div class="bonus-doc">
@@ -2840,6 +2858,44 @@ async function doClientReport() {
 }
 
 // ── 我的報備紀錄 ──────────────────────────────────────────────────────────
+// ── 報備改期 / 取消 ──────────────────────────────────────────
+let bovEditRegId = null;
+function bovOpenReschedule(id, date, time) {
+  bovEditRegId = id;
+  document.getElementById('rgeDate').value = date || '';
+  document.getElementById('rgeTime').value = time || '';
+  document.getElementById('regEditModal').classList.add('open');
+}
+function bovCloseReschedule() {
+  document.getElementById('regEditModal').classList.remove('open');
+  bovEditRegId = null;
+}
+async function bovSaveReschedule() {
+  const d = document.getElementById('rgeDate').value;
+  const t = document.getElementById('rgeTime').value;
+  if (!d || !t) { alert('請選擇新的帶看日期與時間'); return; }
+  const btn = document.getElementById('rgeSaveBtn');
+  btn.disabled = true; btn.textContent = '儲存中…';
+  try {
+    // 改期後回到待確認，並重置提醒旗標讓系統重新寄 24 小時提醒
+    const { error } = await _sb.from('client_registrations')
+      .update({ view_date: d, view_time: t, status: 'pending', reminder_sent: false })
+      .eq('id', bovEditRegId);
+    if (error) { alert('更新失敗：' + error.message); }
+    else { bovCloseReschedule(); loadMyRegs(); }
+  } catch(e) { alert('連線錯誤，請稍後再試'); }
+  btn.disabled = false; btn.textContent = '儲存變更';
+}
+async function bovCancelReg(id) {
+  if (!confirm('確定要取消這筆報備帶看嗎？取消後無法復原。')) return;
+  try {
+    const { error } = await _sb.from('client_registrations')
+      .update({ status: 'cancelled' }).eq('id', id);
+    if (error) { alert('取消失敗：' + error.message); return; }
+    loadMyRegs();
+  } catch(e) { alert('連線錯誤，請稍後再試'); }
+}
+
 async function loadMyRegs() {
   if (!bovCurrentUser) return;
   const el = document.getElementById('myregContent');
@@ -2853,8 +2909,10 @@ async function loadMyRegs() {
     if (error || !data || data.length === 0) {
       el.innerHTML = '<div class="bov-empty">尚無報備紀錄</div>'; return;
     }
-    const statusLabel = { pending:'待確認', confirmed:'已確認', closed:'已結案' };
-    const rows = data.map(r => `
+    const statusLabel = { pending:'待確認', confirmed:'已確認', closed:'已結案', cancelled:'已取消' };
+    const rows = data.map(r => {
+      const canAct = r.status === 'pending' || r.status === 'confirmed';
+      return `
       <tr>
         <td><span class="bov-reg-no">${r.registration_no}</span></td>
         <td>${r.client_name}</td>
@@ -2862,9 +2920,13 @@ async function loadMyRegs() {
         <td>${r.view_date ? r.view_date + (r.view_time ? '<br><span style="font-size:.75rem;color:var(--ov-ink3)">' + r.view_time + '</span>' : '') : '<span style="color:var(--ov-ink3);font-size:.78rem">未指定</span>'}</td>
         <td>${new Date(r.created_at).toLocaleString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false})}</td>
         <td><span class="bov-status ${r.status}">${statusLabel[r.status]||r.status}</span></td>
-      </tr>`).join('');
+        <td>${canAct
+          ? `<button class="mr-btn" onclick="bovOpenReschedule('${r.id}','${r.view_date||''}','${r.view_time||''}')">改期</button><button class="mr-btn mr-cancel" onclick="bovCancelReg('${r.id}')">取消</button>`
+          : '<span style="color:#AAB4C0;font-size:.75rem">—</span>'}</td>
+      </tr>`;
+    }).join('');
     el.innerHTML = `<table class="bov-reg-table">
-      <thead><tr><th>報備編號</th><th>客戶姓名</th><th>建案</th><th>帶看時間</th><th>報備時間</th><th>狀態</th></tr></thead>
+      <thead><tr><th>報備編號</th><th>客戶姓名</th><th>建案</th><th>帶看時間</th><th>報備時間</th><th>狀態</th><th>操作</th></tr></thead>
       <tbody>${rows}</tbody></table>`;
   } catch(e) {
     el.innerHTML = '<div class="bov-empty">載入失敗，請稍後再試</div>';
@@ -5952,7 +6014,9 @@ html { scroll-behavior: smooth !important; }
       </div>
       <!-- 客戶報備 -->
       <div class="adm-panel" id="admRegistrations">
-        <div class="adm-title">客戶報備紀錄</div>
+        <div class="adm-title" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">客戶報備紀錄
+          <button onclick="admExportRegsCSV()" style="background:#fff;border:1px solid #C7D2DE;color:#1A3A5F;border-radius:8px;padding:.45rem 1rem;font-size:.78rem;font-weight:600;cursor:pointer;font-family:inherit;transition:background .18s,color .18s;" onmouseover="this.style.background='#1A3A5F';this.style.color='#fff'" onmouseout="this.style.background='#fff';this.style.color='#1A3A5F'">⬇ 匯出 CSV</button>
+        </div>
         <div id="admRegContent"><div class="adm-empty">載入中…</div></div>
       </div>
       <!-- 預約帶看 -->
@@ -6027,7 +6091,7 @@ async function loadAdmRegs() {
     <td>${r.client_name}</td><td>${r.client_phone}</td><td>${r.project_name}</td>
     <td>${r.view_date ? '<strong>' + r.view_date + '</strong>' + (r.view_time ? ' ' + r.view_time : '') : '<span style="opacity:.4">—</span>'}</td>
     <td style="font-size:.78rem">${new Date(r.created_at).toLocaleString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false})}</td>
-    <td><span class="adm-badge ${r.status}" id="reg-status-${r.id}">${{pending:'待確認',confirmed:'已確認',closed:'結案'}[r.status]||r.status}</span></td>
+    <td><span class="adm-badge ${r.status}" id="reg-status-${r.id}">${{pending:'待確認',confirmed:'已確認',closed:'結案',cancelled:'已取消'}[r.status]||r.status}</span></td>
     <td>${r.status==='pending'
       ? `<button onclick="admConfirmView('${r.id}')" style="background:var(--ov-navy);color:#fff;border:none;border-radius:6px;padding:.3rem .8rem;font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:opacity .2s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">確認帶看</button>`
       : r.status==='confirmed'
@@ -6035,6 +6099,28 @@ async function loadAdmRegs() {
         : '<span style="color:#ccc;font-size:.75rem">—</span>'
     }</td>
     </tr>`).join('')}</tbody></table>`;
+}
+
+// 匯出報備紀錄 CSV（含 BOM，Excel 開啟中文不亂碼）
+async function admExportRegsCSV() {
+  const { data, error } = await _sb.from('client_registrations').select('*').order('created_at', { ascending: false });
+  if (error || !data || !data.length) { alert('目前沒有報備資料可匯出'); return; }
+  const esc = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+  const label = { pending: '待確認', confirmed: '已確認', closed: '結案', cancelled: '已取消' };
+  const head = ['報備編號','仲介','公司','客戶','電話末5碼','建案','帶看日期','帶看時間','報備時間','狀態'];
+  const rows = data.map(r => [
+    r.registration_no, r.broker_name || '', r.broker_company || '', r.client_name, r.client_phone,
+    r.project_name, r.view_date || '', r.view_time || '',
+    new Date(r.created_at).toLocaleString('zh-TW', { hour12: false }),
+    label[r.status] || r.status
+  ].map(esc).join(','));
+  const csv = '\uFEFF' + head.map(esc).join(',') + '\r\n' + rows.join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '報備紀錄_' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(a.href);
 }
 
 async function admUpdateRegStatus(id, newStatus, btn) {
@@ -7485,6 +7571,19 @@ html, body { overflow-x: clip; }
 .rs-send-btn:hover:not(:disabled) { background: #C19A4E; }
 .rs-send-btn:disabled { opacity: .55; cursor: default; }
 #rsCode { letter-spacing: .35em; font-variant-numeric: tabular-nums; }
+
+/* ── 我的報備：改期 / 取消 ── */
+.mr-btn {
+  border: 1px solid #C7D2DE; background: #F4F8FB; color: #1A3A5F;
+  border-radius: 6px; padding: .28rem .65rem; font-size: .72rem; font-weight: 600;
+  cursor: pointer; font-family: inherit; white-space: nowrap; transition: background .18s, color .18s;
+}
+.mr-btn + .mr-btn { margin-left: .35rem; }
+.mr-btn:hover { background: #1A3A5F; color: #fff; }
+.mr-btn.mr-cancel { border-color: rgba(176,48,48,.35); background: #FDF4F4; color: #A03030; }
+.mr-btn.mr-cancel:hover { background: #A03030; color: #fff; }
+.bov-status.cancelled { background: #EEECE6 !important; color: #7A8494 !important; }
+.adm-badge.cancelled { background: #EEECE6 !important; color: #7A8494 !important; }
 
 /* ══════════════════════════════════════════════════════
    合作仲介獎金辦法（bovBonus 分頁）

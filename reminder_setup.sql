@@ -38,7 +38,7 @@ begin
     where cr.reminder_sent = false
       and cr.view_date is not null
       and cr.view_time is not null
-      and cr.status <> 'closed'
+      and cr.status not in ('closed','cancelled')
   loop
     -- 帶看時間（台灣時區）
     v_ts := (r.view_date::text || ' ' || r.view_time)::timestamp

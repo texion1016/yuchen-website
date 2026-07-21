@@ -5998,8 +5998,9 @@ html { scroll-behavior: smooth !important; }
       <button class="adm-nav-btn" onclick="switchAdmPanel('registrations')">客戶報備</button>
       
       <button class="adm-nav-btn" onclick="switchAdmPanel('inquiries')">案件詢問</button>
+      <button class="adm-nav-btn" onclick="switchAdmPanel('units')">戶況管理</button>
       <button class="adm-nav-btn" onclick="switchAdmPanel('brokers')">仲介管理</button>
-      <button class="adm-nav-btn" onclick="openDevPortalFromAdmin()">建案戶況</button>
+      <button class="adm-nav-btn" onclick="openDevPortalFromAdmin()">建案戶況(檢視)</button>
     </div>
     <div class="adm-content">
       <!-- 總覽 -->
@@ -6019,6 +6020,14 @@ html { scroll-behavior: smooth !important; }
         </div>
         <div id="admRegContent"><div class="adm-empty">載入中…</div></div>
       </div>
+      <!-- 戶況管理 -->
+      <div class="adm-panel" id="admUnits">
+        <div class="adm-title" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">戶況管理
+          <select id="admUnitProj" onchange="loadAdmUnits()" style="border:1px solid #C7D2DE;border-radius:8px;padding:.4rem .7rem;font-size:.82rem;font-family:inherit;color:#1A3A5F;background:#fff;"></select>
+          <span style="font-size:.72rem;color:#7A8CA0;font-weight:400;">變更狀態即同步建商專區；成交、付定、帶看可登錄明細</span>
+        </div>
+        <div id="admUnitContent"><div class="adm-empty">載入中…</div></div>
+      </div>
       <!-- 預約帶看 -->
       <div class="adm-panel" id="admBookings">
         <div class="adm-title">預約帶看紀錄</div>
@@ -6033,6 +6042,31 @@ html { scroll-behavior: smooth !important; }
       <div class="adm-panel" id="admBrokers">
         <div class="adm-title">合作仲介名單</div>
         <div id="admBrokerContent"><div class="adm-empty">載入中…</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 戶況明細登錄彈窗 -->
+  <div id="admUnitModal" class="dvm-bg" style="z-index:9900;" onclick="if(event.target===this)admCloseUnitModal()">
+    <div class="dvm-card" style="max-width:380px;">
+      <div class="dvm-head"><b id="aumTitle">登錄明細</b><button class="dvm-x" onclick="admCloseUnitModal()" aria-label="關閉">✕</button></div>
+      <div class="dvm-body">
+        <div id="aumSold" style="display:none;">
+          <div class="bov-field"><label>成交價 *</label><input type="text" id="aumPrice" placeholder="例：1,000萬" /></div>
+          <div class="bov-field"><label>成交日期 *</label><input type="date" id="aumDate" /></div>
+          <div class="bov-field"><label>買方 *</label><input type="text" id="aumBuyer" placeholder="例：陳○宏" /></div>
+          <div class="bov-field"><label>結算階段</label><select id="aumStage"><option>簽約完成</option><option>已撥款</option><option>已交屋</option></select></div>
+        </div>
+        <div id="aumHold" style="display:none;">
+          <div class="bov-field"><label>定金金額 *</label><input type="text" id="aumDeposit" placeholder="例：20萬" /></div>
+          <div class="bov-field"><label>付定日期 *</label><input type="date" id="aumDepDate" /></div>
+          <div class="bov-field"><label>預計簽約期限</label><input type="date" id="aumSignDue" /></div>
+        </div>
+        <div id="aumView" style="display:none;">
+          <div class="bov-field"><label>帶看時間</label><input type="text" id="aumViewTime" placeholder="例：2026-07-20 14:30" /></div>
+        </div>
+        <button class="bov-btn" id="aumSaveBtn" onclick="admSaveUnitDetail()">儲存</button>
+        <div class="dvm-note" style="margin-top:.9rem;">儲存後建商專區立即同步顯示。</div>
       </div>
     </div>
   </div>
@@ -6064,7 +6098,7 @@ function switchAdmPanel(name) {
   document.querySelectorAll('.adm-nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('adm' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
   event.target.classList.add('active');
-  const loaders = { registrations: loadAdmRegs, inquiries: loadAdmInq, brokers: loadAdmBrokers };
+  const loaders = { registrations: loadAdmRegs, inquiries: loadAdmInq, brokers: loadAdmBrokers, units: loadAdmUnits };
   if (loaders[name]) loaders[name]();
 }
 
@@ -6121,6 +6155,102 @@ async function admExportRegsCSV() {
   a.download = '報備紀錄_' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '.csv';
   document.body.appendChild(a); a.click(); a.remove();
   URL.revokeObjectURL(a.href);
+}
+
+// ── 戶況管理 ──────────────────────────────────────────────
+let admUnitEdit = null; // { id, kind }
+
+async function loadAdmUnits() {
+  const sel = document.getElementById('admUnitProj');
+  const el = document.getElementById('admUnitContent');
+  el.innerHTML = '<div class="adm-empty">載入中…</div>';
+  const { data, error } = await _sb.from('units').select('*, unit_deals(*)')
+    .order('project_name').order('floor', { ascending: false }).order('unit_no');
+  if (error) {
+    el.innerHTML = '<div class="adm-empty">讀取失敗：' + error.message + '<br>若尚未建表，請先在 Supabase SQL Editor 執行 units_setup.sql</div>';
+    return;
+  }
+  if (!data || !data.length) {
+    el.innerHTML = '<div class="adm-empty">尚無戶別資料。請先在 Supabase SQL Editor 執行 units_setup.sql 建表與種子資料。</div>';
+    return;
+  }
+  const projects = [...new Set(data.map(r => r.project_name))];
+  if (!sel.options.length || sel.options.length !== projects.length) {
+    const keep = sel.value;
+    sel.innerHTML = projects.map(p => '<option' + (p === keep ? ' selected' : '') + '>' + p + '</option>').join('');
+  }
+  const cur = sel.value || projects[0];
+  const rows = data.filter(r => r.project_name === cur);
+  const stLabel = { open: '未售出', view: '帶看中', hold: '已付定金', sold: '已成交' };
+  el.innerHTML = '<table class="adm-table"><thead><tr><th>樓層</th><th>戶別</th><th>戶型</th><th>開價</th><th>底價</th><th>狀態</th><th>明細</th></tr></thead><tbody>'
+    + rows.map(r =>
+      '<tr>'
+      + '<td>' + r.floor + 'F</td>'
+      + '<td style="font-weight:700">' + r.unit_no + '</td>'
+      + '<td>' + (r.unit_type || '—') + '</td>'
+      + '<td>' + (r.list_price || '—') + '</td>'
+      + '<td>' + (r.floor_price || '—') + '</td>'
+      + '<td><select onchange="admSetUnitStatus(\'' + r.id + '\', this.value, this)" style="border:1px solid #C7D2DE;border-radius:6px;padding:.3rem .5rem;font-size:.78rem;font-family:inherit;background:#fff;color:#1A2D40;">'
+        + Object.entries(stLabel).map(([k, v]) => '<option value="' + k + '"' + (r.status === k ? ' selected' : '') + '>' + v + '</option>').join('')
+      + '</select></td>'
+      + '<td>' + (r.status === 'sold' ? '<button class="mr-btn" onclick="admOpenDealForm(\'' + r.id + '\',\'sold\')">成交明細</button>'
+        : r.status === 'hold' ? '<button class="mr-btn" onclick="admOpenDealForm(\'' + r.id + '\',\'hold\')">付定明細</button>'
+        : r.status === 'view' ? '<button class="mr-btn" onclick="admOpenDealForm(\'' + r.id + '\',\'view\')">帶看時間</button>'
+        : '<span style="color:#bbb;font-size:.75rem">—</span>') + '</td>'
+      + '</tr>'
+    ).join('') + '</tbody></table>';
+}
+
+async function admSetUnitStatus(id, val, selEl) {
+  selEl.disabled = true;
+  const { error } = await _sb.from('units').update({ status: val, updated_at: new Date().toISOString() }).eq('id', id);
+  selEl.disabled = false;
+  if (error) { alert('更新失敗：' + error.message); loadAdmUnits(); return; }
+  await loadAdmUnits();
+  // 轉成交／付定／帶看時，順手開明細登錄表單
+  if (val === 'sold' || val === 'hold' || val === 'view') admOpenDealForm(id, val);
+}
+
+function admOpenDealForm(id, kind) {
+  admUnitEdit = { id, kind };
+  document.getElementById('aumSold').style.display = kind === 'sold' ? '' : 'none';
+  document.getElementById('aumHold').style.display = kind === 'hold' ? '' : 'none';
+  document.getElementById('aumView').style.display = kind === 'view' ? '' : 'none';
+  document.getElementById('aumTitle').innerText = kind === 'sold' ? '登錄成交明細' : kind === 'hold' ? '登錄付定明細' : '登錄帶看時間';
+  document.getElementById('admUnitModal').classList.add('open');
+}
+function admCloseUnitModal() {
+  document.getElementById('admUnitModal').classList.remove('open');
+  admUnitEdit = null;
+}
+async function admSaveUnitDetail() {
+  if (!admUnitEdit) return;
+  const { id, kind } = admUnitEdit;
+  const btn = document.getElementById('aumSaveBtn');
+  let error = null;
+  if (kind === 'sold') {
+    const price = document.getElementById('aumPrice').value.trim();
+    const date = document.getElementById('aumDate').value;
+    const buyer = document.getElementById('aumBuyer').value.trim();
+    const stage = document.getElementById('aumStage').value;
+    if (!price || !date || !buyer) { alert('請填寫成交價、成交日期與買方'); return; }
+    btn.disabled = true; btn.textContent = '儲存中…';
+    ({ error } = await _sb.from('unit_deals').insert({ unit_id: id, stage: stage, deal_price: price, deal_date: date, buyer_name: buyer }));
+  } else if (kind === 'hold') {
+    const dep = document.getElementById('aumDeposit').value.trim();
+    const dd = document.getElementById('aumDepDate').value;
+    const due = document.getElementById('aumSignDue').value;
+    if (!dep || !dd) { alert('請填寫定金金額與付定日期'); return; }
+    btn.disabled = true; btn.textContent = '儲存中…';
+    ({ error } = await _sb.from('unit_deals').insert({ unit_id: id, stage: '已付定金', deposit_amount: dep, deposit_date: dd, sign_due: due || null }));
+  } else {
+    btn.disabled = true; btn.textContent = '儲存中…';
+    ({ error } = await _sb.from('units').update({ view_time: document.getElementById('aumViewTime').value.trim() || null }).eq('id', id));
+  }
+  btn.disabled = false; btn.textContent = '儲存';
+  if (error) { alert('儲存失敗：' + error.message); return; }
+  admCloseUnitModal();
+  loadAdmUnits();
 }
 
 async function admUpdateRegStatus(id, newStatus, btn) {
@@ -8272,6 +8402,56 @@ const DEV_PROJECTS = {
   }
 };
 const DEV_ST = { s: { cls: 's-sold', label: '已成交' }, v: { cls: 's-view', label: '帶看中' }, d: { cls: 's-hold', label: '已付定金' }, o: { cls: 's-open', label: '未售出' } };
+const DEV_STATUS_CHAR = { sold: 's', view: 'v', hold: 'd', open: 'o' };
+
+// ── 即時資料層：優先讀 Supabase units 表，讀不到自動退回示範資料 ──
+let devActiveP = null;
+
+async function devFetchUnits(name) {
+  try {
+    const { data, error } = await _sb.from('units')
+      .select('*, unit_deals(*)')
+      .eq('project_name', name)
+      .order('floor', { ascending: true })
+      .order('unit_no', { ascending: true });
+    if (error || !data || !data.length) return null;
+    const maxF = Math.max(...data.map(r => r.floor));
+    const grid = [];
+    for (let f = 1; f <= maxF; f++) grid.push(data.filter(r => r.floor === f));
+    return grid;
+  } catch (e) { return null; }
+}
+
+async function devResolveProject(name) {
+  const cfg = DEV_PROJECTS[name] || { meta: '', plan: 'slab', unitTypes: [], floors: [] };
+  const grid = await devFetchUnits(name);
+  if (!grid) return Object.assign({ live: false }, cfg);
+  return {
+    live: true,
+    meta: cfg.meta || '',
+    plan: cfg.plan || (grid[0] && grid[0].length === 4 ? 'tower' : 'slab'),
+    unitTypes: cfg.unitTypes || [],
+    floors: grid.map(fr => fr.map(u => DEV_STATUS_CHAR[u.status] || 'o')),
+    grid: grid
+  };
+}
+
+// 取單戶顯示資訊（live 讀資料庫列；示範讀設定）
+function devUnitOf(p, f, ui) {
+  if (p.live) {
+    const r = p.grid[f - 1][ui];
+    return { no: r.unit_no, type: r.unit_type || '—', size: r.size || '—', price: r.list_price || '—', floor: r.floor_price || '—', row: r };
+  }
+  const u = p.unitTypes[ui];
+  return { no: u.no, type: u.type, size: u.size, price: u.price, floor: u.floor, row: null };
+}
+// 該戶最新一筆符合條件的紀錄
+function devLatestDeal(row, filterFn) {
+  if (!row || !row.unit_deals || !row.unit_deals.length) return null;
+  const list = filterFn ? row.unit_deals.filter(filterFn) : row.unit_deals.slice();
+  if (!list.length) return null;
+  return list.sort((a, b) => new Date(a.created_at) - new Date(b.created_at)).pop();
+}
 
 let devViewer = null;          // { projects: [...], isAdmin }
 let devCurrentProject = null;
@@ -8315,9 +8495,11 @@ function showDevDash() {
   renderDevDash();
 }
 
-function renderDevDash() {
-  const p = DEV_PROJECTS[devCurrentProject];
-  document.getElementById('devProjName').innerHTML = devCurrentProject + ' <span class="dev-demo-tag">示範資料</span>';
+async function renderDevDash() {
+  devActiveP = await devResolveProject(devCurrentProject);
+  const p = devActiveP;
+  document.getElementById('devProjName').innerHTML = devCurrentProject
+    + ' <span class="dev-demo-tag">' + (p.live ? '即時同步' : '示範資料') + '</span>';
   document.getElementById('devProjMeta').innerText = p.meta;
 
   // 建案切換分頁（多於一案才顯示）
@@ -8358,7 +8540,7 @@ function switchDevProject(name) {
 
 // 3D 樓體：每層＝前立面（N 格窗＝N 戶狀態）＋側立面；屋頂、入口、地坪
 function renderDevBuilding() {
-  const p = DEV_PROJECTS[devCurrentProject];
+  const p = devActiveP;
   const nF = p.floors.length;
   const w = document.getElementById('bdWorld');
   w.style.height = (nF * 34 + 44) + 'px';
@@ -8387,7 +8569,7 @@ function selectDevFloor(f) {
 }
 
 function renderDevFloor(f) {
-  const p = DEV_PROJECTS[devCurrentProject];
+  const p = devActiveP;
   const st = p.floors[f - 1];
   document.getElementById('devPlanTitle').innerText = f + 'F 平面圖';
   const c = { s: 0, v: 0, d: 0, o: 0 };
@@ -8411,7 +8593,7 @@ function renderDevFloor(f) {
 
   // 平面圖
   const cell = (i, area, balPos) => {
-    const u = p.unitTypes[i], s = DEV_ST[st[i]];
+    const u = devUnitOf(p, f, i), s = DEV_ST[st[i]];
     const bal = '<div class="du-balcony">陽台</div>';
     return '<div class="dev-unit ' + s.cls + ' dev-' + area + '" onclick="openDevUnit(' + f + ',' + i + ')" title="點擊查看詳情">'
       + (balPos === 'top' ? bal : '')
@@ -8510,8 +8692,8 @@ function devHoldInfo(p, f, ui) {
 
 // 點戶別 → 詳情彈窗（建商唯讀：無任何操作按鈕）
 function openDevUnit(f, ui) {
-  const p = DEV_PROJECTS[devCurrentProject];
-  const u = p.unitTypes[ui];
+  const p = devActiveP;
+  const u = devUnitOf(p, f, ui);
   const stChar = p.floors[f - 1][ui];
   const s = DEV_ST[stChar];
   const unitNo = (f < 10 ? '0' + f : f) + '-' + u.no;
@@ -8524,29 +8706,56 @@ function openDevUnit(f, ui) {
     + row('開價（對外）', u.price)
     + row('底價（協議價）', u.floor);
   if (stChar === 's') {
-    const d = devDealInfo(p, f, ui);
-    const diff = d.dealPrice - d.listPrice;
-    const pct = Math.abs(diff / d.listPrice * 100).toFixed(1);
-    const badge = diff < 0
-      ? '<span class="dvm-diff down">−' + pct + '%</span>'
-      : diff > 0 ? '<span class="dvm-diff up">+' + pct + '%</span>' : '<span class="dvm-diff flat">平開價</span>';
-    html += '<div class="dvm-row"><span class="k">成交價</span><span class="v big">' + devFmtPrice(d.dealPrice) + badge + '</span></div>'
-      + row('成交日期', d.date)
-      + row('買方', d.buyer)
-      + row('結算階段', d.stage)
-      + '<div class="dvm-note">成交資料由平台結算系統提供；買方資訊於契約成立後揭露予建設公司。</div>';
+    let d;
+    if (p.live) {
+      const dl = devLatestDeal(u.row, x => x.deal_price || x.deal_date || x.buyer_name);
+      d = dl ? { dealPrice: devParsePrice(dl.deal_price), listPrice: devParsePrice(u.price), dealStr: dl.deal_price || '—', date: dl.deal_date || '—', buyer: dl.buyer_name || '—', stage: dl.stage || '—' } : null;
+    } else {
+      const g = devDealInfo(p, f, ui);
+      d = { dealPrice: g.dealPrice, listPrice: g.listPrice, dealStr: devFmtPrice(g.dealPrice), date: g.date, buyer: g.buyer, stage: g.stage };
+    }
+    if (d) {
+      let badge = '';
+      if (d.dealPrice && d.listPrice) {
+        const diff = d.dealPrice - d.listPrice;
+        const pct = Math.abs(diff / d.listPrice * 100).toFixed(1);
+        badge = diff < 0 ? '<span class="dvm-diff down">−' + pct + '%</span>'
+          : diff > 0 ? '<span class="dvm-diff up">+' + pct + '%</span>' : '<span class="dvm-diff flat">平開價</span>';
+      }
+      html += '<div class="dvm-row"><span class="k">成交價</span><span class="v big">' + d.dealStr + badge + '</span></div>'
+        + row('成交日期', d.date)
+        + row('買方', d.buyer)
+        + row('結算階段', d.stage)
+        + '<div class="dvm-note">成交資料由平台結算系統提供；買方資訊於契約成立後揭露予建設公司。</div>';
+    } else {
+      html += '<div class="dvm-note">本戶已成交，成交明細待平台管理員登錄。</div>';
+    }
   } else if (stChar === 'v') {
-    const v = devViewInfo(p, f, ui);
-    html += row('預約帶看時間', v.when)
-      + row('報備編號', v.regNo)
-      + row('帶看狀態', v.status)
-      + '<div class="dvm-note">為保障合作仲介權益，帶看階段不揭露客戶與仲介資訊；成交後將提供買方資料。帶看確認與結案由平台管理員處理，建商端為唯讀。</div>';
+    if (p.live) {
+      html += row('預約帶看時間', (u.row && u.row.view_time) || '待安排')
+        + '<div class="dvm-note">為保障合作仲介權益，帶看階段不揭露客戶與仲介資訊；成交後將提供買方資料。帶看確認與結案由平台管理員處理，建商端為唯讀。</div>';
+    } else {
+      const v = devViewInfo(p, f, ui);
+      html += row('預約帶看時間', v.when)
+        + row('報備編號', v.regNo)
+        + row('帶看狀態', v.status)
+        + '<div class="dvm-note">為保障合作仲介權益，帶看階段不揭露客戶與仲介資訊；成交後將提供買方資料。帶看確認與結案由平台管理員處理，建商端為唯讀。</div>';
+    }
   } else if (stChar === 'd') {
-    const h = devHoldInfo(p, f, ui);
-    html += row('付定日期', h.payDate)
-      + row('定金金額', h.deposit)
-      + row('預計簽約期限', h.signDue)
-      + row('後續流程', '確認成交 → 轉「已成交」<br>退定 → 恢復「未售出」')
+    let h;
+    if (p.live) {
+      const dl = devLatestDeal(u.row, x => x.stage === '已付定金');
+      h = dl ? { payDate: dl.deposit_date || '—', deposit: dl.deposit_amount || '—', signDue: dl.sign_due || '—' } : null;
+    } else {
+      const g = devHoldInfo(p, f, ui);
+      h = { payDate: g.payDate, deposit: g.deposit, signDue: g.signDue };
+    }
+    if (h) {
+      html += row('付定日期', h.payDate)
+        + row('定金金額', h.deposit)
+        + row('預計簽約期限', h.signDue);
+    }
+    html += row('後續流程', '確認成交 → 轉「已成交」<br>退定 → 恢復「未售出」')
       + '<div class="dvm-note">付定期間本戶暫停銷售。買方資訊於正式簽約後揭露；狀態變更由平台管理員處理，建商端為唯讀。</div>';
   } else {
     html += '<div class="dvm-row"><span class="k">目前狀態</span><span class="v">可售中，尚無帶看與成交紀錄</span></div>';
@@ -8558,21 +8767,28 @@ function closeDevUnitModal() { document.getElementById('devUnitModal').classList
 
 // 統計卡 → 全案明細列表（帶看中 / 已成交）
 function openDevList(kind) {
-  const p = DEV_PROJECTS[devCurrentProject];
+  const p = devActiveP;
   const rows = [];
   for (let f = 1; f <= p.floors.length; f++) {
     p.floors[f - 1].forEach((st, ui) => {
       if (st !== kind) return;
-      const unitNo = (f < 10 ? '0' + f : f) + '-' + p.unitTypes[ui].no;
+      const u = devUnitOf(p, f, ui);
+      const unitNo = (f < 10 ? '0' + f : f) + '-' + u.no;
       if (kind === 'v') {
-        const v = devViewInfo(p, f, ui);
-        rows.push('<tr><td class="u">' + unitNo + '</td><td>' + p.unitTypes[ui].type + '</td><td>' + v.when + '</td><td>' + v.regNo + '</td><td>' + v.status + '</td></tr>');
+        let when = '待安排', regNo = '—', vst = '—';
+        if (p.live) { when = (u.row && u.row.view_time) || '待安排'; }
+        else { const v = devViewInfo(p, f, ui); when = v.when; regNo = v.regNo; vst = v.status; }
+        rows.push('<tr><td class="u">' + unitNo + '</td><td>' + u.type + '</td><td>' + when + '</td><td>' + regNo + '</td><td>' + vst + '</td></tr>');
       } else if (kind === 'd') {
-        const h = devHoldInfo(p, f, ui);
-        rows.push('<tr><td class="u">' + unitNo + '</td><td>' + p.unitTypes[ui].type + '</td><td>' + h.payDate + '</td><td>' + h.deposit + '</td><td>' + h.signDue + '</td></tr>');
+        let pay = '—', dep = '—', due = '—';
+        if (p.live) { const dl = devLatestDeal(u.row, x => x.stage === '已付定金'); if (dl) { pay = dl.deposit_date || '—'; dep = dl.deposit_amount || '—'; due = dl.sign_due || '—'; } }
+        else { const h = devHoldInfo(p, f, ui); pay = h.payDate; dep = h.deposit; due = h.signDue; }
+        rows.push('<tr><td class="u">' + unitNo + '</td><td>' + u.type + '</td><td>' + pay + '</td><td>' + dep + '</td><td>' + due + '</td></tr>');
       } else {
-        const d = devDealInfo(p, f, ui);
-        rows.push('<tr><td class="u">' + unitNo + '</td><td>' + d.date + '</td><td>' + devFmtPrice(d.dealPrice) + '</td><td>' + d.buyer + '</td><td>' + d.stage + '</td></tr>');
+        let date = '—', price = '待登錄', buyer = '—', stage = '—';
+        if (p.live) { const dl = devLatestDeal(u.row, x => x.deal_price || x.deal_date || x.buyer_name); if (dl) { date = dl.deal_date || '—'; price = dl.deal_price || '待登錄'; buyer = dl.buyer_name || '—'; stage = dl.stage || '—'; } }
+        else { const d = devDealInfo(p, f, ui); date = d.date; price = devFmtPrice(d.dealPrice); buyer = d.buyer; stage = d.stage; }
+        rows.push('<tr><td class="u">' + unitNo + '</td><td>' + date + '</td><td>' + price + '</td><td>' + buyer + '</td><td>' + stage + '</td></tr>');
       }
     });
   }

@@ -535,14 +535,33 @@
     .footer-legal a:hover { color: var(--cyan); }
 
     /* ── 懸浮按鈕 ── */
-    .float-cta { position: fixed; right: 1.5rem; bottom: 1.5rem; z-index: 500; display: flex; flex-direction: column; gap: 0.7rem; }
-    .float-btn { width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; cursor: pointer; transition: all 0.25s var(--ease); border: none; color: #fff; }
-    .float-btn:hover { transform: translateY(-3px); }
-    .float-btn:active { transform: translateY(0) scale(0.96); }
-    .float-line { background: linear-gradient(135deg, #1ED465, #06C755 60%, #05AD4B); box-shadow: 0 8px 22px rgba(6,199,85,0.4), 0 0 24px rgba(6,199,85,0.25); }
-    .float-phone { background: linear-gradient(135deg, var(--cyan), var(--cyan-deep)); color: var(--void); box-shadow: 0 8px 22px rgba(56,198,240,0.4), 0 0 24px rgba(91,232,255,0.3); }
-    .float-top { background: linear-gradient(135deg, #F0CE7E, var(--gold-2)); color: var(--void); box-shadow: 0 8px 22px rgba(201,154,87,0.4); opacity: 0; pointer-events: none; }
-    .float-top.visible { opacity: 1; pointer-events: all; }
+    /* 邊緣收合工具列：預設只露出把手，點擊拉出／收回 */
+    .edge-dock {
+      position: fixed; right: 0; top: 32%; z-index: 500;
+      display: flex; align-items: stretch;
+      background: rgba(255,255,255,0.95); border: 1px solid #E0DCD0; border-right: none;
+      border-radius: 12px 0 0 12px;
+      box-shadow: -4px 6px 18px rgba(15,25,35,0.14);
+      transform: translateX(calc(100% - 23px));
+      transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
+    }
+    .edge-dock.out { transform: translateX(0); }
+    .edge-handle {
+      width: 23px; border: none; cursor: pointer;
+      border-radius: 11px 0 0 11px;
+      background: #1A3A5F; color: #E8D5AC; font-size: 0.95rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .edge-action {
+      width: 44px; height: 44px; margin: 6px 8px 6px 7px;
+      border: none; border-radius: 11px; cursor: pointer;
+      background: linear-gradient(135deg, #F0CE7E, #C19A4E); color: #14202E;
+      font-size: 1.05rem; font-weight: 700;
+      box-shadow: 0 5px 14px rgba(193,154,78,0.35);
+      transition: transform 0.18s;
+    }
+    .edge-action:active { transform: scale(0.94); }
+    @media (prefers-reduced-motion: reduce) { .edge-dock { transition: none; } }
 
     /* ── 進場動畫 ── */
     .fade-up { opacity: 0; transform: translateY(26px); transition: opacity 0.8s var(--ease-soft), transform 0.8s var(--ease-soft); }
@@ -3627,12 +3646,18 @@ function boToast(msg){
 }
 </script>
 
-<!-- ━━ FLOATING CTA ━━ -->
-<div class="float-cta">
-  <button class="float-btn float-top" id="floatTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
-  <button class="float-btn float-phone" title="電話諮詢">📞</button>
-  <button class="float-btn float-line" title="LINE 諮詢">💬</button>
+<!-- ━━ 邊緣收合工具列（可拉出／收回） ━━ -->
+<div class="edge-dock" id="edgeDock">
+  <button class="edge-handle" id="edgeHandle" onclick="toggleEdgeDock()" aria-label="展開工具列">‹</button>
+  <button class="edge-action" id="floatTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="回到頂部">↑</button>
 </div>
+<script>
+function toggleEdgeDock() {
+  const d = document.getElementById('edgeDock');
+  d.classList.toggle('out');
+  document.getElementById('edgeHandle').textContent = d.classList.contains('out') ? '›' : '‹';
+}
+</script>
 
 <!-- ━━ SCRIPTS ━━ -->
 <script>

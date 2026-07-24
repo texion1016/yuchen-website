@@ -7704,6 +7704,29 @@ html, body { overflow-x: clip; }
 .adm-badge.cancelled { background: #EEECE6 !important; color: #7A8494 !important; }
 .adm-badge.suspended { background: #F2E4E4 !important; color: #A03030 !important; }
 
+/* ── 生活場景區暫時隱藏（保留代碼，不展示） ── */
+#reels { display: none !important; }
+
+/* ── 建案詳情：頂欄報備按鈕（深藍底）白字 ── */
+#projDetailOverlay #pdTopBar button[onclick*="openBrokerOverlay"] { color: #fff !important; }
+
+/* ── 建案詳情：底部 CTA 容器恢復深藍底，白字可讀 ── */
+#projDetailOverlay [style*="linear-gradient(135deg,#2F4A3E,#2F4A3E)"] {
+  background: linear-gradient(135deg, #1A3A5F, #14304F) !important;
+  border: none !important;
+  box-shadow: 0 14px 40px rgba(20,40,70,.25) !important;
+}
+
+/* ── 裝潢彈窗：價格字深藍粗體 ──
+   （舊浮水印規則 [style*="5rem"] 會誤中 1.5rem 的價格字，用雙 ID 權重蓋回） */
+#decoOverlay #decoTrack [style*="C99A57"] { color: #1A3A5F !important; text-shadow: none !important; font-weight: 800 !important; }
+
+/* ── 導航英文小字：淺底上改深銅金 ── */
+.nav-logo-en { color: #8A6516 !important; }
+
+/* ── 建案詳情底部金色按鈕：金底上改深字 ── */
+#projDetailOverlay [style*="background:var(--gold)"] { color: #14202E !important; }
+
 /* ══════════════════════════════════════════════════════
    合作仲介獎金辦法（bovBonus 分頁）
 ══════════════════════════════════════════════════════ */

@@ -483,21 +483,10 @@ async function loadAdmBrokers() {
     </tr>`).join('')}</tbody></table>`;
 }
 
-/* ── 登入狀態記憶（同一分頁工作階段內免重複登入）── */
-const _doAdminLogin = doAdminLogin;
-doAdminLogin = function() {
-  _doAdminLogin();
-  if (document.getElementById('admDash').style.display === 'flex') {
-    try { sessionStorage.setItem('admIn', '1'); } catch (e) {}
-  }
-};
-try {
-  if (sessionStorage.getItem('admIn') === '1') {
-    document.getElementById('admLoginWrap').style.display = 'none';
-    document.getElementById('admDash').style.display = 'flex';
-    loadAdmOverview();
-  }
-} catch (e) {}
+/* ── 免登入：開啟即進入儀表板 ── */
+document.getElementById('admLoginWrap').style.display = 'none';
+document.getElementById('admDash').style.display = 'flex';
+loadAdmOverview();
 </script>
 
 <!-- ══════════════════════════════════════════════

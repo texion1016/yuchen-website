@@ -1,0 +1,1415 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>譽誠聯合銷售平台｜管理後台</title>
+  <link rel="icon" type="image/png" href="icon-192.png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;800&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+  :root {
+    --font-serif: 'Noto Serif TC', serif;
+    --ink: #14202E;
+    --ov-navy: #1A3A5F;
+    --ov-gold: #8A6516;
+    --ov-ink: #14202E;
+    --ov-ink2: #3A4E63;
+    --ov-ink3: #8A9AB5;
+    --ov-line: #E5E1D5;
+  }
+  * { margin: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: #F0EDE4; color: #14202E;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── 版面骨架 ── */
+  #adminOverlay { display: flex; flex-direction: column; min-height: 100vh; }
+  .adm-header {
+    background: #1A3A5F; color: #fff;
+    padding: .85rem 1.6rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .adm-logo { font-family: var(--font-serif); font-size: 1rem; font-weight: 700; letter-spacing: .05em; color: #D5B577; }
+  .adm-home {
+    color: rgba(255,255,255,.75); font-size: .78rem; text-decoration: none;
+    border: 1px solid rgba(255,255,255,.3); border-radius: 8px; padding: .35rem .8rem;
+    transition: background .2s, color .2s;
+  }
+  .adm-home:hover { background: rgba(255,255,255,.15); color: #fff; }
+
+  /* ── 登入 ── */
+  #admLoginWrap {
+    background:
+      linear-gradient(160deg, rgba(16,30,50,.85), rgba(20,48,79,.8)),
+      url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+  }
+  .adm-login-box {
+    width: 100%; max-width: 380px; background: rgba(255,255,255,.97);
+    border-radius: 16px; padding: 2.6rem 2.4rem; margin: 2rem 1rem;
+    box-shadow: 0 24px 70px rgba(6,14,26,.45);
+  }
+  .bov-msg { display: none; padding: .55rem .9rem; border-radius: 8px; font-size: .8rem; margin-bottom: 1rem; }
+  .bov-msg.error { display: block; background: #FDF2F2; border: 1px solid rgba(196,74,74,.4); color: #B03030; }
+  .bov-field { margin-bottom: 1.1rem; }
+  .bov-field label { display: block; font-size: .78rem; color: #46607A; margin-bottom: .35rem; letter-spacing: .05em; }
+  .bov-field input, .bov-field select, .bov-field textarea {
+    width: 100%; padding: .72rem 1rem; border: 1px solid #D8D5CB; border-radius: 10px;
+    font-size: .9rem; font-family: inherit; color: #14202E; background: #fff; outline: none;
+    transition: border .2s, box-shadow .2s;
+  }
+  .bov-field input:focus, .bov-field select:focus { border-color: #1A3A5F; box-shadow: 0 0 0 3px rgba(26,58,95,.12); }
+  .bov-btn {
+    width: 100%; padding: .78rem; border: none; border-radius: 10px; cursor: pointer;
+    background: #1A3A5F; color: #fff; font-size: .9rem; font-weight: 700; font-family: inherit;
+    letter-spacing: .08em; transition: background .2s;
+  }
+  .bov-btn:hover { background: #C19A4E; }
+
+  /* ── 側欄與內容 ── */
+  .adm-layout { min-height: 0; }
+  .adm-sidebar {
+    width: 168px; flex-shrink: 0; background: #fff; border-right: 1px solid var(--ov-line);
+    padding: 1rem 0; display: flex; flex-direction: column; gap: .15rem;
+  }
+  .adm-nav-btn {
+    display: block; width: 100%; padding: .72rem 1.3rem; background: none; border: none;
+    color: #3A4E63; text-align: left; cursor: pointer; font-size: .86rem; font-family: inherit;
+    transition: background .18s, color .18s;
+  }
+  .adm-nav-btn:hover, .adm-nav-btn.active { background: #EBF2FA; color: #1A3A5F; font-weight: 700; }
+  .adm-content { flex: 1; min-width: 0; overflow-y: auto; padding: 1.6rem clamp(1rem, 3vw, 2.2rem) 3rem; }
+  .adm-panel { display: none; }
+  .adm-panel.active { display: block; }
+  .adm-title { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 800; color: #14202E; margin-bottom: 1.2rem; }
+
+  /* ── 總覽統計 ── */
+  .adm-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1rem; }
+  .adm-stat-card { background: #fff; border: 1px solid var(--ov-line); border-radius: 14px; padding: 1.3rem 1.5rem; }
+  .adm-stat-num { font-family: var(--font-serif); font-size: 2rem; font-weight: 800; color: #1A3A5F; line-height: 1.2; }
+  .adm-stat-label { font-size: .74rem; color: #4A6280; letter-spacing: .08em; margin-top: .3rem; }
+
+  /* ── 表格 ── */
+  .adm-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; font-size: .84rem; box-shadow: 0 1px 3px rgba(15,25,35,.06); }
+  .adm-table th { background: #F4F1E8; color: #4A6280; font-size: .72rem; letter-spacing: .06em; padding: .65rem .8rem; text-align: left; white-space: nowrap; }
+  .adm-table td { padding: .6rem .8rem; border-bottom: 1px solid #F0EDE3; color: #1A2D40; white-space: nowrap; }
+  .adm-table tbody tr:hover { background: #FAF8F1; }
+  .adm-empty { padding: 2.5rem 1rem; text-align: center; color: #7A8CA0; font-size: .86rem; background: #fff; border: 1px dashed var(--ov-line); border-radius: 12px; line-height: 2; }
+
+  /* ── 狀態徽章 ── */
+  .adm-badge { display: inline-block; padding: .22rem .6rem; border-radius: 6px; font-size: .72rem; font-weight: 700; letter-spacing: .05em; }
+  .adm-badge.pending   { background: rgba(214,164,46,.16); color: #7A5A10; }
+  .adm-badge.confirmed { background: rgba(26,58,95,.12); color: #0E2E4E; }
+  .adm-badge.closed    { background: #EEECE6; color: #55687E; }
+  .adm-badge.cancelled { background: #EEECE6; color: #7A8494; }
+  .adm-badge.active    { background: rgba(62,124,91,.15); color: #2F6B4F; }
+  .adm-badge.new       { background: rgba(90,80,160,.12); color: #3A3080; }
+
+  /* ── 小按鈕 ── */
+  .mr-btn {
+    border: 1px solid #C7D2DE; background: #F4F8FB; color: #1A3A5F;
+    border-radius: 6px; padding: .28rem .65rem; font-size: .72rem; font-weight: 600;
+    cursor: pointer; font-family: inherit; white-space: nowrap; transition: background .18s, color .18s;
+  }
+  .mr-btn + .mr-btn { margin-left: .35rem; }
+  .mr-btn:hover { background: #1A3A5F; color: #fff; }
+
+  /* 表格橫向捲動（窄螢幕） */
+  #admRegContent, #admUnitContent, #admInqContent, #admBrokerContent, #admBookContent { overflow-x: auto; }
+
+  @media (max-width: 760px) {
+    .adm-layout { flex-direction: column !important; }
+    .adm-sidebar { width: 100%; flex-direction: row; overflow-x: auto; padding: .4rem .5rem; gap: .2rem; }
+    .adm-nav-btn { width: auto; white-space: nowrap; padding: .55rem .85rem; border-radius: 8px; font-size: .8rem; }
+  }
+  </style>
+</head>
+<body>
+
+<div id="adminOverlay">
+  <div class="adm-header">
+    <div class="adm-logo">譽誠聯合銷售平台 — 管理後台</div>
+    <a class="adm-home" href="index.html">← 回主站</a>
+  </div>
+  <div id="admLoginWrap" style="flex:1;display:flex;align-items:center;justify-content:center;">
+    <div class="adm-login-box">
+      <div style="font-family:var(--font-serif);font-size:1.3rem;margin-bottom:1.5rem;color:var(--ink);">管理員登入</div>
+      <div id="admLoginErr" class="bov-msg error" style="display:none;">密碼錯誤</div>
+      <div class="bov-field"><label>管理員密碼</label><input type="password" id="admPwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doAdminLogin()" /></div>
+      <button class="bov-btn" style="width:100%;margin-top:.5rem;" onclick="doAdminLogin()">登入</button>
+    </div>
+  </div>
+  <div id="admDash" style="display:none;flex:1;overflow:hidden;flex-direction:row;" class="adm-layout">
+    <div class="adm-sidebar">
+      <button class="adm-nav-btn active" onclick="switchAdmPanel('overview')">總覽</button>
+      <button class="adm-nav-btn" onclick="switchAdmPanel('registrations')">客戶報備</button>
+      
+      <button class="adm-nav-btn" onclick="switchAdmPanel('inquiries')">案件詢問</button>
+      <button class="adm-nav-btn" onclick="switchAdmPanel('units')">戶況管理</button>
+      <button class="adm-nav-btn" onclick="switchAdmPanel('brokers')">仲介管理</button>
+      <button class="adm-nav-btn" onclick="openDevPortalFromAdmin()">建案戶況(檢視)</button>
+    </div>
+    <div class="adm-content">
+      <!-- 總覽 -->
+      <div class="adm-panel active" id="admOverview">
+        <div class="adm-title">總覽儀表板</div>
+        <div class="adm-stats" id="admStatsGrid">
+          <div class="adm-stat-card"><div class="adm-stat-num" id="statRegs">-</div><div class="adm-stat-label">客戶報備</div></div>
+          
+          <div class="adm-stat-card"><div class="adm-stat-num" id="statInq">-</div><div class="adm-stat-label">案件詢問</div></div>
+          <div class="adm-stat-card"><div class="adm-stat-num" id="statBrokers">-</div><div class="adm-stat-label">合作仲介</div></div>
+        </div>
+      </div>
+      <!-- 客戶報備 -->
+      <div class="adm-panel" id="admRegistrations">
+        <div class="adm-title" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">客戶報備紀錄
+          <button onclick="admExportRegsCSV()" style="background:#fff;border:1px solid #C7D2DE;color:#1A3A5F;border-radius:8px;padding:.45rem 1rem;font-size:.78rem;font-weight:600;cursor:pointer;font-family:inherit;transition:background .18s,color .18s;" onmouseover="this.style.background='#1A3A5F';this.style.color='#fff'" onmouseout="this.style.background='#fff';this.style.color='#1A3A5F'">⬇ 匯出 CSV</button>
+        </div>
+        <div id="admRegContent"><div class="adm-empty">載入中…</div></div>
+      </div>
+      <!-- 戶況管理 -->
+      <div class="adm-panel" id="admUnits">
+        <div class="adm-title" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">戶況管理
+          <select id="admUnitProj" onchange="loadAdmUnits()" style="border:1px solid #C7D2DE;border-radius:8px;padding:.4rem .7rem;font-size:.82rem;font-family:inherit;color:#1A3A5F;background:#fff;"></select>
+          <span style="font-size:.72rem;color:#7A8CA0;font-weight:400;">變更狀態即同步建商專區；成交、付定、帶看可登錄明細</span>
+        </div>
+        <div id="admUnitContent"><div class="adm-empty">載入中…</div></div>
+      </div>
+      <!-- 預約帶看 -->
+      <div class="adm-panel" id="admBookings">
+        <div class="adm-title">預約帶看紀錄</div>
+        <div id="admBookContent"><div class="adm-empty">載入中…</div></div>
+      </div>
+      <!-- 案件詢問 -->
+      <div class="adm-panel" id="admInquiries">
+        <div class="adm-title">案件詢問紀錄</div>
+        <div id="admInqContent"><div class="adm-empty">載入中…</div></div>
+      </div>
+      <!-- 仲介管理 -->
+      <div class="adm-panel" id="admBrokers">
+        <div class="adm-title">合作仲介名單</div>
+        <div id="admBrokerContent"><div class="adm-empty">載入中…</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 戶況明細登錄彈窗 -->
+  <div id="admUnitModal" class="dvm-bg" style="z-index:9900;" onclick="if(event.target===this)admCloseUnitModal()">
+    <div class="dvm-card" style="max-width:380px;">
+      <div class="dvm-head"><b id="aumTitle">登錄明細</b><button class="dvm-x" onclick="admCloseUnitModal()" aria-label="關閉">✕</button></div>
+      <div class="dvm-body">
+        <div id="aumSold" style="display:none;">
+          <div class="bov-field"><label>成交價 *</label><input type="text" id="aumPrice" placeholder="例：1,000萬" /></div>
+          <div class="bov-field"><label>成交日期 *</label><input type="date" id="aumDate" /></div>
+          <div class="bov-field"><label>買方 *</label><input type="text" id="aumBuyer" placeholder="例：陳○宏" /></div>
+          <div class="bov-field"><label>結算階段</label><select id="aumStage"><option>簽約完成</option><option>已撥款</option><option>已交屋</option></select></div>
+        </div>
+        <div id="aumHold" style="display:none;">
+          <div class="bov-field"><label>定金金額 *</label><input type="text" id="aumDeposit" placeholder="例：20萬" /></div>
+          <div class="bov-field"><label>付定日期 *</label><input type="date" id="aumDepDate" /></div>
+          <div class="bov-field"><label>預計簽約期限</label><input type="date" id="aumSignDue" /></div>
+        </div>
+        <div id="aumView" style="display:none;">
+          <div class="bov-field"><label>帶看時間</label><input type="text" id="aumViewTime" placeholder="例：2026-07-20 14:30" /></div>
+        </div>
+        <button class="bov-btn" id="aumSaveBtn" onclick="admSaveUnitDetail()">儲存</button>
+        <div class="dvm-note" style="margin-top:.9rem;">儲存後建商專區立即同步顯示。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+const _SB_URL = 'https://femuufnveodwcnusuthy.supabase.co';
+const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlbXV1Zm52ZW9kd2NudXN1dGh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2ODQ0MjcsImV4cCI6MjA5NzI2MDQyN30.TQER06oE6_CT8nHprhPlf79qjbcsgS4nhEJs5VUregQ';
+const _sb = supabase.createClient(_SB_URL, _SB_KEY);
+
+const ADMIN_PWD = 'yuchen1101';
+
+function openAdmin() {
+  document.getElementById('adminOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeAdmin() {
+  document.getElementById('adminOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function doAdminLogin() {
+  if (document.getElementById('admPwd').value === ADMIN_PWD) {
+    document.getElementById('admLoginWrap').style.display = 'none';
+    const dash = document.getElementById('admDash');
+    dash.style.display = 'flex';
+    loadAdmOverview();
+  } else {
+    document.getElementById('admLoginErr').style.display = 'block';
+  }
+}
+function switchAdmPanel(name) {
+  document.querySelectorAll('.adm-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.adm-nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('adm' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
+  event.target.classList.add('active');
+  const loaders = { registrations: loadAdmRegs, inquiries: loadAdmInq, brokers: loadAdmBrokers, units: loadAdmUnits };
+  if (loaders[name]) loaders[name]();
+}
+
+async function loadAdmOverview() {
+  const [r1,r3,r4] = await Promise.all([
+    _sb.from('client_registrations').select('id', {count:'exact',head:true}),
+    _sb.from('inquiries').select('id', {count:'exact',head:true}),
+    _sb.from('brokers').select('id', {count:'exact',head:true})
+  ]);
+  document.getElementById('statRegs').textContent = r1.count ?? '-';
+  document.getElementById('statInq').textContent = r3.count ?? '-';
+  document.getElementById('statBrokers').textContent = r4.count ?? '-';
+}
+
+async function loadAdmRegs() {
+  const el = document.getElementById('admRegContent');
+  const { data } = await _sb.from('client_registrations').select('*').order('created_at',{ascending:false});
+  if (!data||!data.length){el.innerHTML='<div class="adm-empty">尚無資料</div>';return;}
+  el.innerHTML = `<table class="adm-table"><thead><tr>
+    <th>報備編號</th><th>仲介</th><th>公司</th><th>客戶</th><th>電話末5碼</th><th>建案</th><th>帶看時間</th><th>報備時間</th><th>狀態</th><th>操作</th>
+    </tr></thead><tbody>${data.map(r=>`<tr id="reg-row-${r.id}">
+    <td style="font-family:monospace;font-size:.75rem;color:var(--ov-gold)">${r.registration_no}</td>
+    <td>${r.broker_name||''}</td><td>${r.broker_company||''}</td>
+    <td>${r.client_name}</td><td>${r.client_phone}</td><td>${r.project_name}</td>
+    <td>${r.view_date ? '<strong>' + r.view_date + '</strong>' + (r.view_time ? ' ' + r.view_time : '') : '<span style="opacity:.4">—</span>'}</td>
+    <td style="font-size:.78rem">${new Date(r.created_at).toLocaleString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false})}</td>
+    <td><span class="adm-badge ${r.status}" id="reg-status-${r.id}">${{pending:'待確認',confirmed:'已確認',closed:'結案',cancelled:'已取消'}[r.status]||r.status}</span></td>
+    <td>${r.status==='pending'
+      ? `<button onclick="admConfirmView('${r.id}')" style="background:var(--ov-navy);color:#fff;border:none;border-radius:6px;padding:.3rem .8rem;font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:opacity .2s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">確認帶看</button>`
+      : r.status==='confirmed'
+        ? `<button onclick="admCloseReg('${r.id}')" style="background:rgba(100,80,50,.12);color:#7A5A10;border:none;border-radius:6px;padding:.3rem .8rem;font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap">結案</button>`
+        : '<span style="color:#ccc;font-size:.75rem">—</span>'
+    }</td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+// 匯出報備紀錄 CSV（含 BOM，Excel 開啟中文不亂碼）
+async function admExportRegsCSV() {
+  const { data, error } = await _sb.from('client_registrations').select('*').order('created_at', { ascending: false });
+  if (error || !data || !data.length) { alert('目前沒有報備資料可匯出'); return; }
+  const esc = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+  const label = { pending: '待確認', confirmed: '已確認', closed: '結案', cancelled: '已取消' };
+  const head = ['報備編號','仲介','公司','客戶','電話末5碼','建案','帶看日期','帶看時間','報備時間','狀態'];
+  const rows = data.map(r => [
+    r.registration_no, r.broker_name || '', r.broker_company || '', r.client_name, r.client_phone,
+    r.project_name, r.view_date || '', r.view_time || '',
+    new Date(r.created_at).toLocaleString('zh-TW', { hour12: false }),
+    label[r.status] || r.status
+  ].map(esc).join(','));
+  const csv = '\uFEFF' + head.map(esc).join(',') + '\r\n' + rows.join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '報備紀錄_' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(a.href);
+}
+
+// ── 戶況管理 ──────────────────────────────────────────────
+let admUnitEdit = null; // { id, kind }
+
+async function loadAdmUnits() {
+  const sel = document.getElementById('admUnitProj');
+  const el = document.getElementById('admUnitContent');
+  el.innerHTML = '<div class="adm-empty">載入中…</div>';
+  const { data, error } = await _sb.from('units').select('*, unit_deals(*)')
+    .order('project_name').order('floor', { ascending: false }).order('unit_no');
+  if (error) {
+    el.innerHTML = '<div class="adm-empty">讀取失敗：' + error.message + '<br>若尚未建表，請先在 Supabase SQL Editor 執行 units_setup.sql</div>';
+    return;
+  }
+  if (!data || !data.length) {
+    el.innerHTML = '<div class="adm-empty">尚無戶別資料。請先在 Supabase SQL Editor 執行 units_setup.sql 建表與種子資料。</div>';
+    return;
+  }
+  const projects = [...new Set(data.map(r => r.project_name))];
+  if (!sel.options.length || sel.options.length !== projects.length) {
+    const keep = sel.value;
+    sel.innerHTML = projects.map(p => '<option' + (p === keep ? ' selected' : '') + '>' + p + '</option>').join('');
+  }
+  const cur = sel.value || projects[0];
+  const rows = data.filter(r => r.project_name === cur);
+  const stLabel = { open: '未售出', view: '帶看中', hold: '已付定金', sold: '已成交' };
+  el.innerHTML = '<table class="adm-table"><thead><tr><th>樓層</th><th>戶別</th><th>戶型</th><th>開價</th><th>底價</th><th>狀態</th><th>明細</th></tr></thead><tbody>'
+    + rows.map(r =>
+      '<tr>'
+      + '<td>' + r.floor + 'F</td>'
+      + '<td style="font-weight:700">' + r.unit_no + '</td>'
+      + '<td>' + (r.unit_type || '—') + '</td>'
+      + '<td>' + (r.list_price || '—') + '</td>'
+      + '<td>' + (r.floor_price || '—') + '</td>'
+      + '<td><select onchange="admSetUnitStatus(\'' + r.id + '\', this.value, this)" style="border:1px solid #C7D2DE;border-radius:6px;padding:.3rem .5rem;font-size:.78rem;font-family:inherit;background:#fff;color:#1A2D40;">'
+        + Object.entries(stLabel).map(([k, v]) => '<option value="' + k + '"' + (r.status === k ? ' selected' : '') + '>' + v + '</option>').join('')
+      + '</select></td>'
+      + '<td>' + (r.status === 'sold' ? '<button class="mr-btn" onclick="admOpenDealForm(\'' + r.id + '\',\'sold\')">成交明細</button>'
+        : r.status === 'hold' ? '<button class="mr-btn" onclick="admOpenDealForm(\'' + r.id + '\',\'hold\')">付定明細</button>'
+        : r.status === 'view' ? '<button class="mr-btn" onclick="admOpenDealForm(\'' + r.id + '\',\'view\')">帶看時間</button>'
+        : '<span style="color:#bbb;font-size:.75rem">—</span>') + '</td>'
+      + '</tr>'
+    ).join('') + '</tbody></table>';
+}
+
+async function admSetUnitStatus(id, val, selEl) {
+  selEl.disabled = true;
+  const { error } = await _sb.from('units').update({ status: val, updated_at: new Date().toISOString() }).eq('id', id);
+  selEl.disabled = false;
+  if (error) { alert('更新失敗：' + error.message); loadAdmUnits(); return; }
+  await loadAdmUnits();
+  // 轉成交／付定／帶看時，順手開明細登錄表單
+  if (val === 'sold' || val === 'hold' || val === 'view') admOpenDealForm(id, val);
+}
+
+function admOpenDealForm(id, kind) {
+  admUnitEdit = { id, kind };
+  document.getElementById('aumSold').style.display = kind === 'sold' ? '' : 'none';
+  document.getElementById('aumHold').style.display = kind === 'hold' ? '' : 'none';
+  document.getElementById('aumView').style.display = kind === 'view' ? '' : 'none';
+  document.getElementById('aumTitle').innerText = kind === 'sold' ? '登錄成交明細' : kind === 'hold' ? '登錄付定明細' : '登錄帶看時間';
+  document.getElementById('admUnitModal').classList.add('open');
+}
+function admCloseUnitModal() {
+  document.getElementById('admUnitModal').classList.remove('open');
+  admUnitEdit = null;
+}
+async function admSaveUnitDetail() {
+  if (!admUnitEdit) return;
+  const { id, kind } = admUnitEdit;
+  const btn = document.getElementById('aumSaveBtn');
+  let error = null;
+  if (kind === 'sold') {
+    const price = document.getElementById('aumPrice').value.trim();
+    const date = document.getElementById('aumDate').value;
+    const buyer = document.getElementById('aumBuyer').value.trim();
+    const stage = document.getElementById('aumStage').value;
+    if (!price || !date || !buyer) { alert('請填寫成交價、成交日期與買方'); return; }
+    btn.disabled = true; btn.textContent = '儲存中…';
+    ({ error } = await _sb.from('unit_deals').insert({ unit_id: id, stage: stage, deal_price: price, deal_date: date, buyer_name: buyer }));
+  } else if (kind === 'hold') {
+    const dep = document.getElementById('aumDeposit').value.trim();
+    const dd = document.getElementById('aumDepDate').value;
+    const due = document.getElementById('aumSignDue').value;
+    if (!dep || !dd) { alert('請填寫定金金額與付定日期'); return; }
+    btn.disabled = true; btn.textContent = '儲存中…';
+    ({ error } = await _sb.from('unit_deals').insert({ unit_id: id, stage: '已付定金', deposit_amount: dep, deposit_date: dd, sign_due: due || null }));
+  } else {
+    btn.disabled = true; btn.textContent = '儲存中…';
+    ({ error } = await _sb.from('units').update({ view_time: document.getElementById('aumViewTime').value.trim() || null }).eq('id', id));
+  }
+  btn.disabled = false; btn.textContent = '儲存';
+  if (error) { alert('儲存失敗：' + error.message); return; }
+  admCloseUnitModal();
+  loadAdmUnits();
+}
+
+async function admUpdateRegStatus(id, newStatus, btn) {
+  if (btn) { btn.disabled = true; btn.style.opacity = '.5'; }
+  const { error } = await _sb.from('client_registrations').update({ status: newStatus }).eq('id', id);
+  if (error) {
+    const isGrant = /permission denied/i.test(error.message || '');
+    const hint = isGrant
+      ? '此為「資料表授權」不足（非 RLS policy）。\n請至 Supabase → SQL Editor 執行：\nGRANT UPDATE ON client_registrations TO anon, authenticated;'
+      : '若為 RLS 阻擋，請至 Supabase → SQL Editor 執行：\nCREATE POLICY "adm upd" ON client_registrations FOR UPDATE USING (true) WITH CHECK (true);';
+    alert('更新失敗：' + error.message + '\n\n' + hint);
+    if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+    return;
+  }
+  const statusMap = { confirmed: '已確認', closed: '結案', pending: '待確認' };
+  const badgeClassMap = { confirmed: 'adm-badge confirmed', closed: 'adm-badge', pending: 'adm-badge pending' };
+  const badge = document.getElementById('reg-status-' + id);
+  if (badge) { badge.textContent = statusMap[newStatus]; badge.className = badgeClassMap[newStatus]; }
+  const row = document.getElementById('reg-row-' + id);
+  if (row) {
+    const cell = row.querySelector('td:last-child');
+    if (cell) {
+      if (newStatus === 'confirmed') {
+        cell.innerHTML = `<button onclick="admUpdateRegStatus('${id}','closed',this)" style="background:rgba(100,80,50,.12);color:#7A5A10;border:none;border-radius:6px;padding:.3rem .8rem;font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap">結案</button>`;
+      } else {
+        cell.innerHTML = '<span style="color:#bbb;font-size:.75rem">—</span>';
+      }
+    }
+  }
+}
+function admConfirmView(id) { admUpdateRegStatus(id, 'confirmed', event.target); }
+function admCloseReg(id)    { admUpdateRegStatus(id, 'closed',    event.target); }
+
+async function loadAdmBookings() {
+  const el = document.getElementById('admBookContent');
+  const { data } = await _sb.from('bookings').select('*').order('created_at',{ascending:false});
+  if (!data||!data.length){el.innerHTML='<div class="adm-empty">尚無資料</div>';return;}
+  el.innerHTML = `<table class="adm-table"><thead><tr>
+    <th>客戶</th><th>電話</th><th>建案</th><th>預約日期</th><th>時段</th><th>狀態</th>
+    </tr></thead><tbody>${data.map(r=>`<tr>
+    <td>${r.client_name}</td><td>${r.client_phone}</td><td>${r.project_name}</td>
+    <td>${r.booking_date||''}</td><td>${r.time_slot||''}</td>
+    <td><span class="adm-badge ${r.status}">${{pending:'待確認',confirmed:'已確認'}[r.status]||r.status}</span></td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+async function loadAdmInq() {
+  const el = document.getElementById('admInqContent');
+  const { data } = await _sb.from('inquiries').select('*').order('created_at',{ascending:false});
+  if (!data||!data.length){el.innerHTML='<div class="adm-empty">尚無資料</div>';return;}
+  el.innerHTML = `<table class="adm-table"><thead><tr>
+    <th>姓名</th><th>電話</th><th>建案</th><th>詢問內容</th><th>日期</th><th>狀態</th>
+    </tr></thead><tbody>${data.map(r=>`<tr>
+    <td>${r.name}</td><td>${r.phone}</td><td>${r.project_name||'未指定'}</td>
+    <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.content||''}</td>
+    <td>${new Date(r.created_at).toLocaleString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false})}</td>
+    <td><span class="adm-badge new">${r.status}</span></td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+async function loadAdmBrokers() {
+  const el = document.getElementById('admBrokerContent');
+  const { data } = await _sb.from('brokers').select('*').order('created_at',{ascending:false});
+  if (!data||!data.length){el.innerHTML='<div class="adm-empty">尚無資料</div>';return;}
+  el.innerHTML = `<table class="adm-table"><thead><tr>
+    <th>姓名</th><th>公司</th><th>證件號</th><th>電話</th><th>信箱</th><th>申請時間</th><th>狀態</th>
+    </tr></thead><tbody>${data.map(r=>`<tr>
+    <td>${r.name}</td><td>${r.company}</td><td style="font-family:monospace;font-size:.8rem;color:var(--ov-gold)">${r.license_no||'—'}</td><td>${r.phone}</td><td>${r.email}</td>
+    <td>${new Date(r.created_at).toLocaleString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false})}</td>
+    <td><span class="adm-badge ${r.status}">${{pending:'審核中',active:'啟用',suspended:'停用'}[r.status]||r.status}</span></td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+/* ── 登入狀態記憶（同一分頁工作階段內免重複登入）── */
+const _doAdminLogin = doAdminLogin;
+doAdminLogin = function() {
+  _doAdminLogin();
+  if (document.getElementById('admDash').style.display === 'flex') {
+    try { sessionStorage.setItem('admIn', '1'); } catch (e) {}
+  }
+};
+try {
+  if (sessionStorage.getItem('admIn') === '1') {
+    document.getElementById('admLoginWrap').style.display = 'none';
+    document.getElementById('admDash').style.display = 'flex';
+    loadAdmOverview();
+  }
+} catch (e) {}
+</script>
+
+<!-- ══════════════════════════════════════════════
+     建商專區 — 建案戶況追蹤
+══════════════════════════════════════════════ -->
+<style>
+#devOverlay {
+  display: none; position: fixed; inset: 0; z-index: 9600;
+  background: #F2F1EC; overflow-y: auto; overflow-x: clip;
+}
+#devOverlay.open { display: block; }
+
+/* 頂列 */
+.dev-header {
+  position: sticky; top: 0; z-index: 30;
+  background: #1A3A5F; color: #fff;
+  padding: .8rem 1.6rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+}
+.dev-logo { font-family: 'Noto Serif TC', serif; font-size: .98rem; font-weight: 700; letter-spacing: .05em; color: #E8D5AC; }
+.dev-logo small { display: block; font-family: 'Noto Sans TC', sans-serif; font-size: .64rem; font-weight: 400; color: rgba(255,255,255,.55); letter-spacing: .2em; margin-top: .15rem; }
+.dev-close {
+  width: 34px; height: 34px; border-radius: 50%; border: none; cursor: pointer;
+  background: rgba(255,255,255,.12); color: #fff; font-size: 1rem; transition: background .2s;
+}
+.dev-close:hover { background: rgba(255,255,255,.25); }
+
+/* 登入卡 */
+#devLogin {
+  min-height: calc(100vh - 60px); display: flex; align-items: center; justify-content: center;
+  padding: 2rem 1.2rem;
+  background:
+    linear-gradient(160deg, rgba(16,30,50,.82), rgba(20,48,79,.78)),
+    url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+}
+.dev-login-card {
+  width: 100%; max-width: 400px; background: rgba(255,255,255,.96);
+  border-radius: 16px; padding: 2.6rem 2.4rem;
+  box-shadow: 0 24px 70px rgba(6,14,26,.45);
+}
+.dev-login-title { font-family: 'Noto Serif TC', serif; font-size: 1.35rem; font-weight: 800; color: #14202E; text-align: center; margin: 0 0 .4rem; }
+.dev-login-sub { font-size: .78rem; color: #55687E; text-align: center; margin: 0 0 1.8rem; letter-spacing: .05em; }
+.dev-field { margin-bottom: 1.1rem; }
+.dev-field label { display: block; font-size: .78rem; color: #46607A; margin-bottom: .35rem; letter-spacing: .05em; }
+.dev-field input {
+  width: 100%; box-sizing: border-box; padding: .72rem 1rem; border: 1px solid #D8D5CB; border-radius: 10px;
+  font-size: .9rem; font-family: inherit; color: #14202E; outline: none; transition: border .2s, box-shadow .2s;
+  background: #fff;
+}
+.dev-field input:focus { border-color: #1A3A5F; box-shadow: 0 0 0 3px rgba(26,58,95,.12); }
+.dev-login-btn {
+  width: 100%; padding: .8rem; border: none; border-radius: 10px; cursor: pointer;
+  background: #1A3A5F; color: #fff; font-size: .92rem; font-weight: 700; font-family: inherit;
+  letter-spacing: .08em; transition: background .2s, transform .15s;
+}
+.dev-login-btn:hover { background: #C19A4E; transform: translateY(-1px); }
+.dev-login-err { display: none; margin-bottom: 1rem; padding: .55rem .9rem; border: 1px solid rgba(196,74,74,.4); border-radius: 8px; background: #FDF2F2; color: #B03030; font-size: .78rem; }
+.dev-login-note { margin-top: 1.3rem; padding: .8rem .95rem; border: 1px solid rgba(193,154,78,.35); border-radius: 8px; background: #FAF6EC; font-size: .74rem; color: #6A5A32; line-height: 1.8; }
+
+/* 儀表板 */
+#devDash { display: none; padding: 1.6rem clamp(1rem, 3.5vw, 2.6rem) 3.5rem; max-width: 1240px; margin: 0 auto; }
+
+.dev-proj-head { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem; }
+.dev-proj-name { font-family: 'Noto Serif TC', serif; font-size: clamp(1.4rem, 3vw, 1.9rem); font-weight: 800; color: #14202E; margin: 0; }
+.dev-proj-name .dev-demo-tag {
+  display: inline-block; vertical-align: 4px; margin-left: .6rem; padding: .18rem .55rem;
+  border: 1px solid rgba(193,154,78,.5); border-radius: 6px;
+  font-family: 'Noto Sans TC', sans-serif; font-size: .62rem; font-weight: 700; letter-spacing: .12em; color: #8A6516;
+}
+.dev-proj-meta { font-size: .78rem; color: #55687E; margin-top: .35rem; }
+
+/* 多建案切換 */
+.dev-proj-tabs { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
+.dev-proj-tab {
+  border: 1px solid #DCD7C9; background: #FBFAF5; color: #2A3E52; border-radius: 9px;
+  padding: .5rem 1.1rem; font-size: .82rem; font-weight: 700; cursor: pointer; font-family: inherit;
+  transition: background .2s, border-color .2s, color .2s;
+}
+.dev-proj-tab:hover { border-color: #C19A4E; }
+.dev-proj-tab.active { background: #1A3A5F; border-color: #1A3A5F; color: #E8D5AC; }
+
+/* 統計列 */
+.dev-stats { display: flex; gap: .6rem; flex-wrap: wrap; }
+.dev-stat {
+  background: #fff; border: 1px solid #E5E1D5; border-radius: 12px;
+  padding: .6rem 1.05rem; text-align: center; min-width: 84px;
+}
+.dev-stat b { display: block; font-family: 'Noto Serif TC', serif; font-size: 1.35rem; font-weight: 800; color: #14202E; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.dev-stat span { font-size: .68rem; color: #55687E; letter-spacing: .08em; }
+.dev-stat.st-sold b { color: #A02F26; }
+.dev-stat.st-view b { color: #3A6E96; }
+.dev-stat.st-hold b { color: #35744C; }
+
+/* 去化率 */
+.dev-rate { margin: 0 0 1.6rem; }
+.dev-rate-bar { height: 8px; border-radius: 4px; background: #E8E4D8; overflow: hidden; }
+.dev-rate-fill { height: 100%; width: 100%; border-radius: 4px; background: linear-gradient(90deg, #B2483E, #DE8177); transform: scaleX(0); transform-origin: left; transition: transform .8s cubic-bezier(.22,1,.36,1); }
+.dev-rate-txt { font-size: .74rem; color: #55687E; margin-top: .4rem; }
+.dev-rate-txt b { color: #B2483E; }
+
+/* ── 常駐雙欄：左 3D 樓體｜右 樓層平面 ── */
+.dev-stage { background: #fff; border: 1px solid #E5E1D5; border-radius: 18px; padding: 1.4rem clamp(1rem, 2.5vw, 2rem) 1.6rem; overflow: hidden; }
+.dvx-grid { display: grid; grid-template-columns: minmax(280px, 360px) 1fr; gap: clamp(1.2rem, 3vw, 2.4rem); align-items: start; }
+
+/* 左欄：3D 樓 */
+.dvx-left { min-width: 0; }
+.dev-stage-title { font-size: .8rem; font-weight: 700; color: #46607A; letter-spacing: .1em; text-align: center; margin: 0; }
+.dev-stage-hint { font-size: .68rem; color: #8A97A8; text-align: center; margin: .3rem 0 0; }
+.bd-scene { display: flex; justify-content: center; padding: 2rem 0 5.5rem; perspective: 1500px; animation: bdRise .9s cubic-bezier(.22,1,.36,1); }
+@keyframes bdRise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+.bd-world {
+  position: relative; width: 220px;
+  transform-style: preserve-3d;
+  transform: rotateX(-18deg) rotateY(-34deg) scale(.92);
+  transform-origin: 50% 62%;
+}
+.bd-floor {
+  position: absolute; left: 0; width: 220px; height: 34px;
+  bottom: calc((var(--i) - 1) * 34px);
+  transform-style: preserve-3d; cursor: pointer;
+  transition: transform .24s cubic-bezier(.22,1,.36,1);
+}
+.bd-floor:hover, .bd-floor.active { transform: translateX(18px); }
+/* 半透明樓體；懸停/選中回實 */
+.bd-face { position: absolute; left: 50%; top: 50%; box-sizing: border-box; opacity: .84; transition: opacity .2s; }
+.bd-floor:hover .bd-face, .bd-floor.active .bd-face { opacity: 1; }
+.f-front {
+  width: 220px; height: 34px; margin: -17px 0 0 -110px;
+  transform: translateZ(65px);
+  background: linear-gradient(180deg, #E4DCCB 0%, #D8CEB9 62%, #C9BEA6 100%);
+  border: 1px solid #A99E86; border-bottom-color: #8F8469;
+  box-shadow: inset 0 2px 0 rgba(255,252,244,.55), inset 0 -3px 5px rgba(74,64,44,.22);
+  display: flex; gap: 4px; padding: 6px 7px 7px 30px; align-items: stretch;
+  transition: box-shadow .2s, border-color .2s, opacity .2s;
+}
+.bd-floor:hover .f-front, .bd-floor.active .f-front { border-color: #C19A4E; box-shadow: inset 0 2px 0 rgba(255,252,244,.55), inset 0 -3px 5px rgba(74,64,44,.22), 0 0 0 1px #C19A4E, 0 0 16px rgba(193,154,78,.5); }
+.fl-no {
+  position: absolute; left: 4px; top: 50%; transform: translateY(-50%);
+  width: 22px; text-align: center;
+  font-size: .58rem; font-weight: 700; color: #5C523C; font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 0 rgba(255,252,244,.5);
+}
+.wu {
+  flex: 1; border-radius: 2px;
+  border: 1px solid rgba(52,62,72,.4);
+  background: linear-gradient(160deg, #F2F7FA 0%, #D9E4EB 55%, #C3D2DB 100%);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.7), inset 0 -1px 2px rgba(52,62,72,.18);
+}
+.wu.s-sold { background: linear-gradient(160deg, #E4776C 0%, #CC5044 55%, #A83A30 100%); border-color: rgba(118,32,24,.7); }
+.wu.s-view { background: linear-gradient(160deg, #D9EAF7 0%, #AFD2EA 55%, #84B4D6 100%); border-color: rgba(58,106,142,.55); }
+.wu.s-hold { background: linear-gradient(160deg, #E2F2E5 0%, #BCDCC5 55%, #94C4A4 100%); border-color: rgba(66,118,84,.5); }
+.f-right {
+  width: 130px; height: 34px; margin: -17px 0 0 -65px;
+  transform: rotateY(90deg) translateZ(110px);
+  background:
+    repeating-linear-gradient(90deg, transparent 0 14px, rgba(52,62,72,.35) 14px 22px, transparent 22px 26px),
+    linear-gradient(90deg, #A79C82 0%, #B4A98F 60%, #BFB49A 100%);
+  border: 1px solid #8F8469;
+  box-shadow: inset 0 2px 0 rgba(255,252,244,.25), inset 0 -3px 5px rgba(60,52,36,.3);
+}
+/* 屋頂 */
+.bd-roof { position: absolute; left: 0; width: 220px; height: 12px; bottom: calc(var(--floors) * 34px); transform-style: preserve-3d; pointer-events: none; }
+.r-front { width: 220px; height: 12px; margin: -6px 0 0 -110px; transform: translateZ(65px); background: linear-gradient(180deg, #CFC5AD, #B8AC8F); border: 1px solid #948868; }
+.r-right { width: 130px; height: 12px; margin: -6px 0 0 -65px; transform: rotateY(90deg) translateZ(110px); background: #A2967A; border: 1px solid #8A7E60; }
+.r-top { width: 220px; height: 130px; margin: -65px 0 0 -110px; transform: rotateX(90deg) translateZ(6px); background: linear-gradient(135deg, #D7CFBC 0%, #C6BCA4 100%); border: 1px solid #948868; }
+.r-top::after { content: ''; position: absolute; left: 24%; top: 30%; width: 46px; height: 34px; background: #B3A78C; border: 1px solid #8A7E60; border-radius: 3px; box-shadow: 60px 14px 0 -6px #ADA184, 0 3px 5px rgba(60,52,36,.35); }
+/* 一樓入口（大廳玻璃門面） */
+.bd-door {
+  position: absolute; left: 50%; bottom: 1px; width: 34px; height: 23px; margin-left: -17px;
+  background: linear-gradient(180deg, rgba(56,74,94,.9), rgba(30,44,60,.95));
+  border: 2px solid #C19A4E; border-bottom: none; border-radius: 5px 5px 0 0;
+  box-shadow: inset 0 2px 3px rgba(255,255,255,.25);
+}
+.bd-door::after { content: ''; position: absolute; left: 50%; top: 3px; bottom: 0; width: 1px; background: rgba(193,154,78,.7); }
+/* 一樓基座（石材大廳） */
+.bd-floor.bf-1 .f-front {
+  background: linear-gradient(180deg, #C7BBA1 0%, #B3A588 60%, #9E9070 100%);
+  border-color: #837654;
+}
+/* 基地地坪（鋪裝廣場） */
+.bd-ground { position: absolute; left: 0; bottom: 0; width: 220px; height: 0; transform-style: preserve-3d; pointer-events: none; }
+.g-plate {
+  position: absolute; left: 50%; top: 0; width: 360px; height: 260px; margin: -130px 0 0 -180px;
+  transform: rotateX(90deg) translateZ(-1px);
+  background:
+    radial-gradient(ellipse 52% 52% at 50% 50%, rgba(20,32,46,.22), transparent 62%),
+    repeating-linear-gradient(0deg, transparent 0 31px, rgba(90,80,60,.14) 31px 32px),
+    repeating-linear-gradient(90deg, transparent 0 31px, rgba(90,80,60,.14) 31px 32px),
+    linear-gradient(135deg, #D9D2C0, #CCC4AE);
+  border: 1px solid #B5AB92; border-radius: 10px;
+}
+
+/* 左欄底部：圖例 + 說明（不會再被樓體遮擋） */
+.dvx-left .dev-legend { display: flex; gap: .9rem; flex-wrap: wrap; justify-content: center; margin-top: .2rem; }
+.dev-legend span { display: inline-flex; align-items: center; gap: .4rem; font-size: .72rem; color: #46607A; }
+.dev-legend i { width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid #D8D2C4; background: #fff; }
+.dev-legend i.lg-sold { background: rgba(196,64,52,.35); border-color: rgba(150,44,36,.6); }
+.dev-legend i.lg-view { background: rgba(150,195,228,.4); border-color: rgba(84,134,172,.55); }
+.dev-legend i.lg-hold { background: rgba(165,212,180,.45); border-color: rgba(96,152,116,.55); }
+.dev-flow-hint { margin-top: .55rem; font-size: .66rem; color: #8A97A8; text-align: center; letter-spacing: .04em; }
+.dev-privacy-note { margin-top: .8rem; font-size: .7rem; color: #7A8CA0; line-height: 1.8; text-align: center; }
+
+/* 右欄：樓層平面 */
+.dvx-right { min-width: 0; }
+.fv-top { display: flex; align-items: baseline; gap: .9rem; flex-wrap: wrap; margin-bottom: .8rem; }
+.fv-title { font-family: 'Noto Serif TC', serif; font-size: 1.3rem; font-weight: 800; color: #14202E; margin: 0; }
+.fv-sub { font-size: .74rem; color: #55687E; }
+.fv-chips { display: flex; gap: .4rem; overflow-x: auto; padding: .1rem .1rem .5rem; margin-bottom: 1rem; scrollbar-width: thin; }
+.fv-chip {
+  flex-shrink: 0; min-width: 46px; padding: .35rem .5rem .32rem; border-radius: 8px; border: 1px solid #DCD7C9;
+  background: #FBFAF5; cursor: pointer; text-align: center; font-family: inherit;
+  transition: border-color .2s, background .2s;
+}
+.fv-chip b { display: block; font-size: .74rem; color: #2A3E52; font-weight: 700; font-variant-numeric: tabular-nums; }
+.fv-chip .fc-bar { display: flex; height: 4px; border-radius: 2px; overflow: hidden; margin-top: .3rem; background: #EFECE2; }
+.fv-chip .fc-bar i { height: 100%; }
+.fv-chip .fc-bar .b-s { background: #A83A30; }
+.fv-chip .fc-bar .b-v { background: #84B4D6; }
+.fv-chip .fc-bar .b-d { background: #94C4A4; }
+.fv-chip:hover { border-color: #C19A4E; }
+.fv-chip.active { background: #1A3A5F; border-color: #1A3A5F; }
+.fv-chip.active b { color: #E8D5AC; }
+
+/* 平面圖：建築圖紙質感 */
+.dvp-paper {
+  position: relative;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 27px, rgba(42,62,82,.05) 27px 28px),
+    repeating-linear-gradient(90deg, transparent 0 27px, rgba(42,62,82,.05) 27px 28px),
+    #FDFDFA;
+  border: 2.5px solid #2A3E52; border-radius: 8px;
+  padding: clamp(.8rem, 2vw, 1.3rem);
+}
+.dvp-anim { animation: devViewIn .32s cubic-bezier(.22,1,.36,1); }
+@keyframes devViewIn { from { opacity: 0; transform: scale(.97); } to { opacity: 1; transform: none; } }
+.dvp-compass {
+  position: absolute; top: 10px; right: 12px; width: 30px; height: 30px; border-radius: 50%;
+  border: 1.5px solid #8A97A8; color: #46607A; font-size: .62rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.88); z-index: 2;
+}
+.dvp-compass::before { content: ''; position: absolute; top: 2px; left: 50%; margin-left: -3px; border: 3px solid transparent; border-bottom: 6px solid #B03030; }
+
+/* 板式（每層 5 戶） */
+.dev-plan {
+  display: grid; gap: 9px;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: minmax(128px, auto) 36px minmax(128px, auto);
+  grid-template-areas: "u1 u2 u3" "co co co" "u4 cr u5";
+}
+/* 點式（每層 4 戶，中央核） */
+.dev-plan.plan-tower {
+  grid-template-columns: 1fr .6fr 1fr;
+  grid-template-rows: minmax(128px, auto) minmax(72px, auto) minmax(128px, auto);
+  grid-template-areas: "u1 c1 u2" "c2 cr c3" "u3 c4 u4";
+}
+.dev-unit {
+  border: 2px solid #C9C2B0; border-radius: 8px; background: #fff;
+  padding: .55rem .65rem; display: flex; flex-direction: column; gap: .28rem;
+  transition: transform .18s, box-shadow .18s; position: relative;
+}
+.dev-unit:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(15,25,35,.1); }
+.dev-unit.s-sold { background: rgba(196,64,52,.2); border-color: rgba(150,44,36,.6); }
+.dev-unit.s-view { background: rgba(126,176,214,.16); border-color: rgba(84,134,172,.5); }
+.dev-unit.s-hold { background: rgba(138,196,158,.16); border-color: rgba(96,152,116,.5); }
+.du-balcony { border: 1.5px dashed #BFB8A4; border-radius: 4px; font-size: .58rem; color: #8F8873; text-align: center; padding: 1px 0; letter-spacing: .4em; text-indent: .4em; }
+.dev-unit-no { font-weight: 800; font-size: .98rem; color: #14202E; font-variant-numeric: tabular-nums; }
+.dev-unit-spec { font-size: .71rem; color: #46607A; line-height: 1.55; }
+.du-price { font-size: .74rem; font-weight: 800; color: #1A3A5F; font-variant-numeric: tabular-nums; }
+.dev-unit-st { align-self: flex-start; font-size: .64rem; font-weight: 700; letter-spacing: .08em; padding: .18rem .5rem; border-radius: 5px; margin-top: auto; }
+.dev-unit.s-open .dev-unit-st { background: #F0EEE6; color: #55687E; }
+.dev-unit.s-sold .dev-unit-st { background: rgba(150,44,36,.94); color: #fff; }
+.dev-unit.s-view .dev-unit-st { background: rgba(50,102,142,.92); color: #fff; }
+.dev-unit.s-hold .dev-unit-st { background: rgba(178,220,190,.96); color: #143A22; }
+.dev-corridor { border: 1.5px dashed #C9C2B0; border-radius: 6px; background: #F7F5EE; display: flex; align-items: center; justify-content: center; font-size: .62rem; color: #98A2B0; letter-spacing: .4em; text-indent: .4em; }
+.dev-co { grid-area: co; }
+.dev-c1 { grid-area: c1; } .dev-c2 { grid-area: c2; } .dev-c3 { grid-area: c3; } .dev-c4 { grid-area: c4; }
+.dev-core { grid-area: cr; border: 2px solid #B9B2A0; border-radius: 8px; background: #ECE8DB; display: flex; align-items: center; justify-content: center; text-align: center; font-size: .66rem; color: #6A7688; letter-spacing: .12em; line-height: 1.7; }
+.dev-u1 { grid-area: u1; } .dev-u2 { grid-area: u2; } .dev-u3 { grid-area: u3; }
+.dev-u4 { grid-area: u4; } .dev-u5 { grid-area: u5; }
+
+@media (max-width: 960px) {
+  .dvx-grid { grid-template-columns: 1fr; }
+  .dev-proj-head { flex-direction: column; align-items: flex-start; }
+  .bd-world { transform: rotateX(-18deg) rotateY(-34deg) scale(.85); }
+  .bd-scene { padding: 1.6rem 0 2rem; }
+}
+@media (max-width: 560px) {
+  .bd-world { transform: rotateX(-16deg) rotateY(-32deg) scale(.72); }
+  .dev-plan { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto 30px auto; grid-template-areas: "u1 u2" "u3 u4" "co co" "u5 cr"; }
+  .dev-plan.plan-tower {
+    grid-template-columns: 1fr .5fr 1fr;
+    grid-template-rows: minmax(110px, auto) minmax(56px, auto) minmax(110px, auto);
+    grid-template-areas: "u1 c1 u2" "c2 cr c3" "u3 c4 u4";
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bd-scene { animation: none; }
+  .dvp-anim { animation: none; }
+  .bd-floor, .bd-face, .dev-unit, .dev-rate-fill { transition: none; }
+}
+
+/* ── 戶別詳情 / 明細列表 彈窗 ── */
+.dev-unit { cursor: pointer; }
+.dev-stat.st-clickable { cursor: pointer; transition: transform .15s, box-shadow .15s; }
+.dev-stat.st-clickable:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(15,25,35,.1); border-color: #C19A4E; }
+.dvm-bg {
+  display: none; position: fixed; inset: 0; z-index: 9700;
+  background: rgba(10,18,30,.5); backdrop-filter: blur(3px);
+  align-items: center; justify-content: center; padding: 1.2rem;
+}
+.dvm-bg.open { display: flex; }
+.dvm-card {
+  width: 100%; max-width: 420px; max-height: 84vh; overflow-y: auto;
+  background: #fff; border-radius: 14px; box-shadow: 0 24px 70px rgba(6,14,26,.4);
+  animation: devViewIn .28s cubic-bezier(.22,1,.36,1);
+}
+.dvm-card.dvm-wide { max-width: 640px; }
+.dvm-head {
+  position: sticky; top: 0; background: #1A3A5F; color: #fff;
+  padding: .85rem 1.2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+}
+.dvm-head b { font-family: 'Noto Serif TC', serif; font-size: 1rem; letter-spacing: .04em; }
+.dvm-head .dvm-st { font-size: .66rem; font-weight: 700; letter-spacing: .08em; padding: .2rem .55rem; border-radius: 5px; }
+.dvm-st.s-sold { background: rgba(168,54,44,.95); color: #fff; }
+.dvm-st.s-view { background: rgba(120,170,208,.95); color: #0E2438; }
+.dvm-st.s-hold { background: rgba(178,220,190,.97); color: #143A22; }
+.dvm-st.s-open { background: rgba(255,255,255,.2); color: #fff; }
+.dvm-x { width: 30px; height: 30px; border-radius: 50%; border: none; background: rgba(255,255,255,.14); color: #fff; cursor: pointer; font-size: .9rem; flex-shrink: 0; }
+.dvm-x:hover { background: rgba(255,255,255,.3); }
+.dvm-body { padding: 1.1rem 1.3rem 1.3rem; }
+.dvm-row { display: flex; justify-content: space-between; gap: 1rem; padding: .5rem 0; border-bottom: 1px solid #F0EDE3; font-size: .84rem; }
+.dvm-row:last-of-type { border-bottom: none; }
+.dvm-row .k { color: #55687E; flex-shrink: 0; }
+.dvm-row .v { color: #14202E; font-weight: 600; text-align: right; }
+.dvm-row .v.big { font-size: 1.05rem; font-weight: 800; color: #1A3A5F; }
+.dvm-diff { display: inline-block; margin-left: .45rem; font-size: .68rem; font-weight: 700; padding: .12rem .4rem; border-radius: 4px; }
+.dvm-diff.down { background: rgba(62,124,91,.15); color: #2F6B4F; }
+.dvm-diff.up { background: rgba(176,48,48,.12); color: #A03030; }
+.dvm-diff.flat { background: #F0EEE6; color: #55687E; }
+.dvm-note {
+  margin-top: 1rem; padding: .65rem .8rem; border: 1px solid rgba(193,154,78,.3); border-radius: 8px;
+  background: #FAF6EC; font-size: .7rem; color: #6A5A32; line-height: 1.8;
+}
+.dvm-table { width: 100%; border-collapse: collapse; font-size: .8rem; }
+.dvm-table th { background: #F4F1E8; color: #55687E; font-size: .7rem; letter-spacing: .06em; padding: .5rem .6rem; text-align: left; white-space: nowrap; }
+.dvm-table td { padding: .55rem .6rem; border-bottom: 1px solid #F0EDE3; color: #2A3E52; white-space: nowrap; }
+.dvm-table td.u { font-weight: 800; color: #14202E; font-variant-numeric: tabular-nums; }
+.dvm-table-wrap { overflow-x: auto; }
+</style>
+
+<div id="devOverlay">
+  <div class="dev-header">
+    <div class="dev-logo">譽誠聯合銷售平台 — 建商專區<small>DEVELOPER PORTAL</small></div>
+    <button class="dev-close" onclick="closeDevOverlay()" aria-label="關閉">✕</button>
+  </div>
+
+  <!-- 登入 -->
+  <div id="devLogin">
+    <div class="dev-login-card">
+      <h2 class="dev-login-title">建商登入</h2>
+      <p class="dev-login-sub">追蹤您建案的帶看與成交戶況</p>
+      <div class="dev-login-err" id="devLoginErr">帳號或密碼錯誤</div>
+      <div class="dev-field"><label>公司帳號</label><input type="text" id="devAcc" placeholder="公司帳號" /></div>
+      <div class="dev-field"><label>密碼</label><input type="password" id="devPwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doDevLogin()" /></div>
+      <button class="dev-login-btn" onclick="doDevLogin()">登入</button>
+      <div class="dev-login-note">測試帳號：<b>yucheng</b>／密碼：<b>mu2026</b><br />正式帳號由平台管理員開通，每家建商僅能查看自己的建案。</div>
+    </div>
+  </div>
+
+  <!-- 儀表板 -->
+  <div id="devDash">
+    <div class="dev-proj-head">
+      <div>
+        <h1 class="dev-proj-name" id="devProjName"></h1>
+        <div class="dev-proj-meta" id="devProjMeta"></div>
+      </div>
+      <div class="dev-stats" id="devStats"></div>
+    </div>
+
+    <div class="dev-proj-tabs" id="devProjTabs"></div>
+
+    <div class="dev-rate">
+      <div class="dev-rate-bar"><div class="dev-rate-fill" id="devRateFill"></div></div>
+      <div class="dev-rate-txt" id="devRateTxt"></div>
+    </div>
+
+    <div class="dev-stage">
+      <div class="dvx-grid">
+        <!-- 左：3D 樓體（常駐） -->
+        <div class="dvx-left">
+          <p class="dev-stage-title">全棟戶況</p>
+          <p class="dev-stage-hint">外牆窗色即戶況 ・ 點擊樓層切換右側平面圖</p>
+          <div class="bd-scene">
+            <div class="bd-world" id="bdWorld"></div>
+          </div>
+          <div class="dev-legend">
+            <span><i></i>未售出</span>
+            <span><i class="lg-view"></i>帶看中</span>
+            <span><i class="lg-hold"></i>已付定金</span>
+            <span><i class="lg-sold"></i>已成交</span>
+          </div>
+          <p class="dev-flow-hint">流程：帶看 → 付定金 → 確認成交（退定則恢復可售）</p>
+          <p class="dev-privacy-note">為保障合作仲介權益，本頁僅顯示戶別銷售狀態，不揭露客戶與報備仲介資訊。</p>
+        </div>
+
+        <!-- 右：樓層平面圖 -->
+        <div class="dvx-right">
+          <div class="fv-top">
+            <h3 class="fv-title" id="devPlanTitle"></h3>
+            <span class="fv-sub" id="devPlanSub"></span>
+          </div>
+          <div class="fv-chips" id="devFloorChips"></div>
+          <div class="dvp-paper" id="devPaper">
+            <span class="dvp-compass">N</span>
+            <div id="devPlanBox"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 戶別詳情彈窗 -->
+  <div id="devUnitModal" class="dvm-bg" onclick="if(event.target===this)closeDevUnitModal()">
+    <div class="dvm-card">
+      <div class="dvm-head"><b id="dvmTitle"></b><span style="display:flex;align-items:center;gap:.6rem"><span class="dvm-st" id="dvmSt"></span><button class="dvm-x" onclick="closeDevUnitModal()" aria-label="關閉">✕</button></span></div>
+      <div class="dvm-body" id="dvmBody"></div>
+    </div>
+  </div>
+
+  <!-- 明細列表彈窗 -->
+  <div id="devListModal" class="dvm-bg" onclick="if(event.target===this)closeDevListModal()">
+    <div class="dvm-card dvm-wide">
+      <div class="dvm-head"><b id="dvlTitle"></b><button class="dvm-x" onclick="closeDevListModal()" aria-label="關閉">✕</button></div>
+      <div class="dvm-body" id="dvlBody"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── 建商專區 ────────────────────────────────────────────────
+// 示範帳號（正式版將移至 Supabase developers 表，由管理員開通）
+const DEV_ACCOUNTS = {
+  'yucheng': { pwd: 'mu2026', company: '譽誠建設', projects: ['譽誠沐光苑', '譽誠星曜'] }
+};
+
+// 建案資料（s=已成交 v=帶看中 o=未售出；floors 由 1F 排到頂樓）
+const DEV_PROJECTS = {
+  '譽誠沐光苑': {
+    meta: '桃園市中壢區 ・ 地上 12 層 ・ 每層 5 戶 ・ 共 60 戶',
+    plan: 'slab',
+    unitTypes: [
+      { no: '01', type: '2房2廳1衛', size: '26.5坪', price: '988萬',   floor: '938萬' },
+      { no: '02', type: '2房2廳1衛', size: '28.5坪', price: '1,028萬', floor: '978萬' },
+      { no: '03', type: '3房2廳2衛', size: '34.0坪', price: '1,180萬', floor: '1,120萬' },
+      { no: '04', type: '3房2廳2衛', size: '35.5坪', price: '1,220萬', floor: '1,158萬' },
+      { no: '05', type: '2房1廳1衛', size: '22.0坪', price: '858萬',   floor: '818萬' }
+    ],
+    floors: [
+      ['s','s','s','s','s'],
+      ['s','s','s','v','s'],
+      ['s','s','o','s','s'],
+      ['s','v','s','s','o'],
+      ['s','s','o','v','s'],
+      ['o','s','s','o','d'],
+      ['s','o','v','s','o'],
+      ['o','s','d','o','s'],
+      ['d','o','s','o','o'],
+      ['o','o','v','o','s'],
+      ['o','v','o','d','o'],
+      ['o','o','o','o','v']
+    ]
+  },
+  '譽誠星曜': {
+    meta: '台中市西屯區 ・ 地上 15 層 ・ 每層 4 戶 ・ 共 60 戶',
+    plan: 'tower',
+    unitTypes: [
+      { no: '01', type: '3房2廳2衛', size: '42.5坪', price: '1,680萬', floor: '1,598萬' },
+      { no: '02', type: '2房2廳1衛', size: '30.5坪', price: '1,180萬', floor: '1,120萬' },
+      { no: '03', type: '2房2廳1衛', size: '30.8坪', price: '1,190萬', floor: '1,130萬' },
+      { no: '04', type: '3房2廳2衛', size: '40.0坪', price: '1,620萬', floor: '1,540萬' }
+    ],
+    floors: [
+      ['s','s','v','s'],
+      ['s','v','s','d'],
+      ['o','s','o','s'],
+      ['v','d','o','s'],
+      ['o','o','s','o'],
+      ['o','d','o','o'],
+      ['o','o','o','o'],
+      ['o','o','v','o'],
+      ['o','o','o','o'],
+      ['o','o','o','o'],
+      ['o','v','o','o'],
+      ['o','o','o','o'],
+      ['o','o','o','o'],
+      ['o','o','o','o'],
+      ['o','o','o','o']
+    ]
+  }
+};
+const DEV_ST = { s: { cls: 's-sold', label: '已成交' }, v: { cls: 's-view', label: '帶看中' }, d: { cls: 's-hold', label: '已付定金' }, o: { cls: 's-open', label: '未售出' } };
+const DEV_STATUS_CHAR = { sold: 's', view: 'v', hold: 'd', open: 'o' };
+
+// ── 即時資料層：優先讀 Supabase units 表，讀不到自動退回示範資料 ──
+let devActiveP = null;
+
+async function devFetchUnits(name) {
+  try {
+    const { data, error } = await _sb.from('units')
+      .select('*, unit_deals(*)')
+      .eq('project_name', name)
+      .order('floor', { ascending: true })
+      .order('unit_no', { ascending: true });
+    if (error || !data || !data.length) return null;
+    const maxF = Math.max(...data.map(r => r.floor));
+    const grid = [];
+    for (let f = 1; f <= maxF; f++) grid.push(data.filter(r => r.floor === f));
+    return grid;
+  } catch (e) { return null; }
+}
+
+async function devResolveProject(name) {
+  const cfg = DEV_PROJECTS[name] || { meta: '', plan: 'slab', unitTypes: [], floors: [] };
+  const grid = await devFetchUnits(name);
+  if (!grid) return Object.assign({ live: false }, cfg);
+  return {
+    live: true,
+    meta: cfg.meta || '',
+    plan: cfg.plan || (grid[0] && grid[0].length === 4 ? 'tower' : 'slab'),
+    unitTypes: cfg.unitTypes || [],
+    floors: grid.map(fr => fr.map(u => DEV_STATUS_CHAR[u.status] || 'o')),
+    grid: grid
+  };
+}
+
+// 取單戶顯示資訊（live 讀資料庫列；示範讀設定）
+function devUnitOf(p, f, ui) {
+  if (p.live) {
+    const r = p.grid[f - 1][ui];
+    return { no: r.unit_no, type: r.unit_type || '—', size: r.size || '—', price: r.list_price || '—', floor: r.floor_price || '—', row: r };
+  }
+  const u = p.unitTypes[ui];
+  return { no: u.no, type: u.type, size: u.size, price: u.price, floor: u.floor, row: null };
+}
+// 該戶最新一筆符合條件的紀錄
+function devLatestDeal(row, filterFn) {
+  if (!row || !row.unit_deals || !row.unit_deals.length) return null;
+  const list = filterFn ? row.unit_deals.filter(filterFn) : row.unit_deals.slice();
+  if (!list.length) return null;
+  return list.sort((a, b) => new Date(a.created_at) - new Date(b.created_at)).pop();
+}
+
+let devViewer = null;          // { projects: [...], isAdmin }
+let devCurrentProject = null;
+let devSelectedFloor = 1;
+let devOpenedFromAdmin = false;
+
+function openDevOverlay() {
+  document.getElementById('devOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeDevOverlay() {
+  document.getElementById('devOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  if (devOpenedFromAdmin) { devOpenedFromAdmin = false; openAdmin(); }
+}
+function doDevLogin() {
+  const acc = document.getElementById('devAcc').value.trim().toLowerCase();
+  const pwd = document.getElementById('devPwd').value;
+  const a = DEV_ACCOUNTS[acc];
+  if (!a || a.pwd !== pwd) {
+    document.getElementById('devLoginErr').style.display = 'block';
+    return;
+  }
+  document.getElementById('devLoginErr').style.display = 'none';
+  devViewer = { projects: a.projects, isAdmin: false };
+  showDevDash();
+}
+/* 管理後台入口：免登入、可看全部建案 */
+function openDevPortalFromAdmin() {
+  closeAdmin();
+  devOpenedFromAdmin = true;
+  devViewer = { projects: Object.keys(DEV_PROJECTS), isAdmin: true };
+  openDevOverlay();
+  showDevDash();
+}
+function showDevDash() {
+  document.getElementById('devLogin').style.display = 'none';
+  document.getElementById('devDash').style.display = 'block';
+  devCurrentProject = devViewer.projects[0];
+  devSelectedFloor = 1;
+  renderDevDash();
+}
+
+async function renderDevDash() {
+  devActiveP = await devResolveProject(devCurrentProject);
+  const p = devActiveP;
+  document.getElementById('devProjName').innerHTML = devCurrentProject
+    + ' <span class="dev-demo-tag">' + (p.live ? '即時同步' : '示範資料') + '</span>';
+  document.getElementById('devProjMeta').innerText = p.meta;
+
+  // 建案切換分頁（多於一案才顯示）
+  const tabs = document.getElementById('devProjTabs');
+  if (devViewer.projects.length > 1) {
+    tabs.innerHTML = devViewer.projects.map(name =>
+      '<button class="dev-proj-tab' + (name === devCurrentProject ? ' active' : '') + '" onclick="switchDevProject(\'' + name + '\')">' + name + '</button>'
+    ).join('');
+  } else {
+    tabs.innerHTML = '';
+  }
+
+  // 統計
+  let sold = 0, view = 0, hold = 0, open = 0;
+  p.floors.forEach(f => f.forEach(s => { if (s === 's') sold++; else if (s === 'v') view++; else if (s === 'd') hold++; else open++; }));
+  const total = sold + view + hold + open;
+  document.getElementById('devStats').innerHTML =
+    '<div class="dev-stat"><b>' + total + '</b><span>總戶數</span></div>' +
+    '<div class="dev-stat st-sold st-clickable" role="button" tabindex="0" onclick="openDevList(\'s\')" title="點擊查看成交明細"><b>' + sold + '</b><span>已成交</span></div>' +
+    '<div class="dev-stat st-hold st-clickable" role="button" tabindex="0" onclick="openDevList(\'d\')" title="點擊查看付定明細"><b>' + hold + '</b><span>已付定金</span></div>' +
+    '<div class="dev-stat st-view st-clickable" role="button" tabindex="0" onclick="openDevList(\'v\')" title="點擊查看帶看明細"><b>' + view + '</b><span>帶看中</span></div>' +
+    '<div class="dev-stat"><b>' + open + '</b><span>未售出</span></div>';
+  const rate = Math.round(sold / total * 100);
+  document.getElementById('devRateTxt').innerHTML = '目前去化率 <b>' + rate + '%</b>（' + sold + ' / ' + total + ' 戶）'
+    + (hold ? '，另有 ' + hold + ' 戶已付定待簽約' : '');
+  requestAnimationFrame(() => { document.getElementById('devRateFill').style.transform = 'scaleX(' + (rate / 100) + ')'; });
+
+  renderDevBuilding();
+  renderDevFloor(devSelectedFloor);
+}
+
+function switchDevProject(name) {
+  if (!devViewer.projects.includes(name)) return;
+  devCurrentProject = name;
+  devSelectedFloor = 1;
+  renderDevDash();
+}
+
+// 3D 樓體：每層＝前立面（N 格窗＝N 戶狀態）＋側立面；屋頂、入口、地坪
+function renderDevBuilding() {
+  const p = devActiveP;
+  const nF = p.floors.length;
+  const w = document.getElementById('bdWorld');
+  w.style.height = (nF * 34 + 44) + 'px';
+  let html = '<div class="bd-ground"><div class="bd-face g-plate"></div></div>';
+  for (let f = 1; f <= nF; f++) {
+    const st = p.floors[f - 1];
+    const panes = st.map(s => '<i class="wu' + (s === 's' ? ' s-sold' : s === 'v' ? ' s-view' : s === 'd' ? ' s-hold' : '') + '"></i>').join('');
+    html += '<div class="bd-floor' + (f === 1 ? ' bf-1' : '') + (f === devSelectedFloor ? ' active' : '') + '" style="--i:' + f + '" onclick="selectDevFloor(' + f + ')" title="' + f + 'F　點擊查看平面圖">'
+      + '<div class="bd-face f-front"><span class="fl-no">' + f + 'F</span>' + panes + (f === 1 ? '<span class="bd-door"></span>' : '') + '</div>'
+      + '<div class="bd-face f-right"></div>'
+      + '</div>';
+  }
+  html += '<div class="bd-roof" style="--floors:' + nF + '">'
+    + '<div class="bd-face r-front"></div><div class="bd-face r-right"></div><div class="bd-face r-top"></div>'
+    + '</div>';
+  w.innerHTML = html;
+}
+
+// 點樓層 → 高亮 + 更新右側平面圖
+function selectDevFloor(f) {
+  devSelectedFloor = f;
+  document.querySelectorAll('.bd-floor').forEach(el => el.classList.toggle('active', +el.style.getPropertyValue('--i') === f));
+  renderDevFloor(f);
+  const paper = document.getElementById('devPaper');
+  paper.classList.remove('dvp-anim'); void paper.offsetWidth; paper.classList.add('dvp-anim');
+}
+
+function renderDevFloor(f) {
+  const p = devActiveP;
+  const st = p.floors[f - 1];
+  document.getElementById('devPlanTitle').innerText = f + 'F 平面圖';
+  const c = { s: 0, v: 0, d: 0, o: 0 };
+  st.forEach(x => c[x]++);
+  document.getElementById('devPlanSub').innerText = '已成交 ' + c.s + '｜已付定 ' + c.d + '｜帶看中 ' + c.v + '｜未售出 ' + c.o;
+
+  // 樓層快切列（高樓層在前，附各層狀態比例條）
+  let chips = '';
+  for (let i = p.floors.length; i >= 1; i--) {
+    const cs = { s: 0, v: 0, d: 0, o: 0 };
+    p.floors[i - 1].forEach(x => cs[x]++);
+    chips += '<button class="fv-chip' + (i === f ? ' active' : '') + '" onclick="selectDevFloor(' + i + ')"><b>' + i + 'F</b>'
+      + '<span class="fc-bar">'
+      + (cs.s ? '<i class="b-s" style="flex:' + cs.s + '"></i>' : '')
+      + (cs.d ? '<i class="b-d" style="flex:' + cs.d + '"></i>' : '')
+      + (cs.v ? '<i class="b-v" style="flex:' + cs.v + '"></i>' : '')
+      + (cs.o ? '<i style="flex:' + cs.o + '"></i>' : '')
+      + '</span></button>';
+  }
+  document.getElementById('devFloorChips').innerHTML = chips;
+
+  // 平面圖
+  const cell = (i, area, balPos) => {
+    const u = devUnitOf(p, f, i), s = DEV_ST[st[i]];
+    const bal = '<div class="du-balcony">陽台</div>';
+    return '<div class="dev-unit ' + s.cls + ' dev-' + area + '" onclick="openDevUnit(' + f + ',' + i + ')" title="點擊查看詳情">'
+      + (balPos === 'top' ? bal : '')
+      + '<div class="dev-unit-no">' + (f < 10 ? '0' + f : f) + '-' + u.no + '</div>'
+      + '<div class="dev-unit-spec">' + u.type + '｜' + u.size + '</div>'
+      + '<div class="du-price">開價 ' + u.price + '</div>'
+      + '<span class="dev-unit-st">' + s.label + '</span>'
+      + (balPos === 'bottom' ? bal : '')
+      + '</div>';
+  };
+  let planHtml;
+  if (p.plan === 'tower') {
+    // 點式：4 戶環繞中央核
+    planHtml = '<div class="dev-plan plan-tower">'
+      + cell(0, 'u1', 'top')
+      + '<div class="dev-corridor dev-c1"></div>'
+      + cell(1, 'u2', 'top')
+      + '<div class="dev-corridor dev-c2">走道</div>'
+      + '<div class="dev-core">電梯<br>樓梯</div>'
+      + '<div class="dev-corridor dev-c3">走道</div>'
+      + cell(2, 'u3', 'bottom')
+      + '<div class="dev-corridor dev-c4"></div>'
+      + cell(3, 'u4', 'bottom')
+      + '</div>';
+  } else {
+    // 板式：5 戶一字排開
+    planHtml = '<div class="dev-plan">'
+      + cell(0, 'u1', 'top') + cell(1, 'u2', 'top') + cell(2, 'u3', 'top')
+      + '<div class="dev-corridor dev-co">走道</div>'
+      + cell(3, 'u4', 'bottom')
+      + '<div class="dev-core">電梯<br>樓梯</div>'
+      + cell(4, 'u5', 'bottom')
+      + '</div>';
+  }
+  document.getElementById('devPlanBox').innerHTML = planHtml;
+}
+
+// ── 戶別詳情（示範資料由確定性規則生成，正式版接 Supabase 成交/報備紀錄）──
+const DEV_BUYERS = ['陳○宏','林○蓁','王○哲','張○婷','李○軒','黃○芸','吳○翰','劉○安','蔡○琪','鄭○廷','許○晴','洪○鈞'];
+const DEV_STAGES = ['已完成交屋','銀行已撥款','簽約完成，對保中'];
+const DEV_VIEW_TIMES = ['2026-07-16 14:30','2026-07-17 10:00','2026-07-18 15:30','2026-07-19 11:00','2026-07-20 16:30','2026-07-21 14:00','2026-07-22 10:30','2026-07-23 15:00','2026-07-24 13:30'];
+const DEV_REG_SUFFIX = ['A7K2','B3M9','C5Q1','D8R4','E2T6','F9W3','G4X8','H6Z5','J1N7','K4P2','L8S6','M3V9'];
+
+// 該戶在全案「同狀態戶」中的序號（由低樓層排起，確定性）
+function devStatusIndex(p, f, ui, statusChar) {
+  let idx = 0;
+  for (let i = 0; i < p.floors.length; i++) {
+    for (let j = 0; j < p.floors[i].length; j++) {
+      if (i === f - 1 && j === ui) return idx;
+      if (p.floors[i][j] === statusChar) idx++;
+    }
+  }
+  return idx;
+}
+function devParsePrice(s) { return parseInt(String(s).replace(/[^\d]/g, ''), 10); }
+function devFmtPrice(n) { return n.toLocaleString('en-US') + '萬'; }
+
+// 成交檔案
+function devDealInfo(p, f, ui) {
+  const idx = devStatusIndex(p, f, ui, 's');
+  const list = devParsePrice(p.unitTypes[ui].price);
+  const factors = [-0.035, -0.02, -0.012, 0, 0.012];
+  const deal = Math.round(list * (1 + factors[(f + ui) % 5]));
+  const start = new Date(p.plan === 'tower' ? '2026-05-20' : '2026-01-10');
+  start.setDate(start.getDate() + idx * 6);
+  const d = start.toISOString().slice(0, 10);
+  return {
+    date: d,
+    listPrice: list,
+    dealPrice: deal,
+    buyer: DEV_BUYERS[(f * 3 + ui) % DEV_BUYERS.length],
+    stage: DEV_STAGES[idx % DEV_STAGES.length]
+  };
+}
+// 帶看安排
+function devViewInfo(p, f, ui) {
+  const idx = devStatusIndex(p, f, ui, 'v');
+  return {
+    when: DEV_VIEW_TIMES[idx % DEV_VIEW_TIMES.length],
+    regNo: 'YC-2607' + String(10 + idx) + '-' + DEV_REG_SUFFIX[(f + ui) % DEV_REG_SUFFIX.length],
+    status: idx % 3 === 0 ? '已確認' : '待確認'
+  };
+}
+// 付定資訊（定金約開價 2%，付定後 14 天內簽約）
+function devHoldInfo(p, f, ui) {
+  const idx = devStatusIndex(p, f, ui, 'd');
+  const list = devParsePrice(p.unitTypes[ui].price);
+  const deposit = Math.max(10, Math.round(list * 0.02 / 5) * 5);
+  const base = new Date('2026-07-06');
+  base.setDate(base.getDate() + (idx * 3) % 9);
+  const payDate = base.toISOString().slice(0, 10);
+  const due = new Date(base);
+  due.setDate(due.getDate() + 14);
+  return { payDate, deposit: deposit + '萬', signDue: due.toISOString().slice(0, 10) };
+}
+
+// 點戶別 → 詳情彈窗（建商唯讀：無任何操作按鈕）
+function openDevUnit(f, ui) {
+  const p = devActiveP;
+  const u = devUnitOf(p, f, ui);
+  const stChar = p.floors[f - 1][ui];
+  const s = DEV_ST[stChar];
+  const unitNo = (f < 10 ? '0' + f : f) + '-' + u.no;
+  document.getElementById('dvmTitle').innerText = devCurrentProject + '　' + unitNo;
+  const stEl = document.getElementById('dvmSt');
+  stEl.className = 'dvm-st ' + s.cls;
+  stEl.innerText = s.label;
+  const row = (k, v) => '<div class="dvm-row"><span class="k">' + k + '</span><span class="v">' + v + '</span></div>';
+  let html = row('戶型', u.type) + row('坪數', u.size)
+    + row('開價（對外）', u.price)
+    + row('底價（協議價）', u.floor);
+  if (stChar === 's') {
+    let d;
+    if (p.live) {
+      const dl = devLatestDeal(u.row, x => x.deal_price || x.deal_date || x.buyer_name);
+      d = dl ? { dealPrice: devParsePrice(dl.deal_price), listPrice: devParsePrice(u.price), dealStr: dl.deal_price || '—', date: dl.deal_date || '—', buyer: dl.buyer_name || '—', stage: dl.stage || '—' } : null;
+    } else {
+      const g = devDealInfo(p, f, ui);
+      d = { dealPrice: g.dealPrice, listPrice: g.listPrice, dealStr: devFmtPrice(g.dealPrice), date: g.date, buyer: g.buyer, stage: g.stage };
+    }
+    if (d) {
+      let badge = '';
+      if (d.dealPrice && d.listPrice) {
+        const diff = d.dealPrice - d.listPrice;
+        const pct = Math.abs(diff / d.listPrice * 100).toFixed(1);
+        badge = diff < 0 ? '<span class="dvm-diff down">−' + pct + '%</span>'
+          : diff > 0 ? '<span class="dvm-diff up">+' + pct + '%</span>' : '<span class="dvm-diff flat">平開價</span>';
+      }
+      html += '<div class="dvm-row"><span class="k">成交價</span><span class="v big">' + d.dealStr + badge + '</span></div>'
+        + row('成交日期', d.date)
+        + row('買方', d.buyer)
+        + row('結算階段', d.stage)
+        + '<div class="dvm-note">成交資料由平台結算系統提供；買方資訊於契約成立後揭露予建設公司。</div>';
+    } else {
+      html += '<div class="dvm-note">本戶已成交，成交明細待平台管理員登錄。</div>';
+    }
+  } else if (stChar === 'v') {
+    if (p.live) {
+      html += row('預約帶看時間', (u.row && u.row.view_time) || '待安排')
+        + '<div class="dvm-note">為保障合作仲介權益，帶看階段不揭露客戶與仲介資訊；成交後將提供買方資料。帶看確認與結案由平台管理員處理，建商端為唯讀。</div>';
+    } else {
+      const v = devViewInfo(p, f, ui);
+      html += row('預約帶看時間', v.when)
+        + row('報備編號', v.regNo)
+        + row('帶看狀態', v.status)
+        + '<div class="dvm-note">為保障合作仲介權益，帶看階段不揭露客戶與仲介資訊；成交後將提供買方資料。帶看確認與結案由平台管理員處理，建商端為唯讀。</div>';
+    }
+  } else if (stChar === 'd') {
+    let h;
+    if (p.live) {
+      const dl = devLatestDeal(u.row, x => x.stage === '已付定金');
+      h = dl ? { payDate: dl.deposit_date || '—', deposit: dl.deposit_amount || '—', signDue: dl.sign_due || '—' } : null;
+    } else {
+      const g = devHoldInfo(p, f, ui);
+      h = { payDate: g.payDate, deposit: g.deposit, signDue: g.signDue };
+    }
+    if (h) {
+      html += row('付定日期', h.payDate)
+        + row('定金金額', h.deposit)
+        + row('預計簽約期限', h.signDue);
+    }
+    html += row('後續流程', '確認成交 → 轉「已成交」<br>退定 → 恢復「未售出」')
+      + '<div class="dvm-note">付定期間本戶暫停銷售。買方資訊於正式簽約後揭露；狀態變更由平台管理員處理，建商端為唯讀。</div>';
+  } else {
+    html += '<div class="dvm-row"><span class="k">目前狀態</span><span class="v">可售中，尚無帶看與成交紀錄</span></div>';
+  }
+  document.getElementById('dvmBody').innerHTML = html;
+  document.getElementById('devUnitModal').classList.add('open');
+}
+function closeDevUnitModal() { document.getElementById('devUnitModal').classList.remove('open'); }
+
+// 統計卡 → 全案明細列表（帶看中 / 已成交）
+function openDevList(kind) {
+  const p = devActiveP;
+  const rows = [];
+  for (let f = 1; f <= p.floors.length; f++) {
+    p.floors[f - 1].forEach((st, ui) => {
+      if (st !== kind) return;
+      const u = devUnitOf(p, f, ui);
+      const unitNo = (f < 10 ? '0' + f : f) + '-' + u.no;
+      if (kind === 'v') {
+        let when = '待安排', regNo = '—', vst = '—';
+        if (p.live) { when = (u.row && u.row.view_time) || '待安排'; }
+        else { const v = devViewInfo(p, f, ui); when = v.when; regNo = v.regNo; vst = v.status; }
+        rows.push('<tr><td class="u">' + unitNo + '</td><td>' + u.type + '</td><td>' + when + '</td><td>' + regNo + '</td><td>' + vst + '</td></tr>');
+      } else if (kind === 'd') {
+        let pay = '—', dep = '—', due = '—';
+        if (p.live) { const dl = devLatestDeal(u.row, x => x.stage === '已付定金'); if (dl) { pay = dl.deposit_date || '—'; dep = dl.deposit_amount || '—'; due = dl.sign_due || '—'; } }
+        else { const h = devHoldInfo(p, f, ui); pay = h.payDate; dep = h.deposit; due = h.signDue; }
+        rows.push('<tr><td class="u">' + unitNo + '</td><td>' + u.type + '</td><td>' + pay + '</td><td>' + dep + '</td><td>' + due + '</td></tr>');
+      } else {
+        let date = '—', price = '待登錄', buyer = '—', stage = '—';
+        if (p.live) { const dl = devLatestDeal(u.row, x => x.deal_price || x.deal_date || x.buyer_name); if (dl) { date = dl.deal_date || '—'; price = dl.deal_price || '待登錄'; buyer = dl.buyer_name || '—'; stage = dl.stage || '—'; } }
+        else { const d = devDealInfo(p, f, ui); date = d.date; price = devFmtPrice(d.dealPrice); buyer = d.buyer; stage = d.stage; }
+        rows.push('<tr><td class="u">' + unitNo + '</td><td>' + date + '</td><td>' + price + '</td><td>' + buyer + '</td><td>' + stage + '</td></tr>');
+      }
+    });
+  }
+  const head = kind === 'v'
+    ? '<tr><th>戶別</th><th>戶型</th><th>帶看時間</th><th>報備編號</th><th>狀態</th></tr>'
+    : kind === 'd'
+    ? '<tr><th>戶別</th><th>戶型</th><th>付定日期</th><th>定金</th><th>預計簽約</th></tr>'
+    : '<tr><th>戶別</th><th>成交日期</th><th>成交價</th><th>買方</th><th>結算階段</th></tr>';
+  const kindName = kind === 'v' ? '帶看中明細（' : kind === 'd' ? '已付定明細（' : '成交明細（';
+  document.getElementById('dvlTitle').innerText = devCurrentProject + '　' + kindName + rows.length + ' 戶）';
+  document.getElementById('dvlBody').innerHTML =
+    '<div class="dvm-table-wrap"><table class="dvm-table"><thead>' + head + '</thead><tbody>' + rows.join('') + '</tbody></table></div>'
+    + (kind === 'v' ? '<div class="dvm-note">帶看階段不揭露客戶與仲介資訊；帶看確認與結案由平台管理員處理，建商端為唯讀。</div>' : '')
+    + (kind === 'd' ? '<div class="dvm-note">付定戶暫停銷售；確認成交轉「已成交」，退定恢復「未售出」。狀態變更由平台管理員處理。</div>' : '');
+  document.getElementById('devListModal').classList.add('open');
+}
+function closeDevListModal() { document.getElementById('devListModal').classList.remove('open'); }
+
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Escape') return;
+  if (document.getElementById('devUnitModal').classList.contains('open')) { closeDevUnitModal(); return; }
+  if (document.getElementById('devListModal').classList.contains('open')) { closeDevListModal(); return; }
+  if (document.getElementById('devOverlay').classList.contains('open')) closeDevOverlay();
+});
+</script>
+
+</body>
+</html>

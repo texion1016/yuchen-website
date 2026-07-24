@@ -6274,13 +6274,42 @@ async function loadAdmBrokers() {
   const el = document.getElementById('admBrokerContent');
   const { data } = await _sb.from('brokers').select('*').order('created_at',{ascending:false});
   if (!data||!data.length){el.innerHTML='<div class="adm-empty">尚無資料</div>';return;}
+  const stLabel = { pending:'審核中', active:'啟用', suspended:'已停用' };
   el.innerHTML = `<table class="adm-table"><thead><tr>
-    <th>姓名</th><th>公司</th><th>證件號</th><th>電話</th><th>信箱</th><th>申請時間</th><th>狀態</th>
+    <th>姓名</th><th>公司</th><th>證件號</th><th>電話</th><th>信箱</th><th>申請時間</th><th>狀態</th><th>操作</th>
     </tr></thead><tbody>${data.map(r=>`<tr>
     <td>${r.name}</td><td>${r.company}</td><td style="font-family:monospace;font-size:.8rem;color:var(--ov-gold)">${r.license_no||'—'}</td><td>${r.phone}</td><td>${r.email}</td>
     <td>${new Date(r.created_at).toLocaleString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false})}</td>
-    <td><span class="adm-badge ${r.status}">${{pending:'審核中',active:'啟用',suspended:'停用'}[r.status]||r.status}</span></td>
+    <td><span class="adm-badge ${r.status}">${stLabel[r.status]||r.status}</span></td>
+    <td>${r.status==='active'
+      ? `<button class="mr-btn" onclick="admSetBrokerStatus('${r.id}','suspended',this)">停用</button>`
+      : `<button class="mr-btn" onclick="admSetBrokerStatus('${r.id}','active',this)">啟用</button>`}
+      <button class="mr-btn mr-cancel" onclick="admDeleteBroker('${r.id}','${(r.name||'').replace(/'/g,'')}')">刪除</button></td>
     </tr>`).join('')}</tbody></table>`;
+}
+
+async function admSetBrokerStatus(id, val, btn) {
+  if (btn) btn.disabled = true;
+  const { error } = await _sb.from('brokers').update({ status: val }).eq('id', id);
+  if (btn) btn.disabled = false;
+  if (error) {
+    if (/permission denied/i.test(error.message || '')) {
+      alert('尚未開通仲介管理權限。\n請至 Supabase SQL Editor 執行：\nGRANT UPDATE (status) ON brokers TO anon, authenticated;\nCREATE POLICY "brokers manage" ON brokers FOR ALL USING (true) WITH CHECK (true);');
+    } else { alert('更新失敗：' + error.message); }
+    return;
+  }
+  loadAdmBrokers();
+}
+async function admDeleteBroker(id, name) {
+  if (!confirm('確定要刪除仲介「' + name + '」？\n刪除後此帳號將無法登入。此操作無法復原。')) return;
+  const { error } = await _sb.from('brokers').delete().eq('id', id);
+  if (error) {
+    if (/permission denied/i.test(error.message || '')) {
+      alert('尚未開通刪除權限。\n請至 Supabase SQL Editor 執行：\nGRANT DELETE ON brokers TO anon, authenticated;\nCREATE POLICY "brokers manage" ON brokers FOR ALL USING (true) WITH CHECK (true);');
+    } else { alert('刪除失敗：' + error.message); }
+    return;
+  }
+  loadAdmBrokers();
 }
 </script>
 
@@ -7673,6 +7702,7 @@ html, body { overflow-x: clip; }
 .mr-btn.mr-cancel:hover { background: #A03030; color: #fff; }
 .bov-status.cancelled { background: #EEECE6 !important; color: #7A8494 !important; }
 .adm-badge.cancelled { background: #EEECE6 !important; color: #7A8494 !important; }
+.adm-badge.suspended { background: #F2E4E4 !important; color: #A03030 !important; }
 
 /* ══════════════════════════════════════════════════════
    合作仲介獎金辦法（bovBonus 分頁）

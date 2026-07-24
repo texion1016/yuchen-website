@@ -2434,10 +2434,10 @@ table.bt2 tbody td{padding:.72rem 1rem;color:#555;white-space:nowrap}
         <select id="rptProject">
           <option value="">請選擇建案</option>
           <option value="譽誠沐光苑">譽誠沐光苑 — 桃園市中壢區</option>
-          <option value="譽誠晴山苑">譽誠晴山苑 — 台中市北屯區</option>
-          <option value="譽誠雲頂">譽誠雲頂 — 新北市板橋區</option>
-          <option value="譽誠觀海">譽誠觀海 — 高雄市左營區</option>
-          <option value="譽誠御所">譽誠御所 — 台北市內湖區</option>
+          <option value="譽誠星曜">譽誠星曜 — 台北市內湖區</option>
+          <option value="譽誠和風居">譽誠和風居 — 新北市新莊區</option>
+          <option value="譽誠晴山苑">譽誠晴山苑 — 台中市西屯區</option>
+          <option value="譽誠綠意村">譽誠綠意村 — 新竹縣竹北市</option>
         </select>
       </div>
       <div class="bov-row">
@@ -7727,6 +7727,17 @@ html, body { overflow-x: clip; }
 /* ── 建案詳情底部金色按鈕：金底上改深字 ── */
 #projDetailOverlay [style*="background:var(--gold)"] { color: #14202E !important; }
 
+/* ── 首頁建案卡：照片底上一律亮字（蓋掉淺色主題的深字規則） ── */
+.pj-tile .pj-loc { color: rgba(255,255,255,.88) !important; }
+.pj-tile .pj-name { color: #fff !important; text-shadow: 0 2px 14px rgba(0,0,0,.55) !important; }
+.pj-tile .pj-price { color: #fff !important; text-shadow: 0 2px 10px rgba(0,0,0,.5) !important; }
+.pj-tile .pj-price small { color: rgba(255,255,255,.78) !important; }
+.pj-tile .pj-badge {
+  background: rgba(10,18,30,.55) !important;
+  color: rgba(255,255,255,.94) !important;
+  border-color: rgba(255,255,255,.28) !important;
+}
+
 /* ══════════════════════════════════════════════════════
    合作仲介獎金辦法（bovBonus 分頁）
 ══════════════════════════════════════════════════════ */
@@ -8386,7 +8397,7 @@ const DEV_PROJECTS = {
     ]
   },
   '譽誠星曜': {
-    meta: '台中市西屯區 ・ 地上 15 層 ・ 每層 4 戶 ・ 共 60 戶',
+    meta: '台北市內湖區 ・ 地上 15 層 ・ 每層 4 戶 ・ 共 60 戶',
     plan: 'tower',
     unitTypes: [
       { no: '01', type: '3房2廳2衛', size: '42.5坪', price: '1,680萬', floor: '1,598萬' },

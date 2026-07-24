@@ -1067,6 +1067,13 @@ function togglePwd(id, el) {
           提供建設公司成屋餘屋銷售整合服務，<br />
           建立透明且高效率的聯合銷售機制。
         </p>
+        <div class="footer-qr">
+          <img src="qr-site.png" alt="譽誠聯合銷售平台官網二維碼" />
+          <div class="footer-qr-txt">
+            <span>掃描或長按<br />開啟官網</span>
+            <a href="qr-site.png" download="譽誠平台二維碼.png">⬇ 下載二維碼</a>
+          </div>
+        </div>
         <div class="footer-social">
           <div class="social-btn">f</div>
           <div class="social-btn">in</div>
@@ -7726,6 +7733,21 @@ html, body { overflow-x: clip; }
 
 /* ── 建案詳情底部金色按鈕：金底上改深字 ── */
 #projDetailOverlay [style*="background:var(--gold)"] { color: #14202E !important; }
+
+/* ── 頁腳官網二維碼 ── */
+.footer-qr { display: flex; align-items: center; gap: .95rem; margin: 1.3rem 0 1.2rem; }
+.footer-qr img {
+  width: 112px; height: 112px; display: block;
+  background: #fff; padding: 6px; border-radius: 12px; box-sizing: border-box;
+  box-shadow: 0 6px 20px rgba(0,0,0,.35);
+}
+.footer-qr-txt { display: flex; flex-direction: column; gap: .6rem; font-size: .76rem; color: rgba(255,255,255,.7); line-height: 1.7; }
+.footer-qr-txt a {
+  color: #D5B577; text-decoration: none; font-size: .74rem; font-weight: 600;
+  border: 1px solid rgba(213,181,119,.45); border-radius: 8px; padding: .34rem .75rem;
+  width: fit-content; letter-spacing: .04em; transition: background .2s, color .2s, border-color .2s;
+}
+.footer-qr-txt a:hover { background: #C19A4E; color: #14202E; border-color: #C19A4E; }
 
 /* ── 首頁建案卡：照片底上一律亮字（蓋掉淺色主題的深字規則） ── */
 .pj-tile .pj-loc { color: rgba(255,255,255,.88) !important; }

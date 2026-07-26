@@ -127,6 +127,12 @@
   .mr-btn.mr-cancel { border-color: rgba(176,48,48,.35); background: #FDF4F4; color: #A03030; }
   .mr-btn.mr-cancel:hover { background: #A03030; color: #fff; }
 
+  /* 建案表單分區標題 */
+  .apj-sec { display: flex; align-items: baseline; gap: .55rem; margin: 1.6rem 0 .95rem; padding-top: 1.15rem; border-top: 1px dashed #E2DDD0; font-size: .8rem; font-weight: 800; color: #1A3A5F; letter-spacing: .08em; }
+  .apj-sec::before { content: ''; width: 3px; height: 13px; background: #C19A4E; border-radius: 2px; align-self: center; flex-shrink: 0; }
+  .apj-sec.first { margin-top: 0; padding-top: 0; border-top: none; }
+  .apj-sec small { font-weight: 400; color: #8B97A6; letter-spacing: 0; font-size: .68rem; }
+
   /* 建案圖片縮圖 */
   .apj-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem; }
   .apj-thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); gap: .5rem; margin-top: .6rem; }
@@ -226,9 +232,11 @@
 
   <!-- 建案編輯彈窗 -->
   <div id="admProjModal" class="dvm-bg" style="z-index:9900;" onclick="if(event.target===this)closeProjForm()">
-    <div class="dvm-card" style="max-width:600px;">
+    <div class="dvm-card" style="max-width:660px;">
       <div class="dvm-head"><b id="apjTitle">新增建案</b><button class="dvm-x" onclick="closeProjForm()" aria-label="關閉">✕</button></div>
       <div class="dvm-body">
+
+        <div class="apj-sec first">① 基本資訊</div>
         <div class="apj-grid2">
           <div class="bov-field"><label>建案名稱 *</label><input type="text" id="apjName" placeholder="譽誠○○苑" /></div>
           <div class="bov-field"><label>地區 *</label><input type="text" id="apjLoc" placeholder="桃園市中壢區" /></div>
@@ -242,17 +250,51 @@
           <div class="bov-field"><label>卡片標籤</label><input type="text" id="apjTag" placeholder="新上架 / 熱銷中…" /></div>
           <div class="bov-field"><label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;margin-top:1.55rem;"><input type="checkbox" id="apjTagHot" style="width:auto;margin:0;" /> 金色標籤</label></div>
         </div>
-        <div class="bov-field"><label>排序（數字小的排前面）</label><input type="number" id="apjSort" placeholder="100" /></div>
-        <div class="bov-field"><label>房型徽章（逗號分隔）</label><input type="text" id="apjBadges" placeholder="2-3 房, 輕裝修, 捷運步行 5 分" /></div>
+        <div class="apj-grid2">
+          <div class="bov-field"><label>房型徽章（逗號分隔）</label><input type="text" id="apjBadges" placeholder="2-3 房, 輕裝修, 捷運步行 5 分" /></div>
+          <div class="bov-field"><label>排序（數字小的排前面）</label><input type="number" id="apjSort" placeholder="100" /></div>
+        </div>
         <div class="bov-field"><label>建案說明 *</label><textarea id="apjDesc" rows="4" placeholder="建案介紹文字…"></textarea></div>
-        <div class="bov-field"><label>規格（每行「標籤|內容」，選填）</label><textarea id="apjSpecs" rows="3" placeholder="基地面積|452.60坪&#10;樓層規劃|地上15層"></textarea></div>
-        <div class="bov-field"><label>交通（每行一項，選填）</label><textarea id="apjTrans" rows="2" placeholder="捷運中壢站步行5分鐘"></textarea></div>
-        <div class="bov-field"><label>生活機能（每行一項，選填）</label><textarea id="apjAmen" rows="2" placeholder="遠東百貨"></textarea></div>
+
+        <div class="apj-sec">② 建築團隊與建照　<small>以下皆選填，有填官網才會顯示</small></div>
+        <div class="apj-grid2">
+          <div class="bov-field"><label>投資建設</label><input type="text" id="apjBuilder" placeholder="譽誠建設開發" /></div>
+          <div class="bov-field"><label>營造公司</label><input type="text" id="apjConstruction" placeholder="○○營造" /></div>
+        </div>
+        <div class="apj-grid2">
+          <div class="bov-field"><label>建築設計</label><input type="text" id="apjArchitect" placeholder="○○建築師事務所" /></div>
+          <div class="bov-field"><label>建照號碼</label><input type="text" id="apjPermit" placeholder="(113)桃市都建字第0888號" /></div>
+        </div>
+
+        <div class="apj-sec">③ 規格與格局</div>
+        <div class="apj-grid2">
+          <div class="bov-field"><label>公設比</label><input type="text" id="apjRatio" placeholder="32.5%" /></div>
+          <div class="bov-field"><label>車位規劃</label><input type="text" id="apjParking" placeholder="坡道平面 96 席，另計 138–150 萬" /></div>
+        </div>
+        <div class="apj-grid2">
+          <div class="bov-field"><label>管理費</label><input type="text" id="apjMgmtFee" placeholder="每坪 85 元/月" /></div>
+          <div class="bov-field"><label>預計交屋</label><input type="text" id="apjHandover" placeholder="2026年Q4 / 已完工" /></div>
+        </div>
+        <div class="bov-field"><label>其他規格（每行「標籤|內容」）</label><textarea id="apjSpecs" rows="3" placeholder="基地面積|452.60坪&#10;樓層規劃|地上15層、地下2層&#10;建築構造|RC構造"></textarea></div>
+        <div class="bov-field"><label>可售格局（每行「格局|坪數|總價|狀態」，狀態可填：可售/保留中/僅剩2戶…）</label><textarea id="apjUnitsInfo" rows="3" placeholder="2房2廳1衛|28坪|988萬起|可售&#10;3房2廳2衛|35坪|1,180萬起|保留中"></textarea></div>
+
+        <div class="apj-sec">④ 交通與周邊</div>
+        <div class="bov-field"><label>交通（每行一項）</label><textarea id="apjTrans" rows="2" placeholder="捷運中壢站步行5分鐘"></textarea></div>
+        <div class="bov-field"><label>生活機能（每行一項）</label><textarea id="apjAmen" rows="2" placeholder="遠東百貨"></textarea></div>
+        <div class="bov-field"><label>學區（每行一項）</label><textarea id="apjSchools" rows="2" placeholder="中壢國小（步行6分鐘）&#10;中壢國中"></textarea></div>
+        <div class="bov-field"><label>Google 地圖連結（留空自動用地址搜尋）</label><input type="url" id="apjMap" placeholder="https://maps.app.goo.gl/…" /></div>
+
+        <div class="apj-sec">⑤ 社區公設與影音</div>
+        <div class="bov-field"><label>社區公設（每行一項）</label><textarea id="apjFac" rows="2" placeholder="迎賓大廳&#10;健身房&#10;空中花園"></textarea></div>
+        <div class="bov-field"><label>建案影片連結（YouTube 網址，官網詳情頁會內嵌播放）</label><input type="url" id="apjVideo" placeholder="https://www.youtube.com/watch?v=…" /></div>
+
+        <div class="apj-sec">⑥ 建案圖片　<small>第 1 張為封面，點 ✕ 可移除</small></div>
         <div class="bov-field">
-          <label>建案圖片（最多 15 張，第 1 張為封面）　<b id="apjImgCount">0/15</b></label>
+          <label>上傳圖片（最多 15 張）　<b id="apjImgCount">0/15</b></label>
           <input type="file" id="apjFiles" accept="image/*" multiple onchange="apjAddFiles(this)" />
           <div id="apjThumbs" class="apj-thumbs"></div>
         </div>
+
         <button class="bov-btn" id="apjSaveBtn" onclick="saveProjForm()">儲存並刊登</button>
         <div class="dvm-note" style="margin-top:.9rem;">儲存後官網首頁與報備下拉立即更新；可隨時在列表中下架或刪除。</div>
       </div>
@@ -519,6 +561,19 @@ function openProjForm(id) {
   document.getElementById('apjSpecs').value = p ? (p.specs || '') : '';
   document.getElementById('apjTrans').value = p ? (p.transport || '') : '';
   document.getElementById('apjAmen').value = p ? (p.amenities || '') : '';
+  document.getElementById('apjBuilder').value = p ? (p.builder || '') : '';
+  document.getElementById('apjConstruction').value = p ? (p.construction || '') : '';
+  document.getElementById('apjArchitect').value = p ? (p.architect || '') : '';
+  document.getElementById('apjPermit').value = p ? (p.permit || '') : '';
+  document.getElementById('apjHandover').value = p ? (p.handover || '') : '';
+  document.getElementById('apjRatio').value = p ? (p.public_ratio || '') : '';
+  document.getElementById('apjParking').value = p ? (p.parking || '') : '';
+  document.getElementById('apjMgmtFee').value = p ? (p.mgmt_fee || '') : '';
+  document.getElementById('apjUnitsInfo').value = p ? (p.units_info || '') : '';
+  document.getElementById('apjSchools').value = p ? (p.schools || '') : '';
+  document.getElementById('apjFac').value = p ? (p.facilities || '') : '';
+  document.getElementById('apjVideo').value = p ? (p.video_url || '') : '';
+  document.getElementById('apjMap').value = p ? (p.map_url || '') : '';
   document.getElementById('apjFiles').value = '';
   apjRenderThumbs();
   document.getElementById('admProjModal').classList.add('open');
@@ -598,25 +653,39 @@ async function saveProjForm() {
       urls.push(_sb.storage.from('project-images').getPublicUrl(path).data.publicUrl);
     }
     btn.textContent = '儲存中…';
+    const val = id => document.getElementById(id).value.trim();
     const row = {
       name: name, location: loc,
-      address: document.getElementById('apjAddr').value.trim(),
+      address: val('apjAddr'),
       price: price,
-      price_note: document.getElementById('apjPriceNote').value.trim(),
-      tag: document.getElementById('apjTag').value.trim(),
+      price_note: val('apjPriceNote'),
+      tag: val('apjTag'),
       tag_hot: document.getElementById('apjTagHot').checked,
-      badges: document.getElementById('apjBadges').value.trim(),
+      badges: val('apjBadges'),
       description: desc,
-      specs: document.getElementById('apjSpecs').value.trim(),
-      transport: document.getElementById('apjTrans').value.trim(),
-      amenities: document.getElementById('apjAmen').value.trim(),
+      specs: val('apjSpecs'),
+      transport: val('apjTrans'),
+      amenities: val('apjAmen'),
       images: urls.slice(0, 15),
       sort: parseInt(document.getElementById('apjSort').value, 10) || 100,
       updated_at: new Date().toISOString()
     };
-    let err;
-    if (apjEdit.id) { ({ error: err } = await _sb.from('projects').update(row).eq('id', apjEdit.id)); }
-    else { row.id = apjEdit.newId; row.published = true; ({ error: err } = await _sb.from('projects').insert(row)); }
+    // 擴充欄位（需先執行 projects_upgrade.sql；若資料庫尚未升級會自動退回只存基本欄位）
+    const extra = {
+      builder: val('apjBuilder'), construction: val('apjConstruction'), architect: val('apjArchitect'),
+      permit: val('apjPermit'), handover: val('apjHandover'), public_ratio: val('apjRatio'),
+      parking: val('apjParking'), mgmt_fee: val('apjMgmtFee'), units_info: val('apjUnitsInfo'),
+      facilities: val('apjFac'), schools: val('apjSchools'), video_url: val('apjVideo'), map_url: val('apjMap')
+    };
+    const doSave = async r => {
+      if (apjEdit.id) return (await _sb.from('projects').update(r).eq('id', apjEdit.id)).error;
+      return (await _sb.from('projects').insert(Object.assign({ id: apjEdit.newId, published: true }, r))).error;
+    };
+    let err = await doSave(Object.assign({}, row, extra));
+    if (err && /column|schema/i.test(err.message)) {
+      err = await doSave(row);
+      if (!err) alert('已儲存基本欄位。\n偵測到資料庫尚未升級：建築團隊、公設、學區、影片等新欄位這次沒有存進去。\n請在 Supabase SQL Editor 執行專案根目錄的 projects_upgrade.sql，之後再編輯一次即可。');
+    }
     if (err) throw new Error(err.message);
     closeProjForm();
     loadAdmProjects();

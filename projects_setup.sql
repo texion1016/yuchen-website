@@ -20,6 +20,19 @@ create table if not exists projects (
   transport text,                     -- 交通，每行一項
   amenities text,                     -- 生活機能，每行一項
   images jsonb default '[]'::jsonb,   -- 圖片網址陣列（最多 15，第 1 張為封面）
+  builder text,                       -- 投資建設
+  construction text,                  -- 營造公司
+  architect text,                     -- 建築設計
+  permit text,                        -- 建照號碼
+  handover text,                      -- 預計交屋
+  public_ratio text,                  -- 公設比
+  parking text,                       -- 車位規劃
+  mgmt_fee text,                      -- 管理費
+  units_info text,                    -- 可售格局，每行「格局|坪數|總價|狀態」
+  facilities text,                    -- 社區公設，每行一項
+  schools text,                       -- 學區，每行一項
+  video_url text,                     -- 建案影片連結（YouTube）
+  map_url text,                       -- Google 地圖連結（留空自動用地址）
   published boolean default true,     -- 刊登中
   sort int default 100,               -- 排序（小的在前）
   created_at timestamptz default now(),

@@ -1981,6 +1981,8 @@ const PROJECT_DATA = {
     ],
     transport: ['中壢火車站步行8分鐘','捷運中壢站步行5分鐘','國道一號中壢交流道車程3分鐘'],
     amenities: ['中壢遠東百貨', 'SOGO百貨', '中壢市場', '壢新醫院', '中原大學', '中壢高中'],
+    facilities: ['迎賓大廳','健身房','交誼廳','兒童遊戲區','閱覽室','空中花園'],
+    schools: ['中壢國小（步行6分鐘）','中壢國中（步行10分鐘）','中壢高中'],
   },
   '譽誠和風居': {
     tag: '熱銷中', tagClass: '',
@@ -2013,6 +2015,8 @@ const PROJECT_DATA = {
     ],
     transport: ['輔大站步行6分鐘','新莊站車程5分鐘','台65快速道路匝道車程2分鐘'],
     amenities: ['新莊廟街商圈', '新莊棒球場', '輔仁大學', '新莊國泰醫院', '宏匯廣場', '家樂福新莊店'],
+    facilities: ['日式枯山水中庭','茶道室','健身房','空中花園','宴會交誼廳','視聽室'],
+    schools: ['新莊國小（步行5分鐘）','新莊國中（步行8分鐘）','輔仁大學'],
   },
   '譽誠晴山苑': {
     tag: '即將完工', tagClass: '',
@@ -2045,6 +2049,8 @@ const PROJECT_DATA = {
     ],
     transport: ['台灣大道幹線公車直達','中港路快速通道','台中高速公路交流道車程8分鐘'],
     amenities: ['新光三越台中中港店', '大遠百台中店', '台中榮總', '逢甲大學商圈', '秋紅谷公園', '台中市政府'],
+    facilities: ['無邊際泳池','景觀健身房','宴會廳','瑜珈教室','媽媽教室','高空觀景酒吧'],
+    schools: ['惠來國小','至善國中','逢甲大學'],
   },
   '譽誠星曜': {
     tag: '夜景戶', tagClass: '',
@@ -2078,6 +2084,8 @@ const PROJECT_DATA = {
     ],
     transport: ['內湖站步行3分鐘','國道一號汐止系統連接','台北市快速道路環狀線'],
     amenities: ['內湖科技園區', '家樂福內湖店', '內湖三軍總醫院', '大湖公園', '碧山巖', '美麗華百樂園'],
+    facilities: ['空中泳池','私人影音劇院','行政酒廊','健身中心','溫水SPA','飯店式管家櫃台'],
+    schools: ['西湖國小（步行4分鐘）','麗山國中','德明財經科技大學'],
   },
   '譽誠綠意村': {
     tag: '新案', tagClass: 'new',
@@ -2110,6 +2118,8 @@ const PROJECT_DATA = {
     ],
     transport: ['竹北火車站步行10分鐘','台68快速道路東西向','高鐵新竹站車程8分鐘'],
     amenities: ['遠東巨城購物中心', '竹北市立圖書館', '竹北國泰醫院', '新竹科學園區', '縣政文化園區', '新瓦屋客家文化保存區'],
+    facilities: ['生態中庭花園','太陽能公共電力','健身房','親子共讀室','洗衣代收站','雨水回收澆灌系統'],
+    schools: ['東興國小（步行7分鐘）','東興國中','新竹縣實驗中學'],
   },
 };
 
@@ -2166,6 +2176,38 @@ function openProjDetail(name) {
     `<span class="pd-amenity-tag">${a}</span>`
   ).join('');
 
+  // 可售格局：沒資料就整段隱藏
+  document.getElementById('pdUnitsWrap').style.display = (d.units && d.units.length) ? '' : 'none';
+
+  // 學區 + 社區公設（沒填的卡片隱藏；只剩一張時佔滿整列）
+  const sch = d.schools || [], fac = d.facilities || [];
+  document.getElementById('pdSchools').innerHTML = sch.map(t => `<li class="pd-transport-item">${t}</li>`).join('');
+  document.getElementById('pdFacilities').innerHTML = fac.map(a => `<span class="pd-amenity-tag">${a}</span>`).join('');
+  const schCard = document.getElementById('pdSchoolsCard'), facCard = document.getElementById('pdFacilitiesCard');
+  schCard.style.display = sch.length ? '' : 'none';
+  facCard.style.display = fac.length ? '' : 'none';
+  schCard.style.gridColumn = (sch.length && !fac.length) ? '1 / -1' : '';
+  facCard.style.gridColumn = (fac.length && !sch.length) ? '1 / -1' : '';
+  document.getElementById('pdExtraWrap').style.display = (sch.length || fac.length) ? 'grid' : 'none';
+
+  // 建案影片：YouTube 內嵌，其他網址顯示連結
+  const vWrap = document.getElementById('pdVideoWrap'), vBox = document.getElementById('pdVideoBox'),
+        vFrame = document.getElementById('pdVideoFrame'), vLink = document.getElementById('pdVideoLink');
+  const ytm = String(d.videoUrl || '').match(/(?:youtu\.be\/|[?&]v=|\/shorts\/|\/embed\/)([\w-]{6,})/);
+  if (ytm) {
+    vFrame.src = 'https://www.youtube.com/embed/' + ytm[1];
+    vBox.style.display = ''; vLink.style.display = 'none'; vWrap.style.display = '';
+  } else if (d.videoUrl) {
+    vFrame.src = ''; vBox.style.display = 'none';
+    vLink.href = d.videoUrl; vLink.style.display = 'inline-block'; vWrap.style.display = '';
+  } else {
+    vFrame.src = ''; vWrap.style.display = 'none';
+  }
+
+  // 地圖連結：自訂連結優先，否則用地址開 Google 地圖
+  document.getElementById('pdMapLink').href =
+    d.mapUrl || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(d.address || name));
+
   // Fill project in booking form
   try {
     const sel = document.getElementById('bkProject');
@@ -2189,6 +2231,7 @@ function openProjDetail(name) {
 function closeProjDetail() {
   document.getElementById('projDetailOverlay').style.display = 'none';
   document.body.style.overflow = '';
+  try { document.getElementById('pdVideoFrame').src = ''; } catch(e) {}
 }
 
 // Close on Escape
@@ -2264,7 +2307,10 @@ function decoConsult() {
       <div>
         <span id="pdHeroTag" class="project-tag" style="position:relative;margin-bottom:.6rem;display:inline-block;">新上架</span>
         <div style="font-family:'Noto Serif TC',serif;font-size:2rem;font-weight:700;color:#fff;text-shadow:0 2px 16px rgba(0,0,0,.4)" id="pdHeroName">建案名稱</div>
-        <div style="font-size:.85rem;color:rgba(255,255,255,.8);margin-top:.3rem" id="pdHeroAddr">📍 地址</div>
+        <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-top:.3rem;">
+          <span style="font-size:.85rem;color:rgba(255,255,255,.8)" id="pdHeroAddr">📍 地址</span>
+          <a id="pdMapLink" href="#" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="font-size:.7rem;color:#fff;border:1px solid rgba(255,255,255,.5);border-radius:20px;padding:.18rem .7rem;text-decoration:none;letter-spacing:.04em;background:rgba(0,0,0,.25);transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(255,255,255,.95)'" onmouseout="this.style.borderColor='rgba(255,255,255,.5)'">地圖 ↗</a>
+        </div>
       </div>
       <div style="text-align:right;">
         <div style="font-size:2rem;font-weight:700;color:#fff;font-family:'Noto Serif TC',serif;text-shadow:0 2px 8px rgba(0,0,0,.4)" id="pdHeroPrice">000萬起</div>
@@ -2292,13 +2338,13 @@ function decoConsult() {
     </div>
 
     <!-- Units -->
-    <div style="margin-bottom:2.5rem;padding-bottom:2rem;border-bottom:1px solid #D8D2C0;">
+    <div id="pdUnitsWrap" style="margin-bottom:2.5rem;padding-bottom:2rem;border-bottom:1px solid #D8D2C0;">
       <div style="font-family:'Noto Serif TC',serif;font-size:1.05rem;font-weight:700;color:#2F4A3E;margin-bottom:1.2rem;letter-spacing:.05em;">可售格局</div>
       <div id="pdUnits" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.85rem;"></div>
     </div>
 
     <!-- Transport + Amenities side by side -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2.5rem;">
+    <div id="pdTaWrap" style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
       <div style="background:#fff;border-radius:14px;padding:1.3rem 1.5rem;border:1.5px solid #E5E1D2;">
         <div style="font-family:'Noto Serif TC',serif;font-size:.9rem;font-weight:700;color:#2F4A3E;margin-bottom:1rem;">🚇 交通便利</div>
         <ul id="pdTransport" style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.6rem;"></ul>
@@ -2307,6 +2353,27 @@ function decoConsult() {
         <div style="font-family:'Noto Serif TC',serif;font-size:.9rem;font-weight:700;color:#2F4A3E;margin-bottom:1rem;">🏪 生活機能</div>
         <div id="pdAmenities" style="display:flex;flex-wrap:wrap;gap:.4rem;"></div>
       </div>
+    </div>
+
+    <!-- Schools + Community facilities -->
+    <div id="pdExtraWrap" style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2.5rem;">
+      <div id="pdSchoolsCard" style="background:#fff;border-radius:14px;padding:1.3rem 1.5rem;border:1.5px solid #E5E1D2;">
+        <div style="font-family:'Noto Serif TC',serif;font-size:.9rem;font-weight:700;color:#2F4A3E;margin-bottom:1rem;">🏫 明星學區</div>
+        <ul id="pdSchools" style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.6rem;"></ul>
+      </div>
+      <div id="pdFacilitiesCard" style="background:#fff;border-radius:14px;padding:1.3rem 1.5rem;border:1.5px solid #E5E1D2;">
+        <div style="font-family:'Noto Serif TC',serif;font-size:.9rem;font-weight:700;color:#2F4A3E;margin-bottom:1rem;">🏛️ 社區公設</div>
+        <div id="pdFacilities" style="display:flex;flex-wrap:wrap;gap:.4rem;"></div>
+      </div>
+    </div>
+
+    <!-- Video -->
+    <div id="pdVideoWrap" style="display:none;margin-bottom:2.5rem;">
+      <div style="font-family:'Noto Serif TC',serif;font-size:1.05rem;font-weight:700;color:#2F4A3E;margin-bottom:1.2rem;letter-spacing:.05em;">建案影片</div>
+      <div id="pdVideoBox" style="position:relative;padding-top:56.25%;border-radius:14px;overflow:hidden;background:#0F1926;">
+        <iframe id="pdVideoFrame" src="" title="建案影片" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      <a id="pdVideoLink" href="#" target="_blank" rel="noopener" style="display:none;font-size:.85rem;color:#1A3A5F;font-weight:600;text-decoration:none;">▶ 觀看建案影片 ↗</a>
     </div>
 
     <!-- CTA -->
@@ -4421,6 +4488,12 @@ document.querySelectorAll('.btn').forEach(btn => {
   border: 1px solid var(--ov-line) !important;
   border-radius: 14px !important;
   box-shadow: 0 2px 12px rgba(15,25,35,0.05) !important;
+}
+
+/* 手機版：交通/機能、學區/公設 卡片改單欄 */
+@media (max-width: 680px) {
+  #pdTaWrap, #pdExtraWrap { grid-template-columns: 1fr !important; }
+  #pdExtraWrap > div { grid-column: auto !important; }
 }
 
 /* Booking CTA at bottom */
@@ -6928,6 +7001,18 @@ async function loadDynamicProjects() {
     // 2) 注入詳情資料（點卡片開啟建案詳情用）
     data.forEach(p => {
       const imgs = Array.isArray(p.images) ? p.images : [];
+      const old = PROJECT_DATA[p.name] || {};
+      const sv = k => (typeof p[k] === 'string' && p[k].trim()) ? p[k].trim() : '';
+      // 結構化欄位併入規格表（沒填的略過）
+      const structured = [
+        ['公設比', 'public_ratio'], ['車位規劃', 'parking'], ['管理費', 'mgmt_fee'], ['預計交屋', 'handover'],
+        ['投資建設', 'builder'], ['營造公司', 'construction'], ['建築設計', 'architect'], ['建照號碼', 'permit']
+      ].map(([lab, k]) => sv(k) ? { label: lab, value: sv(k) } : null).filter(Boolean);
+      // 可售格局：每行「格局|坪數|總價|狀態」
+      const unitRows = lines(p.units_info).map(l => {
+        const c = l.split('|').map(s => s.trim());
+        return { type: c[0] || '', area: c[1] || '', price: c[2] || '', status: c[3] || '可售' };
+      }).filter(u => u.type);
       PROJECT_DATA[p.name] = {
         tag: p.tag || '',
         tagClass: p.tag_hot ? 'new' : '',
@@ -6938,10 +7023,14 @@ async function loadDynamicProjects() {
         desc: p.description || '',
         img: imgs[0] || '',
         gallery: imgs.slice(1),
-        specs: lines(p.specs).map(l => { const ix = l.indexOf('|'); return ix > -1 ? { label: l.slice(0, ix).trim(), value: l.slice(ix + 1).trim() } : { label: '', value: l }; }),
-        units: (PROJECT_DATA[p.name] && PROJECT_DATA[p.name].units) || [],
+        specs: lines(p.specs).map(l => { const ix = l.indexOf('|'); return ix > -1 ? { label: l.slice(0, ix).trim(), value: l.slice(ix + 1).trim() } : { label: '', value: l }; }).concat(structured),
+        units: unitRows.length ? unitRows : (old.units || []),
         transport: lines(p.transport),
-        amenities: lines(p.amenities)
+        amenities: lines(p.amenities),
+        schools: lines(p.schools).length ? lines(p.schools) : (old.schools || []),
+        facilities: lines(p.facilities).length ? lines(p.facilities) : (old.facilities || []),
+        videoUrl: sv('video_url'),
+        mapUrl: sv('map_url')
       };
     });
 

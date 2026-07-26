@@ -242,6 +242,7 @@
           <div class="bov-field"><label>卡片標籤</label><input type="text" id="apjTag" placeholder="新上架 / 熱銷中…" /></div>
           <div class="bov-field"><label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;margin-top:1.55rem;"><input type="checkbox" id="apjTagHot" style="width:auto;margin:0;" /> 金色標籤</label></div>
         </div>
+        <div class="bov-field"><label>排序（數字小的排前面）</label><input type="number" id="apjSort" placeholder="100" /></div>
         <div class="bov-field"><label>房型徽章（逗號分隔）</label><input type="text" id="apjBadges" placeholder="2-3 房, 輕裝修, 捷運步行 5 分" /></div>
         <div class="bov-field"><label>建案說明 *</label><textarea id="apjDesc" rows="4" placeholder="建案介紹文字…"></textarea></div>
         <div class="bov-field"><label>規格（每行「標籤|內容」，選填）</label><textarea id="apjSpecs" rows="3" placeholder="基地面積|452.60坪&#10;樓層規劃|地上15層"></textarea></div>
@@ -513,6 +514,7 @@ function openProjForm(id) {
   document.getElementById('apjTag').value = p ? (p.tag || '') : '';
   document.getElementById('apjTagHot').checked = p ? !!p.tag_hot : false;
   document.getElementById('apjBadges').value = p ? (p.badges || '') : '';
+  document.getElementById('apjSort').value = p ? (p.sort == null ? 100 : p.sort) : 100;
   document.getElementById('apjDesc').value = p ? (p.description || '') : '';
   document.getElementById('apjSpecs').value = p ? (p.specs || '') : '';
   document.getElementById('apjTrans').value = p ? (p.transport || '') : '';
@@ -609,6 +611,7 @@ async function saveProjForm() {
       transport: document.getElementById('apjTrans').value.trim(),
       amenities: document.getElementById('apjAmen').value.trim(),
       images: urls.slice(0, 15),
+      sort: parseInt(document.getElementById('apjSort').value, 10) || 100,
       updated_at: new Date().toISOString()
     };
     let err;

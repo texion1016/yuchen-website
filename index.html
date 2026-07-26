@@ -6872,7 +6872,7 @@ async function loadDynamicProjects() {
         img: imgs[0] || '',
         gallery: imgs.slice(1),
         specs: lines(p.specs).map(l => { const ix = l.indexOf('|'); return ix > -1 ? { label: l.slice(0, ix).trim(), value: l.slice(ix + 1).trim() } : { label: '', value: l }; }),
-        units: [],
+        units: (PROJECT_DATA[p.name] && PROJECT_DATA[p.name].units) || [],
         transport: lines(p.transport),
         amenities: lines(p.amenities)
       };

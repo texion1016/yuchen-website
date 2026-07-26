@@ -1,0 +1,280 @@
+-- ═══════════════════════════════════════════════════════════════════════════
+--  譽誠聯合銷售平台 — 資料庫 SQL 執行紀錄與注解
+--  最後確認：2026-07-26（直接連線 Supabase 逐項實測，非憑記憶）
+--
+--  這份檔案不是拿來執行的，是「這個網站的資料庫是怎麼一步步長出來的」的說明書。
+--  想知道某張表為什麼存在、某個權限是為了哪個功能開的，翻這裡。
+--
+--  ── Supabase 權限是兩層，這是本專案最常踩的坑 ──────────────────
+--    第 1 層 GRANT   ：Postgres 表層權限。缺了會報 "permission denied for table"
+--    第 2 層 RLS policy：列層權限。缺了不會報錯，而是「靜靜地影響 0 筆」
+--    兩層都通過才動得了資料。看到 permission denied 就是缺 GRANT，不是缺 policy。
+--
+--  ── 目前安全姿態（已知並接受的取捨）──────────────────────────
+--    所有 policy 都是 USING (true)，等於完全開放。任何人從網頁原始碼撈到 anon key
+--    就能讀寫全部資料。目前靠「沒人會無聊到爬我的網頁代碼」擋著。
+--    等真的有客戶資料進來之前，值得回頭收緊 client_registrations 與 brokers。
+-- ═══════════════════════════════════════════════════════════════════════════
+
+
+-- ═══════════════════════════════════════════════════════════════════════════
+--  執行順序總表
+-- ───────────────────────────────────────────────────────────────────────────
+--  順序   你的編號   內容                          狀態        重跑安全？
+--  ①      第八個     建立四張核心資料表            ✅ 已執行   ⚠ policy 會報錯
+--  ②      第七個     四張表開放 anon 讀寫          ✅ 已執行   ✅ 安全
+--  ③      第五個     報備單加「帶看日期／時段」    ✅ 已執行   ⚠ 欄位會報錯
+--  ④      第六個     仲介加「經紀人證號」          ✅ 已執行   ⚠ 欄位會報錯
+--  ⑤      第三個     報備單開放修改（GRANT 層）    ✅ 已執行   ✅ 安全
+--  ⑥      第四個     報備單開放修改（policy 層）   ✅ 已執行   ✅ 安全
+--  ⑦      第一個     戶況系統（units + 成交表）    ✅ 已執行   ✅ 安全
+--  ⑧      第二個     仲介啟用／停用／刪除          ✅ 已執行   ⚠ policy 會報錯
+--  ⑨      —          projects_upgrade.sql          ❌ 尚未執行  ✅ 安全
+-- ═══════════════════════════════════════════════════════════════════════════
+
+
+
+-- ╔═════════════════════════════════════════════════════════════════════════╗
+-- ║  ① 【你的第八個】建立四張核心資料表                         ✅ 已執行  ║
+-- ╚═════════════════════════════════════════════════════════════════════════╝
+--
+--  用途：整個網站的地基。第一支跑的 SQL，把四個業務實體建出來。
+--
+--    brokers               合作仲介的帳號。email 設 unique（同一信箱不能重複註冊），
+--                          password_hash 存密碼，status 預設 'pending' 代表待審核。
+--    client_registrations  客戶報備單。registration_no 是對外的報備編號（unique，
+--                          防重複）；broker_id 外鍵指回是誰報的；同時把
+--                          broker_name / broker_company 冗餘存一份，這樣就算之後
+--                          仲介帳號被刪，歷史報備單上還看得到當初是誰報的。
+--    bookings              預約帶看。
+--    inquiries             官網「聯絡我們」表單送來的案件詢問。
+--
+--  同時做了：四張表都 ENABLE ROW LEVEL SECURITY，並各建 SELECT + INSERT policy。
+--
+--  ⚠ 這裡只開了 SELECT 和 INSERT，沒開 UPDATE / DELETE。
+--    這就是後面 ⑤⑥⑧ 三支 SQL 存在的原因 —— 後台要「改狀態」「刪仲介」時才發現
+--    當初沒開，只好一項一項補。
+--
+--  ⚠ 重跑會失敗：CREATE TABLE 有 IF NOT EXISTS 所以安全，但 CREATE POLICY 沒有，
+--    重跑會報 42710 policy already exists。要重跑請見本檔最後的「安全重跑版」。
+
+
+-- ╔═════════════════════════════════════════════════════════════════════════╗
+-- ║  ② 【你的第七個】四張表開放 anon 讀寫                       ✅ 已執行  ║
+-- ╚═════════════════════════════════════════════════════════════════════════╝
+--
+--  用途：補上①漏掉的第 1 層權限（GRANT）。
+--
+--  ①只建了 RLS policy，那是第 2 層。網站當時整個掛掉、前端報
+--  "permission denied for table brokers"，就是因為第 1 層沒開。
+--  這支 SQL 是本專案第一次撞上「權限兩層」的產物。
+--
+--  給 anon（未登入的網頁訪客身分）四張表的 INSERT + SELECT：
+--    brokers               → 讓訪客能自行註冊仲介帳號、登入時能查帳號
+--    client_registrations  → 讓仲介能送出報備單、能看自己報過的單
+--    bookings              → 讓預約帶看表單能送出
+--    inquiries             → 讓聯絡表單能送出
+--
+--  ✅ 重跑安全：GRANT 是冪等的，重複給同樣權限不會報錯。
+
+
+-- ╔═════════════════════════════════════════════════════════════════════════╗
+-- ║  ③ 【你的第五個】報備單加「帶看日期／時段」                 ✅ 已執行  ║
+-- ╚═════════════════════════════════════════════════════════════════════════╝
+--
+--    ALTER TABLE client_registrations ADD COLUMN view_date DATE;
+--    ALTER TABLE client_registrations ADD COLUMN view_time TEXT;
+--
+--  用途：讓一張報備單可以帶上「約好什麼時候去看房」。
+--
+--  這兩欄一路撐起三個功能：
+--    1. 仲介報備客戶時直接選帶看時間
+--    2. 後台與仲介專區的「改期」功能改的就是這兩欄
+--    3. 24 小時提醒信 —— pg_cron 每分鐘跑的 send_view_reminders() 就是拿
+--       view_date + view_time 去算「現在是不是剛好距離帶看前 24 小時」，
+--       是的話就經 Brevo 寄信給該仲介。（見 reminder_setup.sql）
+--
+--  view_time 刻意用 TEXT 不用 TIME，因為存的是「14:00」這種時段字串，
+--  也可能是「下午」這類非精確時間。
+--
+--  ⚠ 重跑會失敗：ADD COLUMN 沒寫 IF NOT EXISTS，重跑報 42701 column already exists。
+
+
+-- ╔═════════════════════════════════════════════════════════════════════════╗
+-- ║  ④ 【你的第六個】仲介加「經紀人證號」                       ✅ 已執行  ║
+-- ╚═════════════════════════════════════════════════════════════════════════╝
+--
+--    ALTER TABLE brokers ADD COLUMN license_no TEXT;
+--
+--  用途：存不動產經紀人／營業員證號。仲介註冊時填寫，後台合作仲介名單看得到。
+--  這是 B2B 平台的信任基礎 —— 審核帳號時要能核對對方是不是真的執業人員。
+--
+--  ⚠ 重跑會失敗：同③，缺 IF NOT EXISTS。
+
+
+-- ╔═════════════════════════════════════════════════════════════════════════╗
+-- ║  ⑤ 【你的第三個】報備單開放修改 — GRANT 層               ✅ 已執行  ║
+-- ╚═════════════════════════════════════════════════════════════════════════╝
+--
+--    GRANT UPDATE ON client_registrations TO anon, authenticated;
+--
+--  用途：權限兩層裡的「第 1 層」。①當初只開了 INSERT / SELECT，
+--  等到後台要把報備單改成「已成交／已取消」時才發現改不動。
+--
+--  這裡是表級授權（沒有指定欄位），所以整張表所有欄位都能改。
+--  對照⑧的 brokers 是欄級授權，只開 status 一欄 —— 那是比較嚴謹的做法。
+--
+--  ✅ 重跑安全。
+
+
+-- ╔═════════════════════════════════════════════════════════════════════════╗
+-- ║  ⑥ 【你的第四個】報備單開放修改 — RLS policy 層          ✅ 已執行  ║
+-- ╚═════════════════════════════════════════════════════════════════════════╝
+--
+--    DROP POLICY IF EXISTS "admin can update registrations" ON client_registrations;
+--    CREATE POLICY "admin can update registrations"
+--    ON client_registrations FOR UPDATE USING (true) WITH CHECK (true);
+--
+--  用途：⑤的另一半。⑤開了第 1 層，這支開第 2 層，兩層到齊才真的改得動。
+--
+--  這支是最典型的「兩層權限」示範：如果只跑⑤不跑⑥，後台按「已成交」
+--  不會跳任何錯誤訊息，但資料就是不會變 —— 因為 RLS 靜靜地把那筆濾掉了。
+--  這種沉默失敗比報錯更難查，記住這個症狀。
+--
+--    USING (true)      → 決定「哪些既有的列可以被改」，true = 全部
+--    WITH CHECK (true) → 決定「改完之後的新值可不可以被接受」，true = 都接受
+--
+--  ✅ 重跑安全 —— 這是八支裡唯一一支有寫 DROP POLICY IF EXISTS 的，寫法最正確。
+
+
+-- ╔═════════════════════════════════════════════════════════════════════════╗
+-- ║  ⑦ 【你的第一個】戶況系統：units + unit_deals              ✅ 已執行  ║
+-- ╚═════════════════════════════════════════════════════════════════════════╝
+--
+--  用途：建商專區的心臟。八支裡最大的一支，一次做完建表＋權限＋種子資料。
+--  檔案在專案根目錄 units_setup.sql。
+--
+--  【第 1 段】units 表 —— 一戶一列
+--    project_name + floor + unit_no 三個欄位組成 unique 鍵，
+--    代表「同一個建案、同一層、同一戶」在資料庫裡只會有一筆，防重複建檔。
+--    list_price（開價）  = 你開給客戶和仲介看的價格
+--    floor_price（底價）= 建商開給你的價格 —— 這兩個分開存是這套系統的關鍵，
+--                         中間的差額就是你的空間，只有你和建商看得到。
+--    status 四種狀態，直接對應建商專區平面圖上的四個顏色：
+--      'open' 未售 → 白底 ／ 'view' 帶看中 → 淺藍
+--      'hold' 已付定 → 淺綠 ／ 'sold' 已成交 → 深紅
+--
+--  【第 2 段】unit_deals 表 —— 成交與付定的明細
+--    一戶可以有多筆紀錄（付定 → 簽約 → 撥款 → 交屋，或是退定後重新來過），
+--    所以是獨立一張表而不是塞在 units 裡。
+--    on delete cascade：刪掉某一戶時，它底下的成交紀錄自動跟著刪，不留孤兒資料。
+--
+--  【第 3 段】權限
+--    RLS + GRANT 兩層一次寫齊 —— 這支是踩過②⑤⑥的坑之後才寫的，
+--    所以後來不需要再補任何權限 SQL。學到教訓了。
+--
+--  【第 4／5 段】種子資料：沐光苑 12層×5戶、星曜 15層×4戶，共 120 戶
+--    寫法解釋：上面的 values 列出每一層的狀態陣列，下面的 values 列出每一戶的
+--    房型規格，cross join 把兩邊交叉相乘展開成 60 列，再用 (f.sts)[u.idx]
+--    從該層的陣列裡取出第 idx 戶的狀態。
+--    這比手寫 60 行 INSERT 短得多，也不容易打錯。
+--    on conflict do nothing → 已經存在的戶別跳過，所以重跑不會覆蓋你後來改過的狀態。
+--
+--  【第 6 段】幫所有 sold 戶自動補一筆成交紀錄
+--    成交價先帶開價（之後可在後台「戶況管理」修正成真實成交價），
+--    成交日期用 row_number()*5 從 2026-01-10 開始每筆間隔 5 天拉開，
+--    純粹是為了讓示範資料看起來像真的有陸續在成交，不是同一天全部賣光。
+--
+--  【第 7 段】幫所有 hold（已付定）戶自動補一筆付定紀錄
+--    定金金額 = 開價數字 × 2%。regexp_replace(list_price,'\D','','g') 是把
+--    「1,028萬」這種字串裡的非數字全部拿掉變成 1028，再乘 0.02 四捨五入。
+--
+--    第 6、7 段都有 not exists 保護 —— 已經有紀錄的戶別不會被重複塞。
+--
+--  對應到網站上的：建商專區的 3D 大樓、點進去的平面樓層圖、點某一戶跳出的
+--  成交／帶看明細彈窗，以及後台「戶況管理」面板。改了狀態即時同步到建商那邊。
+--
+--  ✅ 重跑安全：on conflict do nothing + not exists 雙重保護。
+
+
+-- ╔═════════════════════════════════════════════════════════════════════════╗
+-- ║  ⑧ 【你的第二個】仲介啟用／停用／刪除                      ✅ 已執行  ║
+-- ╚═════════════════════════════════════════════════════════════════════════╝
+--
+--    GRANT UPDATE (status) ON brokers TO anon, authenticated;
+--    GRANT DELETE ON brokers TO anon, authenticated;
+--    CREATE POLICY "brokers manage" ON brokers FOR ALL USING (true) WITH CHECK (true);
+--
+--  用途：讓後台「合作仲介名單」的啟用／停用／刪除三顆按鈕能用。
+--
+--  ★ GRANT UPDATE (status) 括號裡的 status 是重點 —— 這是欄級授權，
+--    只有 status 這一欄能改，其他欄位（姓名、電話、密碼）動不了。
+--    這比⑤那種整張表都能改的做法安全得多。
+--
+--  ★ 欄級授權是累加的：之前為了「忘記密碼」功能已經給過
+--    GRANT UPDATE (password_hash)，跟這裡的 status 兩者並存。
+--    所以 brokers 目前只有 status 和 password_hash 兩欄可以被更新。
+--
+--  ★ FOR ALL 的 policy 涵蓋 SELECT/INSERT/UPDATE/DELETE 四種操作。
+--    它跟①建的 brokers_select_own、brokers_insert 是「或」的關係
+--    （多個 permissive policy 只要任一通過就放行），不衝突。
+--
+--  ⚠ 重跑會失敗：CREATE POLICY 沒有 DROP IF EXISTS，重跑報 42710 already exists。
+--
+--  2026-07-26 實測確認：GRANT 與 policy 兩層都已生效（對真實列做過無變更的
+--  self-update 驗證，回傳該列代表放行）。這支確定已經跑過了。
+
+
+-- ╔═════════════════════════════════════════════════════════════════════════╗
+-- ║  ⑨ projects_upgrade.sql — 建案 CMS 擴充欄位            ❌ 尚未執行  ║
+-- ╚═════════════════════════════════════════════════════════════════════════╝
+--
+--  用途：給 projects 表補上 13 個建案細節欄位，並幫原本五個建案填示範資料。
+--  檔案在專案根目錄 projects_upgrade.sql。
+--
+--    builder / construction / architect / permit   投資建設、營造、建築師、建照號碼
+--    handover / public_ratio / parking / mgmt_fee  交屋時間、公設比、車位、管理費
+--    units_info                                    可售格局（每行「格局|坪數|總價|狀態」）
+--    facilities / schools                          社區公設、學區
+--    video_url / map_url                           建案影片、Google 地圖
+--
+--  沒跑之前後台照常能用，只是這 13 欄存不進去 —— 儲存時會偵測到並跳提示
+--  告訴你去跑這支 SQL。跑完之後再進去編輯一次建案就會正常存了。
+--
+--  ✅ 重跑安全：ADD COLUMN IF NOT EXISTS。
+--  ⚠ 但重跑會把原本五個建案的示範欄位覆寫回預設值，不影響你自己新增的建案。
+
+
+
+-- ═══════════════════════════════════════════════════════════════════════════
+--  安全重跑版 —— 萬一哪天要重建資料庫再用這段
+--  上面①③④⑧四支重跑會報錯，原因都是少了「先刪再建」或 IF NOT EXISTS。
+--  下面是補好防護的版本，可以無限次重複執行。
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- ① 的 policy 部分（重跑安全版）
+-- drop policy if exists "brokers_select_own" on brokers;
+-- create policy "brokers_select_own" on brokers for select using (true);
+-- drop policy if exists "brokers_insert" on brokers;
+-- create policy "brokers_insert" on brokers for insert with check (true);
+-- drop policy if exists "reg_insert" on client_registrations;
+-- create policy "reg_insert" on client_registrations for insert with check (true);
+-- drop policy if exists "reg_select_all" on client_registrations;
+-- create policy "reg_select_all" on client_registrations for select using (true);
+-- drop policy if exists "booking_insert" on bookings;
+-- create policy "booking_insert" on bookings for insert with check (true);
+-- drop policy if exists "booking_select" on bookings;
+-- create policy "booking_select" on bookings for select using (true);
+-- drop policy if exists "inquiry_insert" on inquiries;
+-- create policy "inquiry_insert" on inquiries for insert with check (true);
+-- drop policy if exists "inquiry_select" on inquiries;
+-- create policy "inquiry_select" on inquiries for select using (true);
+
+-- ③④ 的欄位（重跑安全版）
+-- alter table client_registrations add column if not exists view_date date;
+-- alter table client_registrations add column if not exists view_time text;
+-- alter table brokers add column if not exists license_no text;
+
+-- ⑧ 的 policy（重跑安全版）
+-- drop policy if exists "brokers manage" on brokers;
+-- create policy "brokers manage" on brokers for all using (true) with check (true);

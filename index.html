@@ -4468,6 +4468,34 @@ document.querySelectorAll('.btn').forEach(btn => {
   font-size: .95rem !important;
 }
 
+/* 手機版：規格改成 591 式一行一條（左標籤、右內容） */
+@media (max-width: 680px) {
+  #pdSpecs { display: block !important; }
+  #pdSpecs .pd-spec-cell {
+    display: flex !important;
+    align-items: baseline !important;
+    justify-content: space-between !important;
+    gap: 1.2rem !important;
+    padding: .85rem 1.1rem !important;
+    border-bottom: 1px solid var(--ov-line) !important;
+  }
+  #pdSpecs .pd-spec-cell:last-child { border-bottom: none !important; }
+  #pdSpecs .pd-spec-label {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+    font-size: .78rem !important;
+    letter-spacing: .06em !important;
+    margin: 0 !important;
+  }
+  #pdSpecs .pd-spec-value {
+    flex: 1 1 auto !important;
+    text-align: right !important;
+    font-size: .86rem !important;
+    line-height: 1.6 !important;
+    overflow-wrap: anywhere !important;
+  }
+}
+
 /* Unit cards */
 #pdUnits > div {
   background: #fff !important;

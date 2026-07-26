@@ -127,6 +127,15 @@
   .mr-btn.mr-cancel { border-color: rgba(176,48,48,.35); background: #FDF4F4; color: #A03030; }
   .mr-btn.mr-cancel:hover { background: #A03030; color: #fff; }
 
+  /* 建案圖片縮圖 */
+  .apj-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem; }
+  .apj-thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); gap: .5rem; margin-top: .6rem; }
+  .apj-thumb { position: relative; aspect-ratio: 4/3; border-radius: 8px; overflow: hidden; border: 1px solid #D8D5CB; background: #F4F1E8; }
+  .apj-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .apj-thumb .x { position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; border: none; border-radius: 50%; background: rgba(10,18,30,.72); color: #fff; font-size: .64rem; cursor: pointer; line-height: 1; }
+  .apj-thumb .cover { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(26,58,95,.85); color: #E8D5AC; font-size: .6rem; text-align: center; padding: 1px 0; letter-spacing: .1em; }
+  @media (max-width: 560px) { .apj-grid2 { grid-template-columns: 1fr; } }
+
   /* 表格橫向捲動（窄螢幕） */
   #admRegContent, #admUnitContent, #admInqContent, #admBrokerContent, #admBookContent { overflow-x: auto; }
 
@@ -158,6 +167,7 @@
       <button class="adm-nav-btn" onclick="switchAdmPanel('registrations')">客戶報備</button>
       
       <button class="adm-nav-btn" onclick="switchAdmPanel('inquiries')">案件詢問</button>
+      <button class="adm-nav-btn" onclick="switchAdmPanel('projects')">建案管理</button>
       <button class="adm-nav-btn" onclick="switchAdmPanel('units')">戶況管理</button>
       <button class="adm-nav-btn" onclick="switchAdmPanel('brokers')">仲介管理</button>
       <button class="adm-nav-btn" onclick="openDevPortalFromAdmin()">建案戶況(檢視)</button>
@@ -179,6 +189,14 @@
           <button onclick="admExportRegsCSV()" style="background:#fff;border:1px solid #C7D2DE;color:#1A3A5F;border-radius:8px;padding:.45rem 1rem;font-size:.78rem;font-weight:600;cursor:pointer;font-family:inherit;transition:background .18s,color .18s;" onmouseover="this.style.background='#1A3A5F';this.style.color='#fff'" onmouseout="this.style.background='#fff';this.style.color='#1A3A5F'">⬇ 匯出 CSV</button>
         </div>
         <div id="admRegContent"><div class="adm-empty">載入中…</div></div>
+      </div>
+      <!-- 建案管理 -->
+      <div class="adm-panel" id="admProjects">
+        <div class="adm-title" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">建案管理
+          <button class="bov-btn" style="width:auto;padding:.5rem 1.2rem;font-size:.82rem;" onclick="openProjForm(null)">＋ 新增建案</button>
+        </div>
+        <div style="font-size:.74rem;color:#7A8CA0;margin:-.6rem 0 1rem;">刊登中的建案會即時顯示在官網首頁與報備下拉；圖片最多 15 張，第 1 張為封面。</div>
+        <div id="admProjContent"><div class="adm-empty">載入中…</div></div>
       </div>
       <!-- 戶況管理 -->
       <div class="adm-panel" id="admUnits">
@@ -202,6 +220,40 @@
       <div class="adm-panel" id="admBrokers">
         <div class="adm-title">合作仲介名單</div>
         <div id="admBrokerContent"><div class="adm-empty">載入中…</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 建案編輯彈窗 -->
+  <div id="admProjModal" class="dvm-bg" style="z-index:9900;" onclick="if(event.target===this)closeProjForm()">
+    <div class="dvm-card" style="max-width:600px;">
+      <div class="dvm-head"><b id="apjTitle">新增建案</b><button class="dvm-x" onclick="closeProjForm()" aria-label="關閉">✕</button></div>
+      <div class="dvm-body">
+        <div class="apj-grid2">
+          <div class="bov-field"><label>建案名稱 *</label><input type="text" id="apjName" placeholder="譽誠○○苑" /></div>
+          <div class="bov-field"><label>地區 *</label><input type="text" id="apjLoc" placeholder="桃園市中壢區" /></div>
+        </div>
+        <div class="bov-field"><label>詳細地址</label><input type="text" id="apjAddr" placeholder="中壢區中山路168號" /></div>
+        <div class="apj-grid2">
+          <div class="bov-field"><label>價格（萬起）*</label><input type="text" id="apjPrice" inputmode="numeric" placeholder="988" /></div>
+          <div class="bov-field"><label>價格備註</label><input type="text" id="apjPriceNote" placeholder="附基本輕裝修，即買即住" /></div>
+        </div>
+        <div class="apj-grid2">
+          <div class="bov-field"><label>卡片標籤</label><input type="text" id="apjTag" placeholder="新上架 / 熱銷中…" /></div>
+          <div class="bov-field"><label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;margin-top:1.55rem;"><input type="checkbox" id="apjTagHot" style="width:auto;margin:0;" /> 金色標籤</label></div>
+        </div>
+        <div class="bov-field"><label>房型徽章（逗號分隔）</label><input type="text" id="apjBadges" placeholder="2-3 房, 輕裝修, 捷運步行 5 分" /></div>
+        <div class="bov-field"><label>建案說明 *</label><textarea id="apjDesc" rows="4" placeholder="建案介紹文字…"></textarea></div>
+        <div class="bov-field"><label>規格（每行「標籤|內容」，選填）</label><textarea id="apjSpecs" rows="3" placeholder="基地面積|452.60坪&#10;樓層規劃|地上15層"></textarea></div>
+        <div class="bov-field"><label>交通（每行一項，選填）</label><textarea id="apjTrans" rows="2" placeholder="捷運中壢站步行5分鐘"></textarea></div>
+        <div class="bov-field"><label>生活機能（每行一項，選填）</label><textarea id="apjAmen" rows="2" placeholder="遠東百貨"></textarea></div>
+        <div class="bov-field">
+          <label>建案圖片（最多 15 張，第 1 張為封面）　<b id="apjImgCount">0/15</b></label>
+          <input type="file" id="apjFiles" accept="image/*" multiple onchange="apjAddFiles(this)" />
+          <div id="apjThumbs" class="apj-thumbs"></div>
+        </div>
+        <button class="bov-btn" id="apjSaveBtn" onclick="saveProjForm()">儲存並刊登</button>
+        <div class="dvm-note" style="margin-top:.9rem;">儲存後官網首頁與報備下拉立即更新；可隨時在列表中下架或刪除。</div>
       </div>
     </div>
   </div>
@@ -263,7 +315,7 @@ function switchAdmPanel(name) {
   document.querySelectorAll('.adm-nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('adm' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
   event.target.classList.add('active');
-  const loaders = { registrations: loadAdmRegs, inquiries: loadAdmInq, brokers: loadAdmBrokers, units: loadAdmUnits };
+  const loaders = { registrations: loadAdmRegs, inquiries: loadAdmInq, brokers: loadAdmBrokers, units: loadAdmUnits, projects: loadAdmProjects };
   if (loaders[name]) loaders[name]();
 }
 
@@ -416,6 +468,177 @@ async function admSaveUnitDetail() {
   if (error) { alert('儲存失敗：' + error.message); return; }
   admCloseUnitModal();
   loadAdmUnits();
+}
+
+// ── 建案管理 ──────────────────────────────────────────────
+let apjEdit = null; // { id, existing: [已上傳網址], pending: [待上傳檔案] }
+let _apjRows = [];
+
+async function loadAdmProjects() {
+  const el = document.getElementById('admProjContent');
+  el.innerHTML = '<div class="adm-empty">載入中…</div>';
+  const { data, error } = await _sb.from('projects').select('*').order('sort').order('created_at');
+  if (error) {
+    el.innerHTML = '<div class="adm-empty">讀取失敗：' + error.message + '<br>若尚未建表，請先在 Supabase SQL Editor 執行 projects_setup.sql</div>';
+    return;
+  }
+  _apjRows = data || [];
+  if (!_apjRows.length) {
+    el.innerHTML = '<div class="adm-empty">尚無建案資料。點右上「＋ 新增建案」建立第一筆，刊登後官網首頁即會顯示。</div>';
+    return;
+  }
+  el.innerHTML = '<table class="adm-table"><thead><tr><th>排序</th><th>建案</th><th>地區</th><th>價格</th><th>圖片</th><th>狀態</th><th>操作</th></tr></thead><tbody>'
+    + _apjRows.map(p => '<tr>'
+      + '<td>' + (p.sort == null ? '' : p.sort) + '</td>'
+      + '<td style="font-weight:700">' + p.name + '</td>'
+      + '<td>' + (p.location || '—') + '</td>'
+      + '<td>' + (p.price || '—') + ' 萬起</td>'
+      + '<td>' + ((p.images || []).length) + ' 張</td>'
+      + '<td><span class="adm-badge ' + (p.published ? 'active' : 'closed') + '">' + (p.published ? '刊登中' : '已下架') + '</span></td>'
+      + '<td><button class="mr-btn" onclick="openProjForm(\'' + p.id + '\')">編輯</button>'
+      + '<button class="mr-btn" onclick="apjTogglePublish(\'' + p.id + '\',' + (!p.published) + ')">' + (p.published ? '下架' : '刊登') + '</button>'
+      + '<button class="mr-btn mr-cancel" onclick="apjDelete(\'' + p.id + '\')">刪除</button></td>'
+      + '</tr>').join('') + '</tbody></table>';
+}
+
+function openProjForm(id) {
+  const p = id ? _apjRows.find(r => r.id === id) : null;
+  apjEdit = { id: id || null, newId: id ? null : crypto.randomUUID(), existing: p ? (p.images || []).slice() : [], pending: [] };
+  document.getElementById('apjTitle').innerText = p ? '編輯建案' : '新增建案';
+  document.getElementById('apjName').value = p ? p.name : '';
+  document.getElementById('apjLoc').value = p ? (p.location || '') : '';
+  document.getElementById('apjAddr').value = p ? (p.address || '') : '';
+  document.getElementById('apjPrice').value = p ? (p.price || '') : '';
+  document.getElementById('apjPriceNote').value = p ? (p.price_note || '') : '';
+  document.getElementById('apjTag').value = p ? (p.tag || '') : '';
+  document.getElementById('apjTagHot').checked = p ? !!p.tag_hot : false;
+  document.getElementById('apjBadges').value = p ? (p.badges || '') : '';
+  document.getElementById('apjDesc').value = p ? (p.description || '') : '';
+  document.getElementById('apjSpecs').value = p ? (p.specs || '') : '';
+  document.getElementById('apjTrans').value = p ? (p.transport || '') : '';
+  document.getElementById('apjAmen').value = p ? (p.amenities || '') : '';
+  document.getElementById('apjFiles').value = '';
+  apjRenderThumbs();
+  document.getElementById('admProjModal').classList.add('open');
+}
+function closeProjForm() {
+  document.getElementById('admProjModal').classList.remove('open');
+  apjEdit = null;
+}
+
+function apjAddFiles(input) {
+  if (!apjEdit) return;
+  const room = 15 - apjEdit.existing.length - apjEdit.pending.length;
+  const files = Array.from(input.files).slice(0, Math.max(0, room));
+  if (input.files.length > room) alert('圖片上限 15 張，已略過超出的 ' + (input.files.length - room) + ' 張');
+  apjEdit.pending.push(...files);
+  input.value = '';
+  apjRenderThumbs();
+}
+function apjRemoveImg(kind, idx) {
+  if (kind === 'e') apjEdit.existing.splice(idx, 1);
+  else apjEdit.pending.splice(idx, 1);
+  apjRenderThumbs();
+}
+function apjRenderThumbs() {
+  const total = apjEdit.existing.length + apjEdit.pending.length;
+  document.getElementById('apjImgCount').innerText = total + '/15';
+  let html = '';
+  apjEdit.existing.forEach((u, i) => {
+    html += '<div class="apj-thumb"><img src="' + u + '" />'
+      + (i === 0 ? '<span class="cover">封面</span>' : '')
+      + '<button class="x" onclick="apjRemoveImg(\'e\',' + i + ')">✕</button></div>';
+  });
+  apjEdit.pending.forEach((f, i) => {
+    const u = URL.createObjectURL(f);
+    const isCover = apjEdit.existing.length === 0 && i === 0;
+    html += '<div class="apj-thumb"><img src="' + u + '" />'
+      + (isCover ? '<span class="cover">封面</span>' : '')
+      + '<button class="x" onclick="apjRemoveImg(\'p\',' + i + ')">✕</button></div>';
+  });
+  document.getElementById('apjThumbs').innerHTML = html;
+}
+
+// 上傳前壓縮（最長邊 1600px，JPEG 82%）
+function apjCompress(file, maxW = 1600, q = 0.82) {
+  return new Promise(res => {
+    const img = new Image();
+    img.onload = () => {
+      const sc = Math.min(1, maxW / img.width);
+      const w = Math.round(img.width * sc), h = Math.round(img.height * sc);
+      const c = document.createElement('canvas'); c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      c.toBlob(b => res(b || file), 'image/jpeg', q);
+    };
+    img.onerror = () => res(file);
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+async function saveProjForm() {
+  if (!apjEdit) return;
+  const name = document.getElementById('apjName').value.trim();
+  const loc = document.getElementById('apjLoc').value.trim();
+  const price = document.getElementById('apjPrice').value.trim();
+  const desc = document.getElementById('apjDesc').value.trim();
+  if (!name || !loc || !price || !desc) { alert('請填寫建案名稱、地區、價格與建案說明'); return; }
+  if (apjEdit.existing.length + apjEdit.pending.length === 0) { alert('請至少上傳 1 張建案圖片'); return; }
+  const btn = document.getElementById('apjSaveBtn');
+  btn.disabled = true;
+  try {
+    const urls = apjEdit.existing.slice();
+    for (let i = 0; i < apjEdit.pending.length; i++) {
+      btn.textContent = '上傳圖片 ' + (i + 1) + '/' + apjEdit.pending.length + '…';
+      const blob = await apjCompress(apjEdit.pending[i]);
+      const path = (apjEdit.id || apjEdit.newId) + '/' + Date.now() + '_' + i + '.jpg';
+      const { error: ue } = await _sb.storage.from('project-images').upload(path, blob, { contentType: 'image/jpeg' });
+      if (ue) throw new Error('圖片上傳失敗：' + ue.message + '\n（若尚未建儲存桶，請先執行 projects_setup.sql）');
+      urls.push(_sb.storage.from('project-images').getPublicUrl(path).data.publicUrl);
+    }
+    btn.textContent = '儲存中…';
+    const row = {
+      name: name, location: loc,
+      address: document.getElementById('apjAddr').value.trim(),
+      price: price,
+      price_note: document.getElementById('apjPriceNote').value.trim(),
+      tag: document.getElementById('apjTag').value.trim(),
+      tag_hot: document.getElementById('apjTagHot').checked,
+      badges: document.getElementById('apjBadges').value.trim(),
+      description: desc,
+      specs: document.getElementById('apjSpecs').value.trim(),
+      transport: document.getElementById('apjTrans').value.trim(),
+      amenities: document.getElementById('apjAmen').value.trim(),
+      images: urls.slice(0, 15),
+      updated_at: new Date().toISOString()
+    };
+    let err;
+    if (apjEdit.id) { ({ error: err } = await _sb.from('projects').update(row).eq('id', apjEdit.id)); }
+    else { row.id = apjEdit.newId; row.published = true; ({ error: err } = await _sb.from('projects').insert(row)); }
+    if (err) throw new Error(err.message);
+    closeProjForm();
+    loadAdmProjects();
+  } catch (e) {
+    alert(e.message || '儲存失敗，請稍後再試');
+  }
+  btn.disabled = false;
+  btn.textContent = '儲存並刊登';
+}
+
+async function apjTogglePublish(id, val) {
+  const { error } = await _sb.from('projects').update({ published: val }).eq('id', id);
+  if (error) { alert('操作失敗：' + error.message); return; }
+  loadAdmProjects();
+}
+async function apjDelete(id) {
+  const p = _apjRows.find(r => r.id === id);
+  if (!confirm('確定刪除建案「' + (p ? p.name : '') + '」？官網將不再顯示，圖片一併刪除。此操作無法復原。')) return;
+  const { error } = await _sb.from('projects').delete().eq('id', id);
+  if (error) { alert('刪除失敗：' + error.message); return; }
+  try {
+    const { data: fl } = await _sb.storage.from('project-images').list(id);
+    if (fl && fl.length) await _sb.storage.from('project-images').remove(fl.map(f => id + '/' + f.name));
+  } catch (e) {}
+  loadAdmProjects();
 }
 
 async function admUpdateRegStatus(id, newStatus, btn) {

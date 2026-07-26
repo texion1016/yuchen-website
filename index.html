@@ -6826,5 +6826,68 @@ document.addEventListener('keydown', function(e) {
 });
 </script>
 
+<script>
+// ── 建案動態載入：優先讀 Supabase projects 表，讀不到保持內建五案 ──
+async function loadDynamicProjects() {
+  try {
+    const { data, error } = await _sb.from('projects').select('*')
+      .eq('published', true)
+      .order('sort', { ascending: true })
+      .order('created_at', { ascending: true });
+    if (error || !data || !data.length) return;
+
+    const esc = s => String(s == null ? '' : s).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const lines = t => String(t || '').split('\n').map(s => s.trim()).filter(Boolean);
+
+    // 1) 重繪建案卡
+    const grid = document.querySelector('.pj-grid');
+    const cls = i => i === 0 ? 'pj-a' : i === 1 ? 'pj-b' : ['pj-c', 'pj-d', 'pj-e'][(i - 2) % 3];
+    grid.innerHTML = data.map((p, i) => {
+      const imgs = Array.isArray(p.images) ? p.images : [];
+      const badges = String(p.badges || '').split(/[,，]/).map(s => s.trim()).filter(Boolean);
+      return '<div class="pj-tile ' + cls(i) + ' fade-up visible" onclick="openProjDetail(\'' + esc(p.name).replace(/'/g, '') + '\')">'
+        + '<div class="pj-img" style="background-image:url(\'' + (imgs[0] || '') + '\')"></div>'
+        + '<div class="pj-shade"></div>'
+        + (p.tag ? '<div class="pj-tag' + (p.tag_hot ? ' hot' : '') + '">' + esc(p.tag) + '</div>' : '')
+        + '<div class="pj-go">→</div>'
+        + '<div class="pj-info">'
+        + '<div class="pj-loc">' + esc(p.location) + '</div>'
+        + '<div class="pj-name">' + esc(p.name) + '</div>'
+        + '<div class="pj-row"><div class="pj-price">' + esc(p.price) + '<small> 萬起</small></div>'
+        + '<div class="pj-badges">' + badges.map(b => '<span class="pj-badge">' + esc(b) + '</span>').join('') + '</div>'
+        + '</div></div></div>';
+    }).join('');
+
+    // 2) 注入詳情資料（點卡片開啟建案詳情用）
+    data.forEach(p => {
+      const imgs = Array.isArray(p.images) ? p.images : [];
+      PROJECT_DATA[p.name] = {
+        tag: p.tag || '',
+        tagClass: p.tag_hot ? 'new' : '',
+        location: p.location || '',
+        address: p.address || p.location || '',
+        price: (p.price || '') + '萬起',
+        priceNote: p.price_note || '',
+        desc: p.description || '',
+        img: imgs[0] || '',
+        gallery: imgs.slice(1),
+        specs: lines(p.specs).map(l => { const ix = l.indexOf('|'); return ix > -1 ? { label: l.slice(0, ix).trim(), value: l.slice(ix + 1).trim() } : { label: '', value: l }; }),
+        units: [],
+        transport: lines(p.transport),
+        amenities: lines(p.amenities)
+      };
+    });
+
+    // 3) 報備下拉同步
+    const sel = document.getElementById('rptProject');
+    if (sel) {
+      sel.innerHTML = '<option value="">請選擇建案</option>'
+        + data.map(p => '<option value="' + esc(p.name) + '">' + esc(p.name) + ' — ' + esc(p.location) + '</option>').join('');
+    }
+  } catch (e) { /* 表未建立時維持內建內容 */ }
+}
+loadDynamicProjects();
+</script>
+
 </body>
 </html>

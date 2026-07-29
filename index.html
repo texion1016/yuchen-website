@@ -400,7 +400,7 @@
     .comp-before img, .comp-after img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
     .comp-before img { filter: grayscale(.35) brightness(.9) contrast(1.02); }
     .comp-before::after { content: ''; position: absolute; inset: 0; background: linear-gradient(rgba(40,50,70,0.1), rgba(20,28,45,0.16)); }
-    .comp-after { clip-path: inset(0 50% 0 0); transition: clip-path 0.05s linear; }
+    .comp-after { clip-path: inset(0 0 0 50%); transition: clip-path 0.05s linear; }
     .comp-after::after { content: ''; position: absolute; inset: 0; background: linear-gradient(120deg, transparent 70%, rgba(91,232,255,0.1)); }
     .comp-label { position: absolute; bottom: 1.25rem; font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.22em; color: var(--ink); background: rgba(6,9,18,0.7); padding: 0.38rem 1rem; border-radius: 4px; backdrop-filter: blur(5px); z-index: 2; border: 1px solid var(--line); }
     .comp-label-before { left: 1.25rem; }
@@ -1906,7 +1906,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function animComp() {
     animPercent += (targetPercent - animPercent) * 0.12;
     const p = animPercent;
-    compAfter.style.clipPath = `inset(0 ${100 - p}% 0 0)`;
+    compAfter.style.clipPath = `inset(0 0 0 ${p}%)`;
     compLine.style.left = p + '%';
     compHandle.style.left = p + '%';
     requestAnimationFrame(animComp);

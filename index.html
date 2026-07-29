@@ -398,8 +398,8 @@
     .comparison-widget { position: relative; border-radius: var(--radius); overflow: hidden; border: 1px solid rgba(91,232,255,0.32); box-shadow: 0 18px 50px rgba(0,0,0,0.5), 0 0 50px rgba(91,232,255,0.15); user-select: none; aspect-ratio: 16/11; cursor: ew-resize; }
     .comp-before, .comp-after { position: absolute; inset: 0; }
     .comp-before img, .comp-after img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-    .comp-before img { filter: grayscale(1) brightness(0.5) contrast(1.05); }
-    .comp-before::after { content: ''; position: absolute; inset: 0; background: linear-gradient(rgba(40,50,70,0.25), rgba(20,28,45,0.35)); }
+    .comp-before img { filter: grayscale(.35) brightness(.9) contrast(1.02); }
+    .comp-before::after { content: ''; position: absolute; inset: 0; background: linear-gradient(rgba(40,50,70,0.1), rgba(20,28,45,0.16)); }
     .comp-after { clip-path: inset(0 50% 0 0); transition: clip-path 0.05s linear; }
     .comp-after::after { content: ''; position: absolute; inset: 0; background: linear-gradient(120deg, transparent 70%, rgba(91,232,255,0.1)); }
     .comp-label { position: absolute; bottom: 1.25rem; font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.22em; color: var(--ink); background: rgba(6,9,18,0.7); padding: 0.38rem 1rem; border-radius: 4px; backdrop-filter: blur(5px); z-index: 2; border: 1px solid var(--line); }
@@ -851,10 +851,10 @@ function togglePwd(id, el) {
 
     <div class="comparison-widget fade-up fade-up-delay-1" id="compWidget">
       <div class="comp-before">
-        <img loading="lazy" src="https://images.unsplash.com/photo-1560448204-603b3fc33ddc?w=1100&h=760&fit=crop&auto=format" alt="毛胚屋狀態示意" />
+        <img loading="lazy" src="photo/decoration/before.jpg" alt="毛胚屋狀態" />
       </div>
       <div class="comp-after" id="compAfter">
-        <img loading="lazy" src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1100&h=760&fit=crop&auto=format" alt="輕裝修完成示意" />
+        <img loading="lazy" src="photo/decoration/after.jpg" alt="輕裝修完成" />
       </div>
       <span class="comp-label comp-label-before">毛胚屋</span>
       <span class="comp-label comp-label-after">輕裝修完成</span>

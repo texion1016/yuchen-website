@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>加到手機桌面｜譽誠聯合銷售平台</title>
+<meta name="theme-color" content="#1A3A5F" />
+<link rel="icon" type="image/png" href="photo/icons/icon-192.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
+
+<!-- 必須在頁面載入初期就攔截，否則 Chrome 的安裝事件會錯過 -->
+<script>
+  window._bip = null;
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    window._bip = e;
+    if (window._onBipReady) window._onBipReady();
+  });
+</script>
+
+<style>
+  :root {
+    --navy: #1A3A5F;
+    --navy-deep: #10263B;
+    --gold: #C19A4E;
+    --cream: #F6F4EF;
+    --paper: #FFFFFF;
+    --ink: #16212C;
+    --ink-2: #46586B;
+    --line: #E4DCCC;
+    --ok: #2E7D52;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 17px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 560px; margin: 0 auto; padding: 1.6rem 1.3rem 3rem; }
+
+  /* ── 品牌列 ── */
+  .brand { display: flex; align-items: center; gap: .6rem; margin-bottom: 2rem; }
+  .brand img { width: 34px; height: 34px; border-radius: 8px; display: block; }
+  .brand span { font-family: 'Noto Serif TC', serif; font-weight: 700; font-size: 1rem; color: var(--navy); letter-spacing: .06em; }
+
+  /* ── 標題 ── */
+  h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(1.8rem, 7vw, 2.35rem);
+    line-height: 1.35;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0 0 .8rem;
+    letter-spacing: .02em;
+  }
+  .lede { font-size: 1.1rem; color: var(--ink-2); margin: 0 0 2rem; line-height: 1.85; }
+  .lede b { color: var(--ink); font-weight: 700; }
+
+  /* ── 步驟 ── */
+  .steps { list-style: none; padding: 0; margin: 0 0 1.8rem; }
+  .step {
+    display: flex; gap: 1rem; align-items: flex-start;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1.25rem 1.3rem;
+    margin-bottom: .9rem;
+  }
+  .step-n {
+    flex: 0 0 auto;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--navy); color: #fff;
+    font-size: 1.2rem; font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .step-body { flex: 1 1 auto; min-width: 0; }
+  .step-t { font-size: 1.2rem; font-weight: 700; line-height: 1.55; margin-bottom: .2rem; }
+  .step-s { font-size: .97rem; color: var(--ink-2); line-height: 1.7; }
+  .glyph {
+    display: inline-flex; align-items: center; justify-content: center;
+    vertical-align: -.42em; margin: 0 .18em;
+    width: 1.75em; height: 1.75em;
+    border-radius: 7px; background: var(--navy); color: #fff;
+  }
+  .glyph svg { width: 62%; height: 62%; }
+
+  /* ── 手機示意圖：告訴他按鈕實際長在哪 ── */
+  .phone { display: block; width: 190px; margin: .4rem auto 1.9rem; }
+  .ring { animation: pulse 1.9s ease-in-out infinite; transform-origin: center; }
+  @keyframes pulse { 0%,100% { opacity: .35; r: 19; } 50% { opacity: 1; r: 22; } }
+  .point { animation: bob 1.5s ease-in-out infinite; }
+  @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+  @media (prefers-reduced-motion: reduce) { .ring, .point { animation: none; } }
+
+  /* ── 按鈕 ── */
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: .5rem;
+    width: 100%; min-height: 62px;
+    background: var(--navy); color: #fff;
+    border: none; border-radius: 14px;
+    font-family: inherit; font-size: 1.18rem; font-weight: 700; letter-spacing: .04em;
+    cursor: pointer; text-decoration: none;
+    box-shadow: 0 8px 22px rgba(16, 38, 59, .22);
+    transition: transform .15s, box-shadow .15s;
+  }
+  .btn:active { transform: translateY(2px); box-shadow: 0 4px 12px rgba(16, 38, 59, .2); }
+  .btn-gold { background: var(--gold); box-shadow: 0 8px 22px rgba(193, 154, 78, .3); }
+  .btn-ghost {
+    background: transparent; color: var(--navy);
+    border: 1.5px solid var(--line); box-shadow: none; min-height: 54px; font-size: 1.05rem;
+  }
+
+  /* ── 提示條 ── */
+  .note {
+    background: rgba(193, 154, 78, .1);
+    border-left: 4px solid var(--gold);
+    border-radius: 0 10px 10px 0;
+    padding: 1rem 1.1rem;
+    font-size: 1rem; line-height: 1.75; color: var(--ink);
+    margin: 1.4rem 0;
+  }
+
+  /* ── 結果卡 ── */
+  .result { text-align: center; background: var(--paper); border: 1px solid var(--line); border-radius: 18px; padding: 2.4rem 1.4rem; }
+  .result-ico { width: 76px; height: 76px; border-radius: 50%; background: var(--ok); color: #fff; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.1rem; font-size: 2.3rem; }
+  .result h2 { font-family: 'Noto Serif TC', serif; font-size: 1.5rem; color: var(--navy); margin: 0 0 .5rem; }
+  .result p { color: var(--ink-2); margin: 0 0 1.6rem; font-size: 1.05rem; }
+
+  /* ── 完成後的樣子 ── */
+  .preview { display: flex; align-items: center; gap: 1rem; background: var(--navy-deep); border-radius: 16px; padding: 1.2rem 1.3rem; margin-top: 1.8rem; }
+  .preview img { width: 58px; height: 58px; border-radius: 13px; flex: 0 0 auto; box-shadow: 0 4px 14px rgba(0,0,0,.35); }
+  .preview div { color: #fff; font-size: .98rem; line-height: 1.65; }
+  .preview b { display: block; font-size: 1.05rem; font-weight: 700; margin-bottom: .1rem; }
+  .preview span { color: rgba(255,255,255,.7); }
+
+  .skip { display: block; text-align: center; margin-top: 2rem; color: var(--ink-2); font-size: 1rem; text-decoration: none; padding: .8rem; }
+  .skip:hover { color: var(--navy); }
+
+  .qrbox { text-align: center; background: var(--paper); border: 1px solid var(--line); border-radius: 18px; padding: 2rem 1.4rem; }
+  .qrbox img { width: 200px; max-width: 70%; border-radius: 10px; }
+
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand">
+    <img src="photo/icons/icon-192.png" alt="" />
+    <span>譽誠聯合銷售平台</span>
+  </div>
+
+  <h1>把譽誠加到<br />手機桌面</h1>
+  <p class="lede">加好之後，桌面上會多一個圖示，<b>以後點一下就能開</b>，不用再掃碼、也不用記網址。</p>
+
+  <!-- ══ 已經裝好 ══ -->
+  <section id="stDone" hidden>
+    <div class="result">
+      <div class="result-ico">✓</div>
+      <h2>已經裝好了</h2>
+      <p>你現在就是從桌面圖示開啟的，<br />不需要再做任何設定。</p>
+      <a class="btn" href="index.html">進入網站 →</a>
+    </div>
+  </section>
+
+  <!-- ══ LINE / FB 內建瀏覽器 ══ -->
+  <section id="stInApp" hidden>
+    <div class="note">
+      <b>你現在是從 <span id="inAppName">LINE</span> 裡面開啟的。</b><br />
+      這種內建瀏覽器沒辦法把網站加到桌面，要先換成手機的瀏覽器。
+    </div>
+    <ul class="steps">
+      <li class="step">
+        <div class="step-n">1</div>
+        <div class="step-body">
+          <div class="step-t">點右下角的<span class="glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span>按鈕</div>
+          <div class="step-s">通常在畫面的右下角或右上角。</div>
+        </div>
+      </li>
+      <li class="step">
+        <div class="step-n">2</div>
+        <div class="step-body">
+          <div class="step-t">選「用其他瀏覽器開啟」</div>
+          <div class="step-s">也可能寫成「以預設瀏覽器開啟」或「在 Safari 中開啟」。</div>
+        </div>
+      </li>
+      <li class="step">
+        <div class="step-n">3</div>
+        <div class="step-body">
+          <div class="step-t">回到這一頁，照著指示做</div>
+          <div class="step-s">換好瀏覽器後，這頁會自動顯示你手機的步驟。</div>
+        </div>
+      </li>
+    </ul>
+    <button class="btn btn-ghost" onclick="copyLink(this)">📋 複製網址，自己貼到瀏覽器</button>
+  </section>
+
+  <!-- ══ iPhone / iPad ══ -->
+  <section id="stIOS" hidden>
+    <svg class="phone" viewBox="0 0 200 330" role="img" aria-label="iPhone 畫面示意，分享按鈕在最下方中間">
+      <rect x="6" y="6" width="188" height="318" rx="30" fill="#fff" stroke="#1A3A5F" stroke-width="3"/>
+      <rect x="24" y="30" width="152" height="196" rx="9" fill="#F1EDE3"/>
+      <rect x="44" y="60" width="112" height="9" rx="4.5" fill="#D9D2C2"/>
+      <rect x="44" y="82" width="86" height="9" rx="4.5" fill="#E4DED0"/>
+      <rect x="44" y="150" width="112" height="34" rx="8" fill="#1A3A5F" opacity=".16"/>
+      <rect x="26" y="243" width="148" height="28" rx="14" fill="#EFEBE1"/>
+      <text x="100" y="262" text-anchor="middle" font-size="13" fill="#7C8B99" font-family="'Noto Sans TC',sans-serif">譽誠聯合銷售平台</text>
+      <!-- 底部工具列 -->
+      <g stroke="#8A97A5" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M34 292 l-7 7 l7 7"/>
+        <path d="M64 292 l7 7 l-7 7"/>
+        <path d="M136 293 h14 v13 h-14 z"/>
+        <path d="M164 293 h13 v13 h-13 z M170.5 293 v13"/>
+      </g>
+      <!-- 分享鈕（要按的就是這顆） -->
+      <g stroke="#1A3A5F" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M100 291 v16"/>
+        <path d="M94 297 l6 -6 l6 6"/>
+        <path d="M91 302 v10 h18 v-10"/>
+      </g>
+      <circle class="ring" cx="100" cy="300" r="21" fill="none" stroke="#C19A4E" stroke-width="3"/>
+      <g class="point" fill="#C19A4E">
+        <path d="M100 258 l8 14 h-16 z"/>
+      </g>
+    </svg>
+
+    <ul class="steps">
+      <li class="step">
+        <div class="step-n">1</div>
+        <div class="step-body">
+          <div class="step-t">點畫面<b>最下面中間</b>的分享鈕<span class="glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13"/><path d="M8 7l4-4 4 4"/><path d="M5 12v8h14v-8"/></svg></span></div>
+          <div class="step-s">就是上圖金色圈起來的那顆，一個往上的箭頭。</div>
+        </div>
+      </li>
+      <li class="step">
+        <div class="step-n">2</div>
+        <div class="step-body">
+          <div class="step-t">手指往上滑，找「加入主畫面」<span class="glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 6v12"/><path d="M6 12h12"/></svg></span></div>
+          <div class="step-s">選單裡項目很多，要往上滑一段才看得到。</div>
+        </div>
+      </li>
+      <li class="step">
+        <div class="step-n">3</div>
+        <div class="step-body">
+          <div class="step-t">按右上角的「新增」</div>
+          <div class="step-s">按完就完成了，桌面上會出現譽誠的圖示。</div>
+        </div>
+      </li>
+    </ul>
+
+    <div class="note">
+      找不到「加入主畫面」？請確認你是用 <b>Safari</b> 開這一頁。用 Chrome 或 LINE 開的話 iPhone 不給加。
+    </div>
+  </section>
+
+  <!-- ══ Android：可一鍵安裝 ══ -->
+  <section id="stAndroid" hidden>
+    <div class="note">你的手機支援一鍵安裝，<b>按下面這顆按鈕</b>，再按一次確認就好。</div>
+    <button class="btn btn-gold" id="btnInstall" onclick="doInstall()">＋　一鍵加到桌面</button>
+  </section>
+
+  <!-- ══ Android：手動 ══ -->
+  <section id="stAndroidManual" hidden>
+    <ul class="steps">
+      <li class="step">
+        <div class="step-n">1</div>
+        <div class="step-body">
+          <div class="step-t">點<b>右上角</b>的<span class="glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></span>按鈕</div>
+          <div class="step-s">三個直排的小點，在網址列的右邊。</div>
+        </div>
+      </li>
+      <li class="step">
+        <div class="step-n">2</div>
+        <div class="step-body">
+          <div class="step-t">選「安裝應用程式」</div>
+          <div class="step-s">有些手機寫成「加到主畫面」。</div>
+        </div>
+      </li>
+      <li class="step">
+        <div class="step-n">3</div>
+        <div class="step-body">
+          <div class="step-t">按「安裝」確認</div>
+          <div class="step-s">按完就完成了，桌面上會出現譽誠的圖示。</div>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ══ 電腦 ══ -->
+  <section id="stDesktop" hidden>
+    <div class="qrbox">
+      <p style="margin:0 0 1.2rem;font-size:1.08rem;color:var(--ink-2);line-height:1.8;">
+        這個功能是給手機用的。<br />請用<b style="color:var(--ink)">手機相機掃描</b>下面的 QR&nbsp;Code：
+      </p>
+      <img id="qrImg" src="photo/icons/qr-install.png" alt="用手機掃描以開啟安裝說明" />
+      <p style="margin:1.2rem 0 0;font-size:.95rem;color:var(--ink-2);word-break:break-all;" id="qrUrl"></p>
+    </div>
+  </section>
+
+  <!-- 完成後長這樣 -->
+  <div class="preview" id="preview" hidden>
+    <img src="photo/icons/icon-192.png" alt="" />
+    <div>
+      <b>完成後桌面會出現這個</b>
+      <span>以後點它就直接開啟，跟一般 App 一樣。</span>
+    </div>
+  </div>
+
+  <a class="skip" href="index.html">先不用，直接進網站 →</a>
+</div>
+
+<script>
+(function () {
+  var ua = navigator.userAgent || '';
+  var show = function (id) { var e = document.getElementById(id); if (e) e.hidden = false; };
+
+  // 已經從桌面圖示開啟
+  var standalone = window.matchMedia('(display-mode: standalone)').matches
+                   || window.navigator.standalone === true;
+  if (standalone) { show('stDone'); return; }
+
+  // App 內建瀏覽器（LINE / FB / IG…）沒有「加到主畫面」的能力
+  var inApp = null;
+  if (/\bLine\//i.test(ua)) inApp = 'LINE';
+  else if (/FBAN|FBAV|FB_IAB/i.test(ua)) inApp = 'Facebook';
+  else if (/Instagram/i.test(ua)) inApp = 'Instagram';
+  else if (/MicroMessenger/i.test(ua)) inApp = '微信';
+
+  // iPad 從 iOS 13 起會自稱 Macintosh，要靠觸控點數才分得出來
+  var iOS = /iPad|iPhone|iPod/i.test(ua)
+            || (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1);
+  var android = /Android/i.test(ua);
+  var mobile = iOS || android || /Mobile/i.test(ua);
+
+  if (inApp) {
+    document.getElementById('inAppName').textContent = inApp;
+    show('stInApp');
+    show('preview');
+    return;
+  }
+
+  if (iOS) { show('stIOS'); show('preview'); return; }
+
+  if (android) {
+    if (window._bip) { show('stAndroid'); }
+    else {
+      // 事件可能還沒來，等一下再決定要顯示一鍵還是手動
+      var decided = false;
+      window._onBipReady = function () {
+        if (decided) return;
+        decided = true;
+        show('stAndroid');
+      };
+      setTimeout(function () {
+        if (decided) return;
+        decided = true;
+        show(window._bip ? 'stAndroid' : 'stAndroidManual');
+      }, 1200);
+    }
+    show('preview');
+    return;
+  }
+
+  if (!mobile) {
+    document.getElementById('qrUrl').textContent = location.href;
+    show('stDesktop');
+    return;
+  }
+
+  show('stAndroidManual');
+  show('preview');
+})();
+
+function doInstall() {
+  var btn = document.getElementById('btnInstall');
+  if (!window._bip) {
+    document.getElementById('stAndroid').hidden = true;
+    document.getElementById('stAndroidManual').hidden = false;
+    return;
+  }
+  btn.disabled = true;
+  window._bip.prompt();
+  window._bip.userChoice.then(function (r) {
+    window._bip = null;
+    btn.disabled = false;
+    if (r && r.outcome === 'accepted') return;
+    // 使用者按了取消，改給手動步驟當備案
+    document.getElementById('stAndroid').hidden = true;
+    document.getElementById('stAndroidManual').hidden = false;
+  });
+}
+
+window.addEventListener('appinstalled', function () {
+  ['stAndroid', 'stAndroidManual', 'stIOS', 'preview'].forEach(function (id) {
+    var e = document.getElementById(id); if (e) e.hidden = true;
+  });
+  document.getElementById('stDone').hidden = false;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+function copyLink(btn) {
+  var url = location.origin + location.pathname.replace(/install\.html$/, '') ;
+  var done = function () {
+    var old = btn.textContent;
+    btn.textContent = '✓ 已複製，貼到瀏覽器就好';
+    setTimeout(function () { btn.textContent = old; }, 2600);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(done, function () { prompt('請長按複製這個網址：', url); });
+  } else {
+    prompt('請長按複製這個網址：', url);
+  }
+}
+</script>
+</body>
+</html>

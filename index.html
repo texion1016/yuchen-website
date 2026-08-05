@@ -7129,5 +7129,58 @@ async function loadDynamicProjects() {
 loadDynamicProjects();
 </script>
 
+<!-- ═══ 加到手機桌面提示條（僅手機、尚未安裝、未關閉過時出現）═══ -->
+<style>
+#a2hsBar {
+  display: none;
+  position: fixed; left: .7rem; right: .7rem; bottom: .7rem; z-index: 9000;
+  background: #10263B; color: #fff;
+  border-radius: 14px; padding: .8rem .9rem;
+  align-items: center; gap: .8rem;
+  box-shadow: 0 10px 34px rgba(6, 14, 26, .45);
+  animation: a2hsUp .45s cubic-bezier(.22,1,.36,1);
+}
+@keyframes a2hsUp { from { transform: translateY(120%); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { #a2hsBar { animation: none; } }
+#a2hsBar.show { display: flex; }
+#a2hsBar img { width: 40px; height: 40px; border-radius: 10px; flex: 0 0 auto; }
+#a2hsBar .a2hs-t { flex: 1 1 auto; min-width: 0; font-size: .82rem; line-height: 1.5; }
+#a2hsBar .a2hs-t b { display: block; font-size: .92rem; font-weight: 700; }
+#a2hsBar .a2hs-t span { color: rgba(255,255,255,.62); }
+#a2hsBar a.a2hs-go {
+  flex: 0 0 auto; background: #C19A4E; color: #fff; text-decoration: none;
+  border-radius: 9px; padding: .55rem 1rem; font-size: .85rem; font-weight: 700; letter-spacing: .04em;
+}
+#a2hsBar button.a2hs-x {
+  flex: 0 0 auto; width: 30px; height: 30px; border: none; border-radius: 50%;
+  background: rgba(255,255,255,.13); color: #fff; font-size: .85rem; cursor: pointer; line-height: 1;
+}
+</style>
+<div id="a2hsBar" role="complementary" aria-label="加到手機桌面">
+  <img src="photo/icons/icon-192.png" alt="" />
+  <div class="a2hs-t"><b>加到手機桌面</b><span>以後點一下就能開，不用再掃碼</span></div>
+  <a class="a2hs-go" href="install.html">加入</a>
+  <button class="a2hs-x" onclick="dismissA2HS()" aria-label="關閉">✕</button>
+</div>
+<script>
+(function () {
+  var installed = window.matchMedia('(display-mode: standalone)').matches
+                  || window.navigator.standalone === true;
+  var mobile = /Android|iPad|iPhone|iPod|Mobile/i.test(navigator.userAgent);
+  var hidden = false;
+  try { hidden = localStorage.getItem('yc_a2hs_off') === '1'; } catch (e) {}
+  if (installed || !mobile || hidden) return;
+  setTimeout(function () {
+    var b = document.getElementById('a2hsBar');
+    if (b) b.classList.add('show');
+  }, 6000);
+})();
+function dismissA2HS() {
+  var b = document.getElementById('a2hsBar');
+  if (b) b.classList.remove('show');
+  try { localStorage.setItem('yc_a2hs_off', '1'); } catch (e) {}
+}
+</script>
+
 </body>
 </html>

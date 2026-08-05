@@ -221,6 +221,8 @@
     .nav-links a::after { content: ''; position: absolute; bottom: 0; left: 50%; width: 100%; height: 1.5px; border-radius: 2px; background: var(--cyan); box-shadow: 0 0 10px rgba(91,232,255,0.8); transform: translateX(-50%) scaleX(0); transform-origin: center; transition: transform 0.28s var(--ease); }
     .nav-links a:hover { color: var(--ink); }
     .nav-links a:hover::after { transform: translateX(-50%) scaleX(1); }
+    .nav-links a.nav-a2hs { display: inline-flex; align-items: center; gap: .35em; }
+    .nav-links a.nav-a2hs svg { width: 1.05em; height: 1.05em; flex-shrink: 0; }
     .nav-cta { display: flex; align-items: center; gap: 0.7rem; }
     .nav-cta .btn { padding: 0.52rem 1.25rem; font-size: 0.8rem; }
     .nav-broker-btn { background: rgba(91,232,255,0.04); color: var(--cyan); border: 1px solid rgba(91,232,255,0.32); box-shadow: none; }
@@ -573,6 +575,11 @@
       #navbar { padding-left: .8rem; padding-right: .8rem; gap: .5rem; }
       .nav-links { gap: clamp(.7rem, 3vw, 1.4rem); }
       .nav-links a { font-size: .82rem; letter-spacing: .02em; white-space: nowrap; }
+      /* 窄螢幕（iPhone SE 等）收起手機圖示，只留文字才塞得下四個連結 */
+      @media (max-width: 400px) {
+        .nav-links a.nav-a2hs svg { display: none; }
+        .nav-links a.nav-a2hs { gap: 0; }
+      }
       .nav-cta .btn:first-child { display: none; }
       .nav-logo { gap: .45rem; }
       .nav-logo-icon { width: 30px; height: 30px; }
@@ -660,6 +667,8 @@ function togglePwd(id, el) {
     <a href="#projects">精選建案</a>
     <a href="#" onclick="openDevOverlay();return false;">建商專區</a>
     <a href="#" onclick="openBrokerOverlay();return false;">仲介專區</a>
+    <a href="install.html" class="nav-a2hs" title="把譽誠加到手機桌面">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18.5h2"/></svg>手機版</a>
   </nav>
   <div class="nav-cta">
     

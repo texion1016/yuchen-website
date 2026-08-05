@@ -5,7 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>加到手機桌面｜譽誠聯合銷售平台</title>
 <meta name="theme-color" content="#1A3A5F" />
-<link rel="icon" type="image/png" href="photo/icons/icon-192.png" />
+<!-- 用主站同一份 manifest：加到桌面後名稱是「譽誠平台」、圖示是主 logo、
+     開啟的是 index.html，而不是這頁說明。 -->
+<link rel="manifest" href="manifest.json" />
+<meta name="apple-mobile-web-app-title" content="譽誠平台" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<link rel="apple-touch-icon" href="photo/icons/apple-touch-icon.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="photo/icons/icon-192.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
@@ -322,10 +328,11 @@
   var ua = navigator.userAgent || '';
   var show = function (id) { var e = document.getElementById(id); if (e) e.hidden = false; };
 
-  // 已經從桌面圖示開啟
+  // 從桌面圖示開啟時直接進主站 —— 使用者要的是譽誠平台，不是這頁說明。
+  // （manifest 的 start_url 已指向 index.html，這裡是舊版 iOS 的保險）
   var standalone = window.matchMedia('(display-mode: standalone)').matches
                    || window.navigator.standalone === true;
-  if (standalone) { show('stDone'); return; }
+  if (standalone) { location.replace('index.html'); return; }
 
   // App 內建瀏覽器（LINE / FB / IG…）沒有「加到主畫面」的能力
   var inApp = null;

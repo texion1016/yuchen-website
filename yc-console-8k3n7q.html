@@ -192,7 +192,7 @@
       <button type="button" class="adm-setup-link" onclick="sendAdminReset()">忘記密碼？寄送安全重設連結</button>
       </div>
       <div id="admResetArea" style="display:none;">
-        <p style="font-size:.8rem;line-height:1.65;color:#55687E;margin:0 0 1rem;">請設定新的管理員密碼。完成後可再登入並綁定人臉／Passkey。</p>
+        <p style="font-size:.8rem;line-height:1.65;color:#55687E;margin:0 0 1rem;">請設定你要使用的新密碼；不需要知道舊密碼。儲存後會自動登入管理後台。</p>
         <div class="bov-field"><label>新密碼</label><input type="password" id="admResetPwd" autocomplete="new-password" minlength="12" placeholder="至少 12 個字元" /></div>
         <div class="bov-field"><label>確認新密碼</label><input type="password" id="admResetPwd2" autocomplete="new-password" minlength="12" placeholder="再輸入一次新密碼" onkeydown="if(event.key==='Enter')saveAdminPasswordReset()" /></div>
         <button class="bov-btn" type="button" onclick="saveAdminPasswordReset()">儲存新密碼</button>
@@ -389,6 +389,7 @@ const _sb = supabase.createClient(_SB_URL, _SB_KEY, {
   auth: { experimental: { passkey: true }, persistSession: true, autoRefreshToken: true }
 });
 const INITIAL_ADMIN_EMAIL = 'davidlin10161016@gmail.com';
+let adminRecoveryMode = /(?:^|[?&#])type=recovery(?:[&#]|$)/.test(window.location.search + '&' + window.location.hash);
 
 function openAdmin() {
   document.getElementById('adminOverlay').classList.add('open');
@@ -412,6 +413,13 @@ function showAdminLogin() {
   document.getElementById('admLoginControls').style.display = '';
   document.getElementById('admResetArea').style.display = 'none';
 }
+function showAdminPasswordReset() {
+  document.getElementById('admLoginWrap').style.display = 'flex';
+  document.getElementById('admDash').style.display = 'none';
+  document.getElementById('admLogoutBtn').style.display = 'none';
+  document.getElementById('admLoginControls').style.display = 'none';
+  document.getElementById('admResetArea').style.display = '';
+}
 function showAdminDashboard() {
   document.getElementById('admLoginWrap').style.display = 'none';
   document.getElementById('admDash').style.display = 'flex';
@@ -419,6 +427,7 @@ function showAdminDashboard() {
   loadAdmOverview();
 }
 async function verifyAdminSession(showError = true) {
+  if (adminRecoveryMode) { showAdminPasswordReset(); return false; }
   const { data: { user }, error: userError } = await _sb.auth.getUser();
   if (userError || !user) { showAdminLogin(); return false; }
   const { data: role, error: roleError } = await _sb.from('user_roles')
@@ -445,12 +454,13 @@ async function doInitialAdminSignup() {
   const password = document.getElementById('admPwd').value;
   if (email !== INITIAL_ADMIN_EMAIL) { setAdminLoginMessage('首位管理員帳號僅限指定的 Email 建立。', true); return; }
   if (password.length < 12) { setAdminLoginMessage('請設定至少 12 個字元的密碼。', true); return; }
-  const { error } = await _sb.auth.signUp({
+  const { data, error } = await _sb.auth.signUp({
     email,
     password,
     options: { emailRedirectTo: window.location.origin + window.location.pathname }
   });
-  if (error) {
+  const alreadyExists = data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0;
+  if (error || alreadyExists) {
     const { error: resetError } = await _sb.auth.resetPasswordForEmail(email, {
       redirectTo: window.location.origin + window.location.pathname
     });
@@ -479,11 +489,11 @@ async function saveAdminPasswordReset() {
   if (password !== confirmPassword) { setAdminLoginMessage('兩次輸入的新密碼不一致。', true); return; }
   const { error } = await _sb.auth.updateUser({ password });
   if (error) { setAdminLoginMessage('重設連結已失效，請重新寄送。', true); return; }
-  await _sb.auth.signOut();
+  adminRecoveryMode = false;
   document.getElementById('admResetPwd').value = '';
   document.getElementById('admResetPwd2').value = '';
-  showAdminLogin();
-  setAdminLoginMessage('密碼已更新，請使用新密碼登入。', false);
+  history.replaceState(null, '', window.location.pathname);
+  await verifyAdminSession();
 }
 async function doAdminPasskeyLogin() {
   if (!window.PublicKeyCredential) { setAdminLoginMessage('此瀏覽器不支援 Passkey，請改用 Email 與密碼登入。', true); return; }
@@ -505,9 +515,9 @@ async function adminSignOut() {
 
 _sb.auth.onAuthStateChange((event) => {
   if (event !== 'PASSWORD_RECOVERY') return;
-  document.getElementById('admLoginControls').style.display = 'none';
-  document.getElementById('admResetArea').style.display = '';
-  setAdminLoginMessage('請設定新的管理員密碼。', false);
+  adminRecoveryMode = true;
+  showAdminPasswordReset();
+  setAdminLoginMessage('請設定你要使用的新密碼；不需要知道舊密碼。', false);
 });
 async function inviteAdmin() {
   const input = document.getElementById('admInviteEmail');

@@ -255,7 +255,7 @@
       font-family: var(--font-tech); font-size: 0.7rem; letter-spacing: 0.34em;
       color: var(--ink-dim); margin-bottom: 1.7rem; text-transform: uppercase;
     }
-    .hr-eyebrow::before { content: ''; width: 36px; height: 1px; background: var(--cyan); box-shadow: 0 0 10px rgba(91,232,255,0.8); }
+    .hr-eyebrow::before { content: ''; width: 36px; height: 1px; background: var(--cyan); }
     .hr-title {
       font-family: var(--font-display); font-size: clamp(2.5rem, 4.1vw, 3.9rem);
       font-weight: 700; color: var(--ink); line-height: 1.28; letter-spacing: 0.05em; margin-bottom: 1.5rem;
@@ -2379,7 +2379,7 @@ function decoConsult() {
       </div>
     </div>
     <div style="display:flex;gap:.7rem;align-items:center;">
-      <button type="button" onclick="shareProjectToLine()" aria-label="透過 LINE 分享此建案" style="min-height:36px;background:#fff;color:var(--ov-navy,#1A3A5F);border:1px solid rgba(26,58,95,.28);border-radius:10px;padding:.5rem .85rem;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em;">LINE 分享</button>
+      <button type="button" onclick="shareProjectToLine()" aria-label="透過 LINE 分享此建案" style="min-height:44px;background:#06C755;color:#fff;border:1px solid #06C755;border-radius:10px;padding:.5rem .85rem;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em;transition:background-color .2s,border-color .2s;" onmouseover="this.style.backgroundColor='#05B64D';this.style.borderColor='#05B64D'" onmouseout="this.style.backgroundColor='#06C755';this.style.borderColor='#06C755'">LINE 分享</button>
       <button onclick="closeProjDetail();openBrokerOverlay();" style="background:var(--ov-navy,#1A3A5F);color:#fff;border:none;border-radius:10px;padding:.5rem 1.2rem;font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:.04em;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">報備客戶 · 預約帶看</button>
     </div>
   </div>
@@ -2468,7 +2468,7 @@ function decoConsult() {
       <div style="font-size:.83rem;color:rgba(255,255,255,.7);margin-bottom:1.5rem;">合作仲介立即報備客戶、預約帶看時間；建商合作歡迎電話洽詢</div>
       <div style="display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;">
         <button onclick="closeProjDetail();openBrokerOverlay();" style="background:var(--gold);color:#fff;border:none;border-radius:12px;padding:.75rem 2rem;font-size:.88rem;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:.04em;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">報備客戶 · 預約帶看</button>
-        <button type="button" onclick="shareProjectToLine()" style="background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.4);border-radius:12px;padding:.75rem 2rem;font-size:.88rem;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:.04em;">透過 LINE 分享</button>
+        <button type="button" onclick="shareProjectToLine()" style="min-height:44px;background:#06C755;color:#fff;border:1.5px solid #06C755;border-radius:12px;padding:.75rem 2rem;font-size:.88rem;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:.04em;transition:background-color .2s,border-color .2s;" onmouseover="this.style.backgroundColor='#05B64D';this.style.borderColor='#05B64D'" onmouseout="this.style.backgroundColor='#06C755';this.style.borderColor='#06C755'">透過 LINE 分享</button>
         <a href="tel:0800-888-888" style="background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.4);border-radius:12px;padding:.75rem 2rem;font-size:.88rem;font-weight:600;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(255,255,255,.8)'" onmouseout="this.style.borderColor='rgba(255,255,255,.4)'">📞 電話洽詢</a>
       </div>
     </div>

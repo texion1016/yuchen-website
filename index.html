@@ -184,9 +184,9 @@
       font-weight: 700;
       box-shadow: 0 0 0 1px rgba(232,193,106,0.5) inset, 0 8px 26px rgba(0,0,0,0.24);
     }
-    .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 0 0 1px rgba(232,193,106,0.7) inset, 0 12px 34px rgba(201,154,87,0.55), 0 0 56px rgba(232,193,106,0.4); }
+    .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 0 0 1px rgba(232,193,106,0.7) inset, 0 12px 34px rgba(0,0,0,0.3); }
     .btn-white { background: rgba(255,255,255,0.07); color: var(--ink); border: 1px solid var(--line-2); backdrop-filter: blur(8px); }
-    .btn-white:hover { background: rgba(255,255,255,0.13); transform: translateY(-2px); box-shadow: 0 0 24px rgba(120,180,255,0.25); }
+    .btn-white:hover { background: rgba(255,255,255,0.13); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
     /* 彈窗沿用 .project-tag */
     .project-tag {
       position: absolute; top: 1rem; left: 1rem;
@@ -210,13 +210,13 @@
     }
     #navbar.scrolled { background: rgba(6,9,18,0.82); box-shadow: 0 1px 0 var(--line) inset, 0 8px 30px rgba(0,0,0,0.5); padding: 0.7rem 2.4rem; }
     .nav-logo { display: flex; align-items: center; gap: .72rem; cursor: pointer; }
-    .nav-logo-icon { width: 38px; height: 38px; flex-shrink: 0; filter: drop-shadow(0 0 8px rgba(91,232,255,0.55)); }
+    .nav-logo-icon { width: 38px; height: 38px; flex-shrink: 0; }
     .nav-logo-text { display: flex; flex-direction: column; line-height: 1; }
     .nav-logo-cn { font-family: var(--font-display); font-size: 1.32rem; font-weight: 700; color: var(--ink); letter-spacing: .15em; }
     .nav-logo-en { font-family: var(--font-tech); font-size: .52rem; letter-spacing: .34em; color: var(--cyan); text-transform: uppercase; margin-top: .3rem; font-weight: 600; }
     .nav-links { display: flex; align-items: center; gap: 2rem; }
     .nav-links a { font-size: 0.86rem; color: var(--ink-dim); letter-spacing: 0.08em; position: relative; padding: 0.3rem 0; transition: color 0.22s var(--ease); }
-    .nav-links a::after { content: ''; position: absolute; bottom: 0; left: 50%; width: 100%; height: 1.5px; border-radius: 2px; background: var(--cyan); box-shadow: 0 0 10px rgba(91,232,255,0.8); transform: translateX(-50%) scaleX(0); transform-origin: center; transition: transform 0.28s var(--ease); }
+    .nav-links a::after { content: ''; position: absolute; bottom: 0; left: 50%; width: 100%; height: 1.5px; border-radius: 2px; background: var(--cyan); box-shadow: none; transform: translateX(-50%) scaleX(0); transform-origin: center; transition: transform 0.28s var(--ease); }
     .nav-links a:hover { color: var(--ink); }
     .nav-links a:hover::after { transform: translateX(-50%) scaleX(1); }
     .nav-links a.nav-a2hs { display: inline-flex; align-items: center; gap: .35em; }
@@ -224,9 +224,9 @@
     .nav-cta { display: flex; align-items: center; gap: 0.7rem; }
     .nav-cta .btn { padding: 0.52rem 1.25rem; font-size: 0.8rem; }
     .nav-broker-btn { background: rgba(91,232,255,0.04); color: var(--cyan); border: 1px solid rgba(91,232,255,0.32); box-shadow: none; }
-    .nav-broker-btn:hover { background: rgba(91,232,255,0.14); transform: none; box-shadow: 0 0 22px rgba(91,232,255,0.3); }
+    .nav-broker-btn:hover { background: rgba(91,232,255,0.14); transform: none; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
     .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 6px; }
-    .hamburger span { display: block; width: 24px; height: 2px; background: var(--cyan); border-radius: 2px; box-shadow: 0 0 6px rgba(91,232,255,0.6); }
+    .hamburger span { display: block; width: 24px; height: 2px; background: var(--cyan); border-radius: 2px; box-shadow: none; }
 
     .mobile-nav { display: none; position: fixed; inset: 0; z-index: 999; background: rgba(6,9,18,0.97); backdrop-filter: blur(10px); flex-direction: column; align-items: center; justify-content: center; gap: 1.8rem; }
     .mobile-nav.open { display: flex; }
@@ -656,7 +656,7 @@
   </a>
   <nav class="nav-links">
     <a href="#projects">精選建案</a>
-    <a href="yc-console-8k3n7q.html?mode=developer">建商專區</a>
+    <a href="#" onclick="openDevOverlay();return false;">建商專區</a>
     <a href="#" onclick="openBrokerOverlay();return false;">仲介專區</a>
     <a href="install.html" class="nav-a2hs" title="把譽誠加到手機桌面">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18.5h2"/></svg>手機版</a>
@@ -2123,9 +2123,46 @@ const PROJECT_DATA = {
   },
 };
 
+let _pdProjectName = '';
+const _pdDefaultTitle = document.title;
+
+function buildProjectShareUrl(name) {
+  const url = new URL(window.location.href);
+  url.searchParams.set('project', name);
+  url.hash = '';
+  return url.toString();
+}
+
+function syncProjectUrl(name) {
+  if (window.history && window.history.replaceState) {
+    window.history.replaceState({ project: name }, '', buildProjectShareUrl(name));
+  }
+}
+
+function shareProjectToLine() {
+  const name = _pdProjectName;
+  const d = PROJECT_DATA[name];
+  if (!name || !d) return;
+
+  const message = [name, d.location, d.price].filter(Boolean).join('｜');
+  const lineShareUrl = 'https://social-plugins.line.me/lineit/share?url='
+    + encodeURIComponent(buildProjectShareUrl(name))
+    + '&text=' + encodeURIComponent(message);
+  window.open(lineShareUrl, '_blank', 'noopener,noreferrer');
+}
+
+function openProjectFromUrl() {
+  const name = new URLSearchParams(window.location.search).get('project');
+  if (name && PROJECT_DATA[name]) openProjDetail(name);
+}
+
 function openProjDetail(name) {
   const d = PROJECT_DATA[name];
   if (!d) return;
+
+  _pdProjectName = name;
+  document.title = name + '｜譽誠聯合銷售平台';
+  syncProjectUrl(name);
 
   // Top bar
   document.getElementById('pdBarName').textContent = name;
@@ -2233,6 +2270,13 @@ function closeProjDetail() {
   document.body.style.overflow = '';
   stopPdSlideshow();
   try { document.getElementById('pdVideoFrame').src = ''; } catch(e) {}
+  _pdProjectName = '';
+  document.title = _pdDefaultTitle;
+  const url = new URL(window.location.href);
+  if (url.searchParams.has('project')) {
+    url.searchParams.delete('project');
+    window.history.replaceState({}, '', url.toString());
+  }
 }
 
 /* ── 主圖自動輪播：兩層交替淡入淡出，每 4 秒換一張 ── */
@@ -2335,6 +2379,7 @@ function decoConsult() {
       </div>
     </div>
     <div style="display:flex;gap:.7rem;align-items:center;">
+      <button type="button" onclick="shareProjectToLine()" aria-label="透過 LINE 分享此建案" style="min-height:36px;background:#fff;color:var(--ov-navy,#1A3A5F);border:1px solid rgba(26,58,95,.28);border-radius:10px;padding:.5rem .85rem;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em;">LINE 分享</button>
       <button onclick="closeProjDetail();openBrokerOverlay();" style="background:var(--ov-navy,#1A3A5F);color:#fff;border:none;border-radius:10px;padding:.5rem 1.2rem;font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:.04em;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">報備客戶 · 預約帶看</button>
     </div>
   </div>
@@ -2423,6 +2468,7 @@ function decoConsult() {
       <div style="font-size:.83rem;color:rgba(255,255,255,.7);margin-bottom:1.5rem;">合作仲介立即報備客戶、預約帶看時間；建商合作歡迎電話洽詢</div>
       <div style="display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;">
         <button onclick="closeProjDetail();openBrokerOverlay();" style="background:var(--gold);color:#fff;border:none;border-radius:12px;padding:.75rem 2rem;font-size:.88rem;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:.04em;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">報備客戶 · 預約帶看</button>
+        <button type="button" onclick="shareProjectToLine()" style="background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.4);border-radius:12px;padding:.75rem 2rem;font-size:.88rem;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:.04em;">透過 LINE 分享</button>
         <a href="tel:0800-888-888" style="background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.4);border-radius:12px;padding:.75rem 2rem;font-size:.88rem;font-weight:600;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(255,255,255,.8)'" onmouseout="this.style.borderColor='rgba(255,255,255,.4)'">📞 電話洽詢</a>
       </div>
     </div>
@@ -7116,7 +7162,7 @@ async function loadDynamicProjects() {
     }
   } catch (e) { /* 表未建立時維持內建內容 */ }
 }
-loadDynamicProjects();
+loadDynamicProjects().finally(openProjectFromUrl);
 </script>
 
 <!-- ═══ 加到手機桌面提示條（僅手機、尚未安裝、未關閉過時出現）═══ -->

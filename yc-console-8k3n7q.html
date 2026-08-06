@@ -179,7 +179,7 @@
   <div id="admLoginWrap" style="flex:1;display:flex;align-items:center;justify-content:center;">
     <div class="adm-login-box">
       <div style="font-family:var(--font-serif);font-size:1.3rem;margin-bottom:.45rem;color:var(--ink);">管理員登入</div>
-      <p style="font-size:.78rem;line-height:1.65;color:#55687E;margin:0 0 1.35rem;">僅限獲授權的譽誠管理員。首次完成帳號設定後，即可綁定本裝置的人臉／Passkey。</p>
+      <p style="font-size:.78rem;line-height:1.65;color:#55687E;margin:0 0 1.35rem;">僅限獲授權的譽誠管理員。登入後可至「管理員帳戶」綁定本裝置的人臉／Passkey。</p>
       <div id="admLoginErr" class="bov-msg error" style="display:none;" role="alert" aria-live="polite"></div>
       <div id="admLoginMsg" style="display:none;padding:.55rem .9rem;border-radius:8px;font-size:.8rem;line-height:1.6;margin-bottom:1rem;background:#EEF6F0;border:1px solid rgba(47,107,79,.25);color:#2F6B4F;" role="status" aria-live="polite"></div>
       <div id="admLoginControls">
@@ -187,8 +187,6 @@
       <div class="bov-field"><label>密碼</label><input type="password" id="admPwd" autocomplete="current-password" minlength="12" placeholder="至少 12 個字元" onkeydown="if(event.key==='Enter')doAdminLogin()" /></div>
       <button class="bov-btn" style="width:100%;margin-top:.1rem;" onclick="doAdminLogin()">登入</button>
       <button type="button" onclick="doAdminPasskeyLogin()" style="width:100%;margin-top:.65rem;background:#fff;color:#1A3A5F;border:1px solid #C7D2DE;border-radius:10px;padding:.72rem;cursor:pointer;font:700 .82rem inherit;">使用人臉／裝置 Passkey 登入</button>
-      <button type="button" onclick="doInitialAdminSignup()" style="width:100%;margin-top:.65rem;background:#EEF4FB;color:#1A3A5F;border:1px solid #9DB5CE;border-radius:10px;padding:.72rem;cursor:pointer;font:700 .82rem inherit;">首次使用：建立首位管理員帳號</button>
-      <p style="margin:.55rem 0 0;font-size:.72rem;line-height:1.6;color:#66788B;">輸入指定 Email 與你要設定的密碼，再點此按鈕。</p>
       <button type="button" class="adm-setup-link" onclick="sendAdminReset()">忘記密碼？寄送安全重設連結</button>
       </div>
       <div id="admResetArea" style="display:none;">
@@ -388,7 +386,6 @@ const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsIn
 const _sb = supabase.createClient(_SB_URL, _SB_KEY, {
   auth: { experimental: { passkey: true }, persistSession: true, autoRefreshToken: true }
 });
-const INITIAL_ADMIN_EMAIL = 'davidlin10161016@gmail.com';
 let adminRecoveryMode = /(?:^|[?&#])type=recovery(?:[&#]|$)/.test(window.location.search + '&' + window.location.hash);
 
 function openAdmin() {
@@ -448,30 +445,6 @@ async function doAdminLogin() {
   const { error } = await _sb.auth.signInWithPassword({ email, password });
   if (error) { setAdminLoginMessage('登入失敗：請確認 Email、密碼，或先完成信箱驗證。', true); return; }
   await verifyAdminSession();
-}
-async function doInitialAdminSignup() {
-  const email = document.getElementById('admEmail').value.trim().toLowerCase();
-  const password = document.getElementById('admPwd').value;
-  if (email !== INITIAL_ADMIN_EMAIL) { setAdminLoginMessage('首位管理員帳號僅限指定的 Email 建立。', true); return; }
-  if (password.length < 12) { setAdminLoginMessage('請設定至少 12 個字元的密碼。', true); return; }
-  const { data, error } = await _sb.auth.signUp({
-    email,
-    password,
-    options: { emailRedirectTo: window.location.origin + window.location.pathname }
-  });
-  const alreadyExists = data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0;
-  if (error || alreadyExists) {
-    const { error: resetError } = await _sb.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + window.location.pathname
-    });
-    if (!resetError) {
-      setAdminLoginMessage('發現先前未完成的帳號設定，安全連結已寄出。請到信箱開啟後自行設定密碼。', false);
-      return;
-    }
-    setAdminLoginMessage('建立帳號暫時失敗，請稍後再試。', true);
-    return;
-  }
-  setAdminLoginMessage('驗證信已寄出。請至信箱完成驗證後，再回此頁登入。', false);
 }
 async function sendAdminReset() {
   const email = document.getElementById('admEmail').value.trim().toLowerCase();

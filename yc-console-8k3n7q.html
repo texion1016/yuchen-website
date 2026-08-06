@@ -187,7 +187,8 @@
       <div class="bov-field"><label>密碼</label><input type="password" id="admPwd" autocomplete="current-password" minlength="12" placeholder="至少 12 個字元" onkeydown="if(event.key==='Enter')doAdminLogin()" /></div>
       <button class="bov-btn" style="width:100%;margin-top:.1rem;" onclick="doAdminLogin()">登入</button>
       <button type="button" onclick="doAdminPasskeyLogin()" style="width:100%;margin-top:.65rem;background:#fff;color:#1A3A5F;border:1px solid #C7D2DE;border-radius:10px;padding:.72rem;cursor:pointer;font:700 .82rem inherit;">使用人臉／裝置 Passkey 登入</button>
-      <button type="button" class="adm-setup-link" onclick="doInitialAdminSignup()">首次使用？建立首位管理員帳號</button>
+      <button type="button" onclick="doInitialAdminSignup()" style="width:100%;margin-top:.65rem;background:#EEF4FB;color:#1A3A5F;border:1px solid #9DB5CE;border-radius:10px;padding:.72rem;cursor:pointer;font:700 .82rem inherit;">首次使用：建立首位管理員帳號</button>
+      <p style="margin:.55rem 0 0;font-size:.72rem;line-height:1.6;color:#66788B;">輸入指定 Email 與你要設定的密碼，再點此按鈕。</p>
       <button type="button" class="adm-setup-link" onclick="sendAdminReset()">忘記密碼？寄送安全重設連結</button>
       </div>
       <div id="admResetArea" style="display:none;">
@@ -449,7 +450,17 @@ async function doInitialAdminSignup() {
     password,
     options: { emailRedirectTo: window.location.origin + window.location.pathname }
   });
-  if (error) { setAdminLoginMessage('建立帳號失敗：若此 Email 已建立，請先完成驗證或使用「忘記密碼」。', true); return; }
+  if (error) {
+    const { error: resetError } = await _sb.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + window.location.pathname
+    });
+    if (!resetError) {
+      setAdminLoginMessage('發現先前未完成的帳號設定，安全連結已寄出。請到信箱開啟後自行設定密碼。', false);
+      return;
+    }
+    setAdminLoginMessage('建立帳號暫時失敗，請稍後再試。', true);
+    return;
+  }
   setAdminLoginMessage('驗證信已寄出。請至信箱完成驗證後，再回此頁登入。', false);
 }
 async function sendAdminReset() {

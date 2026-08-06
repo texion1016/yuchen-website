@@ -1,0 +1,17 @@
+# Local editor and operating-system files
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Local Supabase state and secrets
+supabase/.temp/
+supabase/.branches/
+.env
+.env.*
+!.env.example
+
+# Test and generated output
+coverage/
+playwright-report/
+test-results/
+dist/

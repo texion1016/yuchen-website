@@ -11,7 +11,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="photo/icons/icon-192.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=Orbitron:wght@500;700;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet" />
   <style>
     /* ════════════════════════════════════════════
        譽誠廣告 V4 — AETHER 未來宅
@@ -91,14 +91,12 @@
       z-index: -1;
       pointer-events: none;
       background-image:
-        linear-gradient(rgba(120,180,255,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(120,180,255,0.04) 1px, transparent 1px),
         radial-gradient(circle at 12% 18%, rgba(255,255,255,0.5) 0.6px, transparent 1.2px),
         radial-gradient(circle at 67% 42%, rgba(255,255,255,0.4) 0.6px, transparent 1.2px),
         radial-gradient(circle at 34% 73%, rgba(255,255,255,0.45) 0.6px, transparent 1.2px),
         radial-gradient(circle at 88% 88%, rgba(255,255,255,0.35) 0.6px, transparent 1.2px),
         radial-gradient(circle at 50% 12%, rgba(255,255,255,0.4) 0.6px, transparent 1.2px);
-      background-size: 64px 64px, 64px 64px, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
+      background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
       -webkit-mask-image: radial-gradient(ellipse 120% 100% at 50% 0%, #000 30%, transparent 90%);
       mask-image: radial-gradient(ellipse 120% 100% at 50% 0%, #000 30%, transparent 90%);
       opacity: 0.7;
@@ -125,18 +123,18 @@
       color: var(--cyan);
       font-weight: 600;
       margin-bottom: 1rem;
-      text-shadow: 0 0 14px rgba(91,232,255,0.5);
+      text-shadow: none;
     }
     .section-label::before {
       content: '';
       width: 8px; height: 8px;
       border-radius: 50%;
       background: var(--cyan);
-      box-shadow: 0 0 0 3px rgba(91,232,255,0.18), 0 0 14px rgba(91,232,255,0.9);
+      box-shadow: 0 0 0 3px rgba(91,232,255,0.18);
       flex-shrink: 0;
       animation: pulseDot 2.4s var(--ease-soft) infinite;
     }
-    @keyframes pulseDot { 0%,100% { box-shadow: 0 0 0 3px rgba(91,232,255,0.18), 0 0 12px rgba(91,232,255,0.8); } 50% { box-shadow: 0 0 0 5px rgba(91,232,255,0.08), 0 0 22px rgba(91,232,255,1); } }
+    @keyframes pulseDot { 0%,100% { transform: scale(1); opacity: .8; } 50% { transform: scale(1.16); opacity: 1; } }
     .section-label::after { content: ''; width: 46px; height: 1px; background: linear-gradient(to right, var(--line-2), transparent); }
     .section-title {
       font-family: var(--font-display);
@@ -149,7 +147,7 @@
     .section-title em {
       font-style: normal;
       color: var(--cyan);
-      text-shadow: 0 0 24px rgba(91,232,255,0.55);
+      text-shadow: none;
     }
 
     /* ── 按鈕：辉光玻璃 ── */
@@ -175,16 +173,16 @@
       background: linear-gradient(120deg, var(--cyan) 0%, var(--cyan-2) 55%, var(--cyan-deep) 100%);
       color: #03121A;
       font-weight: 700;
-      box-shadow: 0 0 0 1px rgba(193,154,78,0.45) inset, 0 8px 26px rgba(26,58,95,0.35);
+      box-shadow: 0 0 0 1px rgba(193,154,78,0.45) inset, 0 8px 26px rgba(0,0,0,0.24);
     }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 0 1px rgba(193,154,78,0.6) inset, 0 12px 34px rgba(26,58,95,0.45); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 0 1px rgba(193,154,78,0.6) inset, 0 12px 34px rgba(0,0,0,0.3); }
     .btn-outline { background: rgba(193,154,78,0.05); color: var(--gold); border: 1px solid rgba(193,154,78,0.45); backdrop-filter: blur(6px); }
-    .btn-outline:hover { background: rgba(193,154,78,0.12); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,58,95,0.25); }
+    .btn-outline:hover { background: rgba(193,154,78,0.12); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
     .btn-gold {
       background: linear-gradient(120deg, #F0CE7E 0%, var(--gold) 50%, var(--gold-2) 100%);
       color: #1A1206;
       font-weight: 700;
-      box-shadow: 0 0 0 1px rgba(232,193,106,0.5) inset, 0 8px 26px rgba(201,154,87,0.4), 0 0 40px rgba(232,193,106,0.22);
+      box-shadow: 0 0 0 1px rgba(232,193,106,0.5) inset, 0 8px 26px rgba(0,0,0,0.24);
     }
     .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 0 0 1px rgba(232,193,106,0.7) inset, 0 12px 34px rgba(201,154,87,0.55), 0 0 56px rgba(232,193,106,0.4); }
     .btn-white { background: rgba(255,255,255,0.07); color: var(--ink); border: 1px solid var(--line-2); backdrop-filter: blur(8px); }
@@ -208,7 +206,7 @@
       backdrop-filter: blur(18px) saturate(1.3);
       -webkit-backdrop-filter: blur(18px) saturate(1.3);
       border-bottom: 1px solid var(--line);
-      transition: padding 0.3s var(--ease), background 0.3s var(--ease);
+      transition: background 0.3s var(--ease), box-shadow 0.3s var(--ease);
     }
     #navbar.scrolled { background: rgba(6,9,18,0.82); box-shadow: 0 1px 0 var(--line) inset, 0 8px 30px rgba(0,0,0,0.5); padding: 0.7rem 2.4rem; }
     .nav-logo { display: flex; align-items: center; gap: .72rem; cursor: pointer; }
@@ -347,9 +345,8 @@
       -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
       mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
     }
-    .mq-track { display: inline-flex; align-items: center; white-space: nowrap; animation: mqScroll 32s linear infinite; will-change: transform; }
-    .mq:hover .mq-track { animation-play-state: paused; }
-    .mq span { font-family: var(--font-display); font-size: 0.95rem; letter-spacing: 0.3em; color: var(--cyan); padding: 0 1.7rem; display: inline-flex; align-items: center; gap: 1.7rem; text-shadow: 0 0 14px rgba(91,232,255,0.45); }
+    .mq-track { display: inline-flex; align-items: center; white-space: nowrap; }
+    .mq span { font-family: var(--font-display); font-size: 0.95rem; letter-spacing: 0.3em; color: var(--cyan); padding: 0 1.7rem; display: inline-flex; align-items: center; gap: 1.7rem; text-shadow: none; }
     .mq span::after { content: '◇'; color: rgba(154,134,255,0.6); font-size: 0.7em; }
     @keyframes mqScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
@@ -620,13 +617,7 @@
 
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-function togglePwd(id, el) {
-  const inp = document.getElementById(id);
-  if (inp.type === 'password') { inp.type = 'text'; el.textContent = '🙈'; }
-  else { inp.type = 'password'; el.textContent = '👁'; }
-}
-  </script>
+  <script src="assets/js/ui-utils.js"></script>
   <script>
     const _SB_URL = 'https://femuufnveodwcnusuthy.supabase.co';
     const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlbXV1Zm52ZW9kd2NudXN1dGh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2ODQ0MjcsImV4cCI6MjA5NzI2MDQyN30.TQER06oE6_CT8nHprhPlf79qjbcsgS4nhEJs5VUregQ';
@@ -665,7 +656,7 @@ function togglePwd(id, el) {
   </a>
   <nav class="nav-links">
     <a href="#projects">精選建案</a>
-    <a href="#" onclick="openDevOverlay();return false;">建商專區</a>
+    <a href="yc-console-8k3n7q.html?mode=developer">建商專區</a>
     <a href="#" onclick="openBrokerOverlay();return false;">仲介專區</a>
     <a href="install.html" class="nav-a2hs" title="把譽誠加到手機桌面">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18.5h2"/></svg>手機版</a>
@@ -1131,7 +1122,7 @@ function togglePwd(id, el) {
       </div>
     </div>
     <div class="footer-bottom">
-      <div class="footer-copy">© 2025 譽誠聯合銷售平台 All Rights Reserved. <span onclick="openAdmin()" style="cursor:pointer;opacity:0;user-select:none;" title="admin">·</span></div>
+      <div class="footer-copy">© 2025 譽誠聯合銷售平台 All Rights Reserved. <a href="yc-console-8k3n7q.html" aria-label="開啟管理後台" style="cursor:pointer;opacity:0;user-select:none;" title="admin">·</a></div>
       <div class="footer-legal">
         <a href="#" onclick="openLegal('privacy');return false;">隱私權政策</a>
         <a href="#" onclick="openLegal('terms');return false;">服務條款</a>
@@ -3367,7 +3358,7 @@ html, body { background: var(--d-bg) !important; }
   font-size: .62rem; color: #9AA5B4; letter-spacing: .06em;
 }
 .rcd-no {
-  font-family: 'Space Grotesk', monospace;
+  font-family: var(--font-tech);
   font-size: .78rem; font-weight: 700;
   color: var(--d-gold);
   letter-spacing: .12em;
@@ -3573,18 +3564,6 @@ body { font-family: 'Noto Sans TC','Space Grotesk',sans-serif !important; }
   pointer-events: none;
 }
 
-/* ── Hero 左側背景裝飾格線 ── */
-.hr-left::before {
-  content: '';
-  position: absolute; inset: 0;
-  background-image:
-    linear-gradient(rgba(193,154,78,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(193,154,78,0.04) 1px, transparent 1px);
-  background-size: 48px 48px;
-  pointer-events: none;
-  z-index: 0;
-}
-
 /* ── Hero title — 控制尺寸，三行長標題在手機/桌機都不溢出 ── */
 .hr-title {
   font-size: clamp(1.5rem, 3.2vw, 3.5rem) !important;
@@ -3785,11 +3764,13 @@ body { font-family: 'Noto Sans TC','Space Grotesk',sans-serif !important; }
   content: '';
   position: absolute;
   top: 0; left: 0;
-  width: 3px; height: 0;
+  width: 3px; height: 100%;
   background: linear-gradient(to bottom, var(--d-gold, #C8A96E), transparent);
-  transition: height .8s cubic-bezier(.22,1,.36,1);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform .8s cubic-bezier(.22,1,.36,1);
 }
-.process-step.visible::before { height: 100%; }
+.process-step.visible::before { transform: scaleY(1); }
 
 /* ── Line CTA 視覺升級 ── */
 #line-cta {
@@ -3845,16 +3826,16 @@ footer::before {
   content: '';
   position: absolute;
   top: 50%; left: 50%;
-  width: 0; height: 0;
+  width: 300px; height: 300px;
   background: rgba(255,255,255,0.15);
   border-radius: 50%;
-  transform: translate(-50%,-50%);
-  transition: width .5s, height .5s, opacity .5s;
+  transform: translate(-50%,-50%) scale(0);
+  transition: transform .5s, opacity .5s;
   opacity: 0;
   pointer-events: none;
 }
 .btn:active::before {
-  width: 300px; height: 300px;
+  transform: translate(-50%,-50%) scale(1);
   opacity: 0;
   transition: 0s;
 }
@@ -4909,7 +4890,7 @@ document.querySelectorAll('.btn').forEach(btn => {
 }
 .bov-reg-table tr:hover td { background: rgba(26,58,95,0.03) !important; }
 .bov-reg-no {
-  font-family: 'Space Grotesk', monospace !important;
+  font-family: var(--font-tech) !important;
   color: var(--ov-gold) !important;
   font-weight: 700 !important;
   font-size: .78rem !important;
@@ -5039,7 +5020,7 @@ document.querySelectorAll('.btn').forEach(btn => {
   box-shadow: 0 8px 28px rgba(15,25,35,0.1) !important;
 }
 .adm-stat-num {
-  font-family: 'Space Grotesk', monospace !important;
+  font-family: var(--font-tech) !important;
   font-size: 2.2rem !important;
   font-weight: 800 !important;
   color: var(--ov-navy) !important;
@@ -7022,7 +7003,7 @@ document.addEventListener('keydown', function(e) {
 <div id="pdLightbox" onclick="if(event.target===this)closePdLightbox()">
   <button class="pdlb-btn pdlb-x" onclick="closePdLightbox()" aria-label="關閉">✕</button>
   <button class="pdlb-btn pdlb-prev" onclick="pdLightboxNav(-1)" aria-label="上一張">‹</button>
-  <img id="pdLightboxImg" src="" alt="建案照片" />
+  <img id="pdLightboxImg" src="photo/icons/logo-mark.png" alt="建案照片" />
   <button class="pdlb-btn pdlb-next" onclick="pdLightboxNav(1)" aria-label="下一張">›</button>
   <div class="pdlb-count" id="pdlbCount"></div>
 </div>

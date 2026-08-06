@@ -1,5 +1,5 @@
 {
-  "files": ["index.html", "broker.html"],
+  "files": ["index.html", "yc-console-8k3n7q.html"],
   "insertBefore": "</body>",
   "commentSyntax": "html",
   "cspChecked": true

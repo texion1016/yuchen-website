@@ -179,14 +179,13 @@
   <div id="admLoginWrap" style="flex:1;display:flex;align-items:center;justify-content:center;">
     <div class="adm-login-box">
       <div style="font-family:var(--font-serif);font-size:1.3rem;margin-bottom:.45rem;color:var(--ink);">管理員登入</div>
-      <p style="font-size:.78rem;line-height:1.65;color:#55687E;margin:0 0 1.35rem;">僅限獲授權的譽誠管理員。登入後可至「管理員帳戶」綁定本裝置的人臉／Passkey。</p>
+      <p style="font-size:.78rem;line-height:1.65;color:#55687E;margin:0 0 1.35rem;">僅限獲授權的譽誠管理員。未完成裝置驗證時，請使用 Email 與密碼登入。</p>
       <div id="admLoginErr" class="bov-msg error" style="display:none;" role="alert" aria-live="polite"></div>
       <div id="admLoginMsg" style="display:none;padding:.55rem .9rem;border-radius:8px;font-size:.8rem;line-height:1.6;margin-bottom:1rem;background:#EEF6F0;border:1px solid rgba(47,107,79,.25);color:#2F6B4F;" role="status" aria-live="polite"></div>
       <div id="admLoginControls">
       <div class="bov-field"><label>管理員 Email</label><input type="email" id="admEmail" autocomplete="email" inputmode="email" maxlength="254" placeholder="name@example.com" /></div>
       <div class="bov-field"><label>密碼</label><input type="password" id="admPwd" autocomplete="current-password" minlength="12" placeholder="至少 12 個字元" onkeydown="if(event.key==='Enter')doAdminLogin()" /></div>
       <button class="bov-btn" style="width:100%;margin-top:.1rem;" onclick="doAdminLogin()">登入</button>
-      <button type="button" onclick="doAdminPasskeyLogin()" style="width:100%;margin-top:.65rem;background:#fff;color:#1A3A5F;border:1px solid #C7D2DE;border-radius:10px;padding:.72rem;cursor:pointer;font:700 .82rem inherit;">使用人臉／裝置 Passkey 登入</button>
       <button type="button" class="adm-setup-link" onclick="sendAdminReset()">忘記密碼？寄送安全重設連結</button>
       </div>
       <div id="admResetArea" style="display:none;">
@@ -466,12 +465,6 @@ async function saveAdminPasswordReset() {
   document.getElementById('admResetPwd').value = '';
   document.getElementById('admResetPwd2').value = '';
   history.replaceState(null, '', window.location.pathname);
-  await verifyAdminSession();
-}
-async function doAdminPasskeyLogin() {
-  if (!window.PublicKeyCredential) { setAdminLoginMessage('此瀏覽器不支援 Passkey，請改用 Email 與密碼登入。', true); return; }
-  const { error } = await _sb.auth.signInWithPasskey();
-  if (error) { setAdminLoginMessage('Passkey 登入未完成：' + error.message, true); return; }
   await verifyAdminSession();
 }
 async function registerAdminPasskey() {

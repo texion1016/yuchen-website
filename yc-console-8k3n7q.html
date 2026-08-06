@@ -47,6 +47,18 @@
     transition: background .2s, color .2s;
   }
   .adm-home:hover { background: rgba(255,255,255,.15); color: #fff; }
+  .adm-logout {
+    display: inline-flex; align-items: center; justify-content: center; gap: .4rem;
+    min-width: 72px; min-height: 34px; padding: .35rem .75rem;
+    white-space: nowrap; writing-mode: horizontal-tb; line-height: 1;
+  }
+  .adm-logout svg { width: 15px; height: 15px; flex: 0 0 auto; }
+  .adm-setup-link {
+    display: block; width: 100%; margin-top: .7rem; padding: .4rem;
+    border: none; background: transparent; color: #46607A; cursor: pointer;
+    font: 600 .78rem inherit; text-decoration: underline; text-underline-offset: 3px;
+  }
+  .adm-setup-link:hover { color: #1A3A5F; }
 
   /* ── 登入 ── */
   #admLoginWrap {
@@ -159,20 +171,31 @@
     <div class="adm-logo">譽誠聯合銷售平台 — 管理後台</div>
     <div style="display:flex;align-items:center;gap:.5rem;">
       <a class="adm-home" href="index.html">← 回主站</a>
-      <button id="admLogoutBtn" class="adm-home" type="button" style="display:none;background:transparent;cursor:pointer;font-family:inherit;" onclick="adminSignOut()">登出</button>
+      <button id="admLogoutBtn" class="adm-home adm-logout" type="button" style="display:none;background:transparent;cursor:pointer;font-family:inherit;" onclick="adminSignOut()" aria-label="登出管理後台">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M21 19V5a2 2 0 0 0-2-2h-7"/></svg><span>登出</span>
+      </button>
     </div>
   </div>
   <div id="admLoginWrap" style="flex:1;display:flex;align-items:center;justify-content:center;">
     <div class="adm-login-box">
       <div style="font-family:var(--font-serif);font-size:1.3rem;margin-bottom:.45rem;color:var(--ink);">管理員登入</div>
-      <p style="font-size:.78rem;line-height:1.65;color:#55687E;margin:0 0 1.35rem;">僅限獲授權的譽誠管理員。首次帳號請使用已指定的 Email 建立。</p>
+      <p style="font-size:.78rem;line-height:1.65;color:#55687E;margin:0 0 1.35rem;">僅限獲授權的譽誠管理員。首次完成帳號設定後，即可綁定本裝置的人臉／Passkey。</p>
       <div id="admLoginErr" class="bov-msg error" style="display:none;" role="alert" aria-live="polite"></div>
       <div id="admLoginMsg" style="display:none;padding:.55rem .9rem;border-radius:8px;font-size:.8rem;line-height:1.6;margin-bottom:1rem;background:#EEF6F0;border:1px solid rgba(47,107,79,.25);color:#2F6B4F;" role="status" aria-live="polite"></div>
+      <div id="admLoginControls">
       <div class="bov-field"><label>管理員 Email</label><input type="email" id="admEmail" autocomplete="email" inputmode="email" maxlength="254" placeholder="name@example.com" /></div>
       <div class="bov-field"><label>密碼</label><input type="password" id="admPwd" autocomplete="current-password" minlength="12" placeholder="至少 12 個字元" onkeydown="if(event.key==='Enter')doAdminLogin()" /></div>
       <button class="bov-btn" style="width:100%;margin-top:.1rem;" onclick="doAdminLogin()">登入</button>
-      <button type="button" onclick="doInitialAdminSignup()" style="width:100%;margin-top:.65rem;background:#fff;color:#1A3A5F;border:1px solid #C7D2DE;border-radius:10px;padding:.72rem;cursor:pointer;font:600 .82rem inherit;">建立首位管理員帳號</button>
-      <button type="button" onclick="doAdminPasskeyLogin()" style="width:100%;margin-top:.65rem;background:transparent;color:#1A3A5F;border:none;padding:.45rem;cursor:pointer;font:600 .78rem inherit;">使用人臉／裝置 Passkey 登入</button>
+      <button type="button" onclick="doAdminPasskeyLogin()" style="width:100%;margin-top:.65rem;background:#fff;color:#1A3A5F;border:1px solid #C7D2DE;border-radius:10px;padding:.72rem;cursor:pointer;font:700 .82rem inherit;">使用人臉／裝置 Passkey 登入</button>
+      <button type="button" class="adm-setup-link" onclick="doInitialAdminSignup()">首次使用？建立首位管理員帳號</button>
+      <button type="button" class="adm-setup-link" onclick="sendAdminReset()">忘記密碼？寄送安全重設連結</button>
+      </div>
+      <div id="admResetArea" style="display:none;">
+        <p style="font-size:.8rem;line-height:1.65;color:#55687E;margin:0 0 1rem;">請設定新的管理員密碼。完成後可再登入並綁定人臉／Passkey。</p>
+        <div class="bov-field"><label>新密碼</label><input type="password" id="admResetPwd" autocomplete="new-password" minlength="12" placeholder="至少 12 個字元" /></div>
+        <div class="bov-field"><label>確認新密碼</label><input type="password" id="admResetPwd2" autocomplete="new-password" minlength="12" placeholder="再輸入一次新密碼" onkeydown="if(event.key==='Enter')saveAdminPasswordReset()" /></div>
+        <button class="bov-btn" type="button" onclick="saveAdminPasswordReset()">儲存新密碼</button>
+      </div>
     </div>
   </div>
   <div id="admDash" style="display:none;flex:1;overflow:hidden;flex-direction:row;" class="adm-layout">
@@ -385,6 +408,8 @@ function showAdminLogin() {
   document.getElementById('admLoginWrap').style.display = 'flex';
   document.getElementById('admDash').style.display = 'none';
   document.getElementById('admLogoutBtn').style.display = 'none';
+  document.getElementById('admLoginControls').style.display = '';
+  document.getElementById('admResetArea').style.display = 'none';
 }
 function showAdminDashboard() {
   document.getElementById('admLoginWrap').style.display = 'none';
@@ -424,8 +449,30 @@ async function doInitialAdminSignup() {
     password,
     options: { emailRedirectTo: window.location.origin + window.location.pathname }
   });
-  if (error) { setAdminLoginMessage('建立帳號失敗：' + error.message, true); return; }
+  if (error) { setAdminLoginMessage('建立帳號失敗：若此 Email 已建立，請先完成驗證或使用「忘記密碼」。', true); return; }
   setAdminLoginMessage('驗證信已寄出。請至信箱完成驗證後，再回此頁登入。', false);
+}
+async function sendAdminReset() {
+  const email = document.getElementById('admEmail').value.trim().toLowerCase();
+  if (!email || !/^\S+@\S+\.\S+$/.test(email)) { setAdminLoginMessage('請先輸入管理員 Email，再寄送重設連結。', true); return; }
+  const { error } = await _sb.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + window.location.pathname
+  });
+  if (error) { setAdminLoginMessage('重設信寄送失敗，請稍後再試。', true); return; }
+  setAdminLoginMessage('安全重設連結已寄出，請至信箱開啟後回此頁設定新密碼。', false);
+}
+async function saveAdminPasswordReset() {
+  const password = document.getElementById('admResetPwd').value;
+  const confirmPassword = document.getElementById('admResetPwd2').value;
+  if (password.length < 12) { setAdminLoginMessage('新密碼至少需要 12 個字元。', true); return; }
+  if (password !== confirmPassword) { setAdminLoginMessage('兩次輸入的新密碼不一致。', true); return; }
+  const { error } = await _sb.auth.updateUser({ password });
+  if (error) { setAdminLoginMessage('重設連結已失效，請重新寄送。', true); return; }
+  await _sb.auth.signOut();
+  document.getElementById('admResetPwd').value = '';
+  document.getElementById('admResetPwd2').value = '';
+  showAdminLogin();
+  setAdminLoginMessage('密碼已更新，請使用新密碼登入。', false);
 }
 async function doAdminPasskeyLogin() {
   if (!window.PublicKeyCredential) { setAdminLoginMessage('此瀏覽器不支援 Passkey，請改用 Email 與密碼登入。', true); return; }
@@ -444,6 +491,13 @@ async function adminSignOut() {
   showAdminLogin();
   setAdminLoginMessage('已安全登出。', false);
 }
+
+_sb.auth.onAuthStateChange((event) => {
+  if (event !== 'PASSWORD_RECOVERY') return;
+  document.getElementById('admLoginControls').style.display = 'none';
+  document.getElementById('admResetArea').style.display = '';
+  setAdminLoginMessage('請設定新的管理員密碼。', false);
+});
 async function inviteAdmin() {
   const input = document.getElementById('admInviteEmail');
   const email = input.value.trim().toLowerCase();

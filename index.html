@@ -261,7 +261,7 @@
       font-weight: 700; color: var(--ink); line-height: 1.28; letter-spacing: 0.05em; margin-bottom: 1.5rem;
     }
     .hr-line { display: block; }
-    .hr-title .accent { color: var(--cyan); position: relative; white-space: nowrap; text-shadow: 0 0 30px rgba(91,232,255,0.6); }
+    .hr-title .accent { color: var(--cyan); position: relative; white-space: nowrap; }
     .hr-title .accent::after { content: ''; position: absolute; left: -0.04em; right: -0.04em; bottom: 0.05em; height: 0.12em; background: linear-gradient(to right, var(--cyan), transparent); box-shadow: 0 0 14px rgba(91,232,255,0.7); border-radius: 2px; }
     .hr-sub { font-size: 0.96rem; color: var(--ink-dim); line-height: 2.15; letter-spacing: 0.1em; margin-bottom: 2.1rem; max-width: 30em; }
     .hr-sub strong { font-weight: 500; color: var(--ink); border-bottom: 1px solid rgba(91,232,255,0.6); padding-bottom: 2px; }
@@ -655,11 +655,11 @@
     </div>
   </a>
   <nav class="nav-links">
-    <a href="#projects">精選建案</a>
     <a href="#" onclick="openDevOverlay();return false;">建商專區</a>
     <a href="#" onclick="openBrokerOverlay();return false;">仲介專區</a>
     <a href="install.html" class="nav-a2hs" title="把譽誠加到手機桌面">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18.5h2"/></svg>手機版</a>
+    <a href="yc-console-8k3n7q.html">管理員</a>
   </nav>
   <div class="nav-cta">
     
@@ -4014,25 +4014,15 @@ html { scroll-behavior: smooth !important; }
 </div>
 
 <script>
-const ADMIN_PWD = 'yuchen1101';
-
 function openAdmin() {
-  document.getElementById('adminOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
+  window.location.href = 'yc-console-8k3n7q.html';
 }
 function closeAdmin() {
   document.getElementById('adminOverlay').classList.remove('open');
   document.body.style.overflow = '';
 }
 function doAdminLogin() {
-  if (document.getElementById('admPwd').value === ADMIN_PWD) {
-    document.getElementById('admLoginWrap').style.display = 'none';
-    const dash = document.getElementById('admDash');
-    dash.style.display = 'flex';
-    loadAdmOverview();
-  } else {
-    document.getElementById('admLoginErr').style.display = 'block';
-  }
+  window.location.href = 'yc-console-8k3n7q.html';
 }
 function switchAdmPanel(name) {
   document.querySelectorAll('.adm-panel').forEach(p => p.classList.remove('active'));

@@ -14,7 +14,7 @@ if (Test-Path -LiteralPath $publishDir) {
 
 New-Item -ItemType Directory -Path $publishDir | Out-Null
 
-$publicFiles = @('index.html', 'install.html', 'manifest.json')
+$publicFiles = @('index.html', 'install.html', 'manifest.json', 'yc-console-8k3n7q.html', 'admin-manifest.json')
 foreach ($file in $publicFiles) {
   $source = Join-Path $projectRoot $file
   if (-not (Test-Path -LiteralPath $source -PathType Leaf)) {
@@ -32,4 +32,4 @@ foreach ($directory in @('assets', 'photo')) {
 }
 
 Write-Host "Cloudflare upload folder ready: $publishDir"
-Write-Host 'Included: index.html, install.html, manifest.json, assets, photo'
+Write-Host 'Included: public site, secured administrator console, assets, photo'

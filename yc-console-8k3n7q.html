@@ -157,14 +157,22 @@
 <div id="adminOverlay">
   <div class="adm-header">
     <div class="adm-logo">譽誠聯合銷售平台 — 管理後台</div>
-    <a class="adm-home" href="index.html">← 回主站</a>
+    <div style="display:flex;align-items:center;gap:.5rem;">
+      <a class="adm-home" href="index.html">← 回主站</a>
+      <button id="admLogoutBtn" class="adm-home" type="button" style="display:none;background:transparent;cursor:pointer;font-family:inherit;" onclick="adminSignOut()">登出</button>
+    </div>
   </div>
   <div id="admLoginWrap" style="flex:1;display:flex;align-items:center;justify-content:center;">
     <div class="adm-login-box">
-      <div style="font-family:var(--font-serif);font-size:1.3rem;margin-bottom:1.5rem;color:var(--ink);">管理員登入</div>
-      <div id="admLoginErr" class="bov-msg error" style="display:none;">密碼錯誤</div>
-      <div class="bov-field"><label>管理員密碼</label><input type="password" id="admPwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doAdminLogin()" /></div>
-      <button class="bov-btn" style="width:100%;margin-top:.5rem;" onclick="doAdminLogin()">登入</button>
+      <div style="font-family:var(--font-serif);font-size:1.3rem;margin-bottom:.45rem;color:var(--ink);">管理員登入</div>
+      <p style="font-size:.78rem;line-height:1.65;color:#55687E;margin:0 0 1.35rem;">僅限獲授權的譽誠管理員。首次帳號請使用已指定的 Email 建立。</p>
+      <div id="admLoginErr" class="bov-msg error" style="display:none;" role="alert" aria-live="polite"></div>
+      <div id="admLoginMsg" style="display:none;padding:.55rem .9rem;border-radius:8px;font-size:.8rem;line-height:1.6;margin-bottom:1rem;background:#EEF6F0;border:1px solid rgba(47,107,79,.25);color:#2F6B4F;" role="status" aria-live="polite"></div>
+      <div class="bov-field"><label>管理員 Email</label><input type="email" id="admEmail" autocomplete="email" inputmode="email" maxlength="254" placeholder="name@example.com" /></div>
+      <div class="bov-field"><label>密碼</label><input type="password" id="admPwd" autocomplete="current-password" minlength="12" placeholder="至少 12 個字元" onkeydown="if(event.key==='Enter')doAdminLogin()" /></div>
+      <button class="bov-btn" style="width:100%;margin-top:.1rem;" onclick="doAdminLogin()">登入</button>
+      <button type="button" onclick="doInitialAdminSignup()" style="width:100%;margin-top:.65rem;background:#fff;color:#1A3A5F;border:1px solid #C7D2DE;border-radius:10px;padding:.72rem;cursor:pointer;font:600 .82rem inherit;">建立首位管理員帳號</button>
+      <button type="button" onclick="doAdminPasskeyLogin()" style="width:100%;margin-top:.65rem;background:transparent;color:#1A3A5F;border:none;padding:.45rem;cursor:pointer;font:600 .78rem inherit;">使用人臉／裝置 Passkey 登入</button>
     </div>
   </div>
   <div id="admDash" style="display:none;flex:1;overflow:hidden;flex-direction:row;" class="adm-layout">
@@ -176,6 +184,7 @@
       <button class="adm-nav-btn" onclick="switchAdmPanel('projects')">建案管理</button>
       <button class="adm-nav-btn" onclick="switchAdmPanel('units')">戶況管理</button>
       <button class="adm-nav-btn" onclick="switchAdmPanel('brokers')">仲介管理</button>
+      <button class="adm-nav-btn" onclick="switchAdmPanel('admins')">管理員帳戶</button>
       <button class="adm-nav-btn" onclick="openDevPortalFromAdmin()">建案戶況(檢視)</button>
     </div>
     <div class="adm-content">
@@ -226,6 +235,16 @@
       <div class="adm-panel" id="admBrokers">
         <div class="adm-title">合作仲介名單</div>
         <div id="admBrokerContent"><div class="adm-empty">載入中…</div></div>
+      </div>
+      <div class="adm-panel" id="admAdmins">
+        <div class="adm-title">管理員帳戶</div>
+        <div style="max-width:520px;background:#fff;border:1px solid var(--ov-line);border-radius:14px;padding:1.35rem;">
+          <p style="margin:0 0 1rem;font-size:.82rem;line-height:1.75;color:#55687E;">輸入 Email 後，系統會寄出一次性邀請。對方完成設定密碼後，即可登入此管理後台。</p>
+          <div class="bov-field"><label for="admInviteEmail">邀請管理員 Email</label><input type="email" id="admInviteEmail" autocomplete="email" inputmode="email" maxlength="254" placeholder="new-admin@example.com" /></div>
+          <button class="bov-btn" id="admInviteBtn" type="button" onclick="inviteAdmin()">寄送管理員邀請</button>
+          <div id="admInviteMsg" style="display:none;margin-top:.8rem;font-size:.8rem;line-height:1.6;" role="status" aria-live="polite"></div>
+        </div>
+        <button type="button" onclick="registerAdminPasskey()" style="margin-top:1rem;background:#fff;color:#1A3A5F;border:1px solid #C7D2DE;border-radius:10px;padding:.7rem 1rem;cursor:pointer;font:600 .82rem inherit;">啟用此裝置的人臉／Passkey 登入</button>
       </div>
     </div>
   </div>
@@ -331,9 +350,10 @@
 <script>
 const _SB_URL = 'https://femuufnveodwcnusuthy.supabase.co';
 const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlbXV1Zm52ZW9kd2NudXN1dGh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2ODQ0MjcsImV4cCI6MjA5NzI2MDQyN30.TQER06oE6_CT8nHprhPlf79qjbcsgS4nhEJs5VUregQ';
-const _sb = supabase.createClient(_SB_URL, _SB_KEY);
-
-const ADMIN_PWD = 'yuchen1101';
+const _sb = supabase.createClient(_SB_URL, _SB_KEY, {
+  auth: { experimental: { passkey: true }, persistSession: true, autoRefreshToken: true }
+});
+const INITIAL_ADMIN_EMAIL = 'davidlin10161016@gmail.com';
 
 function openAdmin() {
   document.getElementById('adminOverlay').classList.add('open');
@@ -343,15 +363,90 @@ function closeAdmin() {
   document.getElementById('adminOverlay').classList.remove('open');
   document.body.style.overflow = '';
 }
-function doAdminLogin() {
-  if (document.getElementById('admPwd').value === ADMIN_PWD) {
-    document.getElementById('admLoginWrap').style.display = 'none';
-    const dash = document.getElementById('admDash');
-    dash.style.display = 'flex';
-    loadAdmOverview();
-  } else {
-    document.getElementById('admLoginErr').style.display = 'block';
+function setAdminLoginMessage(message, isError) {
+  const error = document.getElementById('admLoginErr');
+  const notice = document.getElementById('admLoginMsg');
+  error.style.display = isError ? 'block' : 'none';
+  notice.style.display = isError ? 'none' : 'block';
+  (isError ? error : notice).textContent = message;
+}
+function showAdminLogin() {
+  document.getElementById('admLoginWrap').style.display = 'flex';
+  document.getElementById('admDash').style.display = 'none';
+  document.getElementById('admLogoutBtn').style.display = 'none';
+}
+function showAdminDashboard() {
+  document.getElementById('admLoginWrap').style.display = 'none';
+  document.getElementById('admDash').style.display = 'flex';
+  document.getElementById('admLogoutBtn').style.display = 'inline-block';
+  loadAdmOverview();
+}
+async function verifyAdminSession(showError = true) {
+  const { data: { user }, error: userError } = await _sb.auth.getUser();
+  if (userError || !user) { showAdminLogin(); return false; }
+  const { data: role, error: roleError } = await _sb.from('user_roles')
+    .select('role').eq('user_id', user.id).maybeSingle();
+  if (roleError || role?.role !== 'admin') {
+    await _sb.auth.signOut();
+    showAdminLogin();
+    if (showError) setAdminLoginMessage('此帳號尚未取得管理員權限，請由既有管理員寄送邀請。', true);
+    return false;
   }
+  showAdminDashboard();
+  return true;
+}
+async function doAdminLogin() {
+  const email = document.getElementById('admEmail').value.trim().toLowerCase();
+  const password = document.getElementById('admPwd').value;
+  if (!email || !password) { setAdminLoginMessage('請輸入管理員 Email 與密碼。', true); return; }
+  const { error } = await _sb.auth.signInWithPassword({ email, password });
+  if (error) { setAdminLoginMessage('登入失敗：請確認 Email、密碼，或先完成信箱驗證。', true); return; }
+  await verifyAdminSession();
+}
+async function doInitialAdminSignup() {
+  const email = document.getElementById('admEmail').value.trim().toLowerCase();
+  const password = document.getElementById('admPwd').value;
+  if (email !== INITIAL_ADMIN_EMAIL) { setAdminLoginMessage('首位管理員帳號僅限指定的 Email 建立。', true); return; }
+  if (password.length < 12) { setAdminLoginMessage('請設定至少 12 個字元的密碼。', true); return; }
+  const { error } = await _sb.auth.signUp({
+    email,
+    password,
+    options: { emailRedirectTo: window.location.origin + window.location.pathname }
+  });
+  if (error) { setAdminLoginMessage('建立帳號失敗：' + error.message, true); return; }
+  setAdminLoginMessage('驗證信已寄出。請至信箱完成驗證後，再回此頁登入。', false);
+}
+async function doAdminPasskeyLogin() {
+  if (!window.PublicKeyCredential) { setAdminLoginMessage('此瀏覽器不支援 Passkey，請改用 Email 與密碼登入。', true); return; }
+  const { error } = await _sb.auth.signInWithPasskey();
+  if (error) { setAdminLoginMessage('Passkey 登入未完成：' + error.message, true); return; }
+  await verifyAdminSession();
+}
+async function registerAdminPasskey() {
+  if (!window.PublicKeyCredential) { alert('此瀏覽器不支援 Passkey。'); return; }
+  const { error } = await _sb.auth.registerPasskey();
+  if (error) { alert('Passkey 設定未完成：' + error.message); return; }
+  alert('此裝置已可使用人臉／Passkey 登入。');
+}
+async function adminSignOut() {
+  await _sb.auth.signOut();
+  showAdminLogin();
+  setAdminLoginMessage('已安全登出。', false);
+}
+async function inviteAdmin() {
+  const input = document.getElementById('admInviteEmail');
+  const email = input.value.trim().toLowerCase();
+  const message = document.getElementById('admInviteMsg');
+  const button = document.getElementById('admInviteBtn');
+  if (!/^\S+@\S+\.\S+$/.test(email)) {
+    message.style.display = 'block'; message.style.color = '#B03030'; message.textContent = '請輸入有效的 Email。'; return;
+  }
+  button.disabled = true; button.textContent = '寄送中…';
+  const { error } = await _sb.functions.invoke('invite-admin', { body: { email } });
+  button.disabled = false; button.textContent = '寄送管理員邀請';
+  message.style.display = 'block';
+  if (error) { message.style.color = '#B03030'; message.textContent = '邀請未送出：' + error.message; return; }
+  input.value = ''; message.style.color = '#2F6B4F'; message.textContent = '邀請已寄出；對方完成信箱流程後即可建立管理員帳號。';
 }
 function switchAdmPanel(name) {
   document.querySelectorAll('.adm-panel').forEach(p => p.classList.remove('active'));
@@ -813,10 +908,7 @@ async function admDeleteBroker(id, name) {
   loadAdmBrokers();
 }
 
-/* ── 免登入：開啟即進入儀表板 ── */
-document.getElementById('admLoginWrap').style.display = 'none';
-document.getElementById('admDash').style.display = 'flex';
-loadAdmOverview();
+verifyAdminSession(false);
 </script>
 
 <!-- ══════════════════════════════════════════════

@@ -2,7 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "yuchen-realty",
   "main": "./cloudflare-worker.mjs",
-  "compatibility_date": "2026-08-07",
+  "compatibility_date": "2026-08-06",
   "account_id": "9242649f2d6bdcc4290e2b5ff3f3e320",
   "assets": {
     "directory": "./cloudflare-deploy",

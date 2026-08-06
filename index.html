@@ -262,7 +262,7 @@
     }
     .hr-line { display: block; }
     .hr-title .accent { color: var(--cyan); position: relative; white-space: nowrap; }
-    .hr-title .accent::after { content: ''; position: absolute; left: -0.04em; right: -0.04em; bottom: 0.05em; height: 0.12em; background: linear-gradient(to right, var(--cyan), transparent); box-shadow: 0 0 14px rgba(91,232,255,0.7); border-radius: 2px; }
+    .hr-title .accent::after { content: ''; position: absolute; left: -0.04em; right: -0.04em; bottom: 0.05em; height: 0.12em; background: linear-gradient(to right, var(--cyan), transparent); border-radius: 2px; }
     .hr-sub { font-size: 0.96rem; color: var(--ink-dim); line-height: 2.15; letter-spacing: 0.1em; margin-bottom: 2.1rem; max-width: 30em; }
     .hr-sub strong { font-weight: 500; color: var(--ink); border-bottom: 1px solid rgba(91,232,255,0.6); padding-bottom: 2px; }
     .hr-btns { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2.7rem; }
@@ -621,7 +621,9 @@
   <script>
     const _SB_URL = 'https://femuufnveodwcnusuthy.supabase.co';
     const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlbXV1Zm52ZW9kd2NudXN1dGh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2ODQ0MjcsImV4cCI6MjA5NzI2MDQyN30.TQER06oE6_CT8nHprhPlf79qjbcsgS4nhEJs5VUregQ';
-    const _sb = supabase.createClient(_SB_URL, _SB_KEY);
+    const _sb = supabase.createClient(_SB_URL, _SB_KEY, {
+      auth: { experimental: { passkey: true }, persistSession: true, autoRefreshToken: true }
+    });
   </script>
 </head>
 <body>
@@ -1183,6 +1185,7 @@
 <div id="brokerOverlay">
   <div class="bov-header">
     <div class="bov-logo">譽誠聯合銷售平台 — 仲介專區</div>
+    <button id="bovLogout" class="bov-close" type="button" style="display:none;width:auto;padding:0 .5rem;font-size:.78rem;" onclick="brokerSignOut()">登出</button>
     <button class="bov-close" onclick="closeBrokerOv()">✕</button>
   </div>
   <div class="bov-tabs" id="bovTabs">
@@ -1190,6 +1193,7 @@
     <button class="bov-tab" id="tabRegister" onclick="switchBovTab('register')">申請合作</button>
     <button class="bov-tab" id="tabReport" style="display:none" onclick="switchBovTab('report')">客戶報備</button>
     <button class="bov-tab" id="tabMyReg" style="display:none" onclick="switchBovTab('myreg')">我的報備</button>
+    <button class="bov-tab" id="tabSecurity" style="display:none" onclick="switchBovTab('security')">登入設定</button>
     <button class="bov-tab" id="tabBonus" onclick="switchBovTab('bonus')">獎金辦法</button>
   </div>
   <div class="bov-body">
@@ -1204,34 +1208,34 @@
       <span class="pwd-eye" onclick="togglePwd('loginPwd',this)">👁</span>
     </div></div>
       <button class="bov-btn" onclick="doBrokerLogin()">登入</button>
+      <button type="button" class="bov-btn bov-btn-sec" style="margin-top:.65rem;" onclick="doBrokerPasskeyLogin()">使用人臉／裝置 Passkey 登入</button>
       <div class="bov-forgot"><a href="#" onclick="switchBovTab('reset');return false;">忘記密碼？</a></div>
       <div class="bov-divider">或</div>
       <button class="bov-btn bov-btn-sec" onclick="switchBovTab('register')">還沒有帳號？申請成為合作仲介</button>
     </div>
 
-    <!-- 重設密碼（信箱驗證碼） -->
+    <!-- 重設密碼 -->
     <div class="bov-panel" id="bovReset">
       <div class="bov-form-title">重設密碼</div>
-      <p class="bov-reset-hint">輸入您註冊的電子信箱，我們會寄送 6 位數驗證碼；驗證通過即可設定新密碼。</p>
+      <p class="bov-reset-hint">輸入註冊信箱後，我們會寄送一次性重設連結。</p>
       <div id="resetMsg" class="bov-msg"></div>
-      <div class="bov-field"><label>電子信箱 *</label>
+      <div id="resetRequestArea"><div class="bov-field"><label>電子信箱 *</label>
         <div class="rs-email-row">
           <input type="email" id="rsEmail" placeholder="broker@example.com" />
-          <button type="button" class="rs-send-btn" id="rsSendBtn" onclick="sendResetCode()">寄送驗證碼</button>
+          <button type="button" class="rs-send-btn" id="rsSendBtn" onclick="sendBrokerReset()">寄送重設信</button>
         </div>
-      </div>
-      <div class="bov-field"><label>驗證碼 *</label>
-        <input type="text" id="rsCode" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="信箱收到的 6 位數字" />
-      </div>
+      </div></div>
+      <div id="resetUpdateArea" style="display:none;">
       <div class="bov-field"><label>新密碼 *</label><div class="pwd-wrap">
-        <input type="password" id="rsPwd" placeholder="至少 8 個字元" />
+        <input type="password" id="rsPwd" minlength="12" placeholder="至少 12 個字元" />
         <span class="pwd-eye" onclick="togglePwd('rsPwd',this)">👁</span>
       </div></div>
       <div class="bov-field"><label>確認新密碼 *</label><div class="pwd-wrap">
         <input type="password" id="rsPwd2" placeholder="再輸入一次新密碼" />
         <span class="pwd-eye" onclick="togglePwd('rsPwd2',this)">👁</span>
       </div></div>
-      <button class="bov-btn" onclick="doBrokerReset()">驗證並重設密碼</button>
+      <button class="bov-btn" onclick="doBrokerReset()">儲存新密碼</button>
+      </div>
       <div class="bov-divider">或</div>
       <button class="bov-btn bov-btn-sec" onclick="switchBovTab('login')">返回登入</button>
     </div>
@@ -1250,7 +1254,7 @@
       </div>
       <div class="bov-field"><label>經紀人證件號 *</label><input type="text" id="regLicenseNo" placeholder="例：B-01234567" /></div>
       <div class="bov-field"><label>設定密碼 *</label><div class="pwd-wrap">
-      <input type="password" id="regPwd" placeholder="至少 8 個字元" />
+      <input type="password" id="regPwd" minlength="12" placeholder="至少 12 個字元" />
       <span class="pwd-eye" onclick="togglePwd('regPwd',this)">👁</span>
     </div></div>
       <button class="bov-btn" onclick="doBrokerRegister()">送出申請</button>
@@ -1297,6 +1301,12 @@
       <div id="myregContent">
         <div class="bov-empty">載入中…</div>
       </div>
+    </div>
+
+    <div class="bov-panel" id="bovSecurity">
+      <div class="bov-form-title">登入設定</div>
+      <p class="bov-reset-hint">Passkey 使用此装置的人脸、指纹或解锁码，不会上传或保存任何生物特征资料。</p>
+      <button type="button" class="bov-btn" onclick="registerBrokerPasskey()">啟用此裝置的人臉／Passkey 登入</button>
     </div>
 
     <!-- 改期彈窗 -->
@@ -1420,19 +1430,13 @@
 </div>
 
 <script>
-// ── Broker Overlay V2 — Supabase 版 ─────────────────────────────────────────
+// ── Broker Overlay — Supabase Auth + 角色權限 ────────────────────────────────
 let bovCurrentUser = null; // { id, name, company, email }
-
-// 簡易密碼雜湊（前端用，非加密級別）
-async function hashPwd(pwd) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pwd));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
 
 function openBrokerOverlay() {
   document.getElementById('brokerOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
-  if (bovCurrentUser) showBovLoggedIn();
+  verifyBrokerSession(false);
 }
 function closeBrokerOv() {
   document.getElementById('brokerOverlay').classList.remove('open');
@@ -1441,7 +1445,7 @@ function closeBrokerOv() {
 function switchBovTab(tab) {
   document.querySelectorAll('.bov-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.bov-tab').forEach(t => t.classList.remove('active'));
-  const panelMap = { login:'bovLogin', register:'bovRegister', report:'bovReport', myreg:'bovMyReg', bonus:'bovBonus', reset:'bovReset' };
+  const panelMap = { login:'bovLogin', register:'bovRegister', report:'bovReport', myreg:'bovMyReg', bonus:'bovBonus', reset:'bovReset', security:'bovSecurity' };
   const panel = document.getElementById(panelMap[tab]);
   if (panel) panel.classList.add('active');
   document.querySelectorAll('.bov-tab').forEach(t => {
@@ -1461,7 +1465,18 @@ function showBovLoggedIn() {
   const bcta = document.querySelector('.bonus-cta'); if (bcta) bcta.style.display = 'none';
   document.getElementById('tabReport').style.display = '';
   document.getElementById('tabMyReg').style.display = '';
+  document.getElementById('tabSecurity').style.display = '';
+  document.getElementById('bovLogout').style.display = '';
   switchBovTab('report');
+}
+function showBovLoggedOut() {
+  bovCurrentUser = null;
+  document.getElementById('tabLogin').style.display = '';
+  document.getElementById('tabRegister').style.display = '';
+  document.getElementById('tabReport').style.display = 'none';
+  document.getElementById('tabMyReg').style.display = 'none';
+  document.getElementById('tabSecurity').style.display = 'none';
+  document.getElementById('bovLogout').style.display = 'none';
 }
 function genRegNo() {
   const d = new Date().toISOString().slice(2,10).replace(/-/g,'');
@@ -1476,111 +1491,77 @@ async function doBrokerLogin() {
   if (!email || !pwd) { showBovMsg('loginMsg','請填寫信箱與密碼','error'); return;  }
   const btn = document.querySelector('#bovLogin .bov-btn');
   btn.textContent = '登入中…'; btn.disabled = true;
-  try {
-    const hash = await hashPwd(pwd);
-    const { data, error } = await _sb.from('brokers')
-      .select('id,name,company,email,status')
-      .eq('email', email)
-      .eq('password_hash', hash)
-      .single();
-    if (error || !data) {
-      showBovMsg('loginMsg','帳號或密碼錯誤','error');
-    } else if (data.status === 'pending') {
-      showBovMsg('loginMsg','帳號審核中，請等待管理員啟用','error');
-    } else if (data.status === 'suspended') {
-      showBovMsg('loginMsg','帳號已停用，請聯絡管理員','error');
-    } else {
-      bovCurrentUser = data;
-      localStorage.setItem('bov_user', JSON.stringify(data));
-      showBovLoggedIn();
-    }
-  } catch(e) {
-    showBovMsg('loginMsg','連線錯誤，請稍後再試','error');
-  }
+  const { error } = await _sb.auth.signInWithPassword({ email, password: pwd });
+  if (error) showBovMsg('loginMsg','登入失敗：請確認 Email、密碼，或先完成信箱驗證。','error');
+  else await verifyBrokerSession(true);
   btn.textContent = '登入'; btn.disabled = false;
 }
 
-// ── 重設密碼（信箱 6 位數驗證碼）──────────────────────────────────────────
-let _rsTimer = null;
+async function verifyBrokerSession(showError = true) {
+  const { data: { user }, error: userError } = await _sb.auth.getUser();
+  if (userError || !user) { showBovLoggedOut(); return false; }
+  const { data: role } = await _sb.from('user_roles').select('role').eq('user_id', user.id).maybeSingle();
+  if (role?.role !== 'broker') {
+    await _sb.auth.signOut();
+    showBovLoggedOut();
+    if (showError) showBovMsg('loginMsg','帳號尚未啟用；請先完成信箱驗證並等待管理員審核。','error');
+    return false;
+  }
+  const { data: profile, error: profileError } = await _sb.from('brokers')
+    .select('id,name,company,email,status').eq('auth_user_id', user.id).maybeSingle();
+  if (profileError || !profile || profile.status !== 'active') {
+    await _sb.auth.signOut(); showBovLoggedOut();
+    if (showError) showBovMsg('loginMsg','此合作仲介帳號目前不可使用，請聯絡管理員。','error');
+    return false;
+  }
+  bovCurrentUser = profile;
+  showBovLoggedIn();
+  return true;
+}
+async function doBrokerPasskeyLogin() {
+  if (!window.PublicKeyCredential) { showBovMsg('loginMsg','此瀏覽器不支援 Passkey，請使用 Email 與密碼登入。','error'); return; }
+  const { error } = await _sb.auth.signInWithPasskey();
+  if (error) { showBovMsg('loginMsg','Passkey 登入未完成：' + error.message,'error'); return; }
+  await verifyBrokerSession(true);
+}
+async function registerBrokerPasskey() {
+  if (!window.PublicKeyCredential) { alert('此瀏覽器不支援 Passkey。'); return; }
+  const { error } = await _sb.auth.registerPasskey();
+  if (error) { alert('Passkey 設定未完成：' + error.message); return; }
+  alert('此裝置已可使用人臉／Passkey 登入。');
+}
+async function brokerSignOut() {
+  await _sb.auth.signOut();
+  showBovLoggedOut();
+  switchBovTab('login');
+}
 
-async function sendResetCode() {
+// ── 重設密碼 ──────────────────────────────────────────────────────────────
+async function sendBrokerReset() {
   const email = document.getElementById('rsEmail').value.trim().toLowerCase();
   if (!email || !/^\S+@\S+\.\S+$/.test(email)) { showBovMsg('resetMsg','請輸入正確的電子信箱','error'); return; }
   const btn = document.getElementById('rsSendBtn');
-  btn.disabled = true; btn.textContent = '確認中…';
-  try {
-    // 先確認是註冊過的合作仲介，避免浪費寄信額度
-    const { data } = await _sb.from('brokers').select('id').eq('email', email).maybeSingle();
-    if (!data) {
-      showBovMsg('resetMsg','此信箱尚未註冊為合作仲介','error');
-      btn.disabled = false; btn.textContent = '寄送驗證碼';
-      return;
-    }
-    const { error } = await _sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
-    if (error) {
-      if (error.status === 429 || /rate/i.test(error.message || '')) {
-        showBovMsg('resetMsg','寄送太頻繁，請稍候幾分鐘再試','error');
-      } else {
-        showBovMsg('resetMsg','寄送失敗：' + error.message,'error');
-      }
-      btn.disabled = false; btn.textContent = '寄送驗證碼';
-      return;
-    }
-    showBovMsg('resetMsg','驗證碼已寄出，請查收信箱（也請檢查垃圾郵件夾），驗證碼 1 小時內有效','success');
-    // 60 秒後才能重寄
-    let sec = 60;
-    btn.textContent = '重寄（60s）';
-    clearInterval(_rsTimer);
-    _rsTimer = setInterval(() => {
-      sec--;
-      if (sec <= 0) { clearInterval(_rsTimer); btn.disabled = false; btn.textContent = '重寄驗證碼'; }
-      else btn.textContent = '重寄（' + sec + 's）';
-    }, 1000);
-  } catch(e) {
-    showBovMsg('resetMsg','連線錯誤，請稍後再試','error');
-    btn.disabled = false; btn.textContent = '寄送驗證碼';
-  }
+  btn.disabled = true; btn.textContent = '寄送中…';
+  const { error } = await _sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + window.location.pathname });
+  btn.disabled = false; btn.textContent = '寄送重設信';
+  if (error) { showBovMsg('resetMsg','寄送失敗，請稍後再試。','error'); return; }
+  showBovMsg('resetMsg','重設連結已寄出，請至信箱開啟後回此頁設定新密碼。','success');
 }
 
 async function doBrokerReset() {
-  const email = document.getElementById('rsEmail').value.trim().toLowerCase();
-  const code = document.getElementById('rsCode').value.trim();
   const pwd = document.getElementById('rsPwd').value;
   const pwd2 = document.getElementById('rsPwd2').value;
-  if (!email || !code || !pwd || !pwd2) { showBovMsg('resetMsg','請填寫所有欄位','error'); return; }
-  if (!/^\d{6}$/.test(code)) { showBovMsg('resetMsg','驗證碼為 6 位數字','error'); return; }
-  if (pwd.length < 8) { showBovMsg('resetMsg','新密碼至少需要 8 個字元','error'); return; }
+  if (!pwd || !pwd2) { showBovMsg('resetMsg','請填寫兩次新密碼','error'); return; }
+  if (pwd.length < 12) { showBovMsg('resetMsg','新密碼至少需要 12 個字元','error'); return; }
   if (pwd !== pwd2) { showBovMsg('resetMsg','兩次輸入的新密碼不一致','error'); return; }
   const btn = document.querySelector('#bovReset .bov-btn');
-  btn.textContent = '驗證中…'; btn.disabled = true;
-  try {
-    const { error: ve } = await _sb.auth.verifyOtp({ email, token: code, type: 'email' });
-    if (ve) {
-      showBovMsg('resetMsg','驗證碼錯誤或已過期，請重新寄送','error');
-    } else {
-      const hash = await hashPwd(pwd);
-      const { error: e2 } = await _sb.from('brokers').update({ password_hash: hash }).eq('email', email);
-      // 驗證用的臨時登入階段用完即丟
-      _sb.auth.signOut().catch(() => {});
-      if (e2) {
-        if (/permission denied/i.test(e2.message || '')) {
-          showBovMsg('resetMsg','系統尚未開通重設權限，請聯絡管理員','error');
-          console.error('需在 Supabase SQL Editor 執行：GRANT UPDATE (password_hash) ON brokers TO anon, authenticated;');
-        } else {
-          showBovMsg('resetMsg','重設失敗：' + e2.message,'error');
-        }
-      } else {
-        showBovMsg('resetMsg','密碼已重設，請用新密碼登入','success');
-        document.getElementById('rsCode').value = '';
-        document.getElementById('rsPwd').value = '';
-        document.getElementById('rsPwd2').value = '';
-        setTimeout(() => { switchBovTab('login'); document.getElementById('loginEmail').value = email; }, 1500);
-      }
-    }
-  } catch(e) {
-    showBovMsg('resetMsg','連線錯誤，請稍後再試','error');
-  }
-  btn.textContent = '驗證並重設密碼'; btn.disabled = false;
+  btn.textContent = '儲存中…'; btn.disabled = true;
+  const { error } = await _sb.auth.updateUser({ password: pwd });
+  btn.disabled = false; btn.textContent = '儲存新密碼';
+  if (error) { showBovMsg('resetMsg','重設連結已失效，請重新寄送。','error'); return; }
+  showBovMsg('resetMsg','密碼已更新，請使用新密碼登入。','success');
+  document.getElementById('rsPwd').value = ''; document.getElementById('rsPwd2').value = '';
+  await _sb.auth.signOut(); setTimeout(() => switchBovTab('login'), 900);
 }
 
 // ── 申請合作 ──────────────────────────────────────────────────────────────
@@ -1594,32 +1575,29 @@ async function doBrokerRegister() {
   if (!name||!company||!phone||!email||!licenseNo||!pwd) {
     showBovMsg('registerMsg','請填寫所有必填欄位（含經紀人證件號）','error'); return;
   }
-  if (pwd.length < 8) { showBovMsg('registerMsg','密碼至少需要 8 個字元','error'); return; }
+  if (pwd.length < 12) { showBovMsg('registerMsg','密碼至少需要 12 個字元','error'); return; }
   const btn = document.querySelector('#bovRegister .bov-btn');
   btn.textContent = '送出中…'; btn.disabled = true;
-  try {
-    const hash = await hashPwd(pwd);
-    const { data: newBroker, error } = await _sb.from('brokers').insert({
-      name, company, phone, email, license_no: licenseNo, password_hash: hash, status: 'active'
-    }).select('id').single();
-    if (error) {
-      if (error.code === '23505') {
-        showBovMsg('registerMsg','此信箱已註冊，請直接登入','error');
-      } else {
-        showBovMsg('registerMsg','送出失敗：'+error.message,'error');
-      }
-    } else {
-      // 自動登入（帶上 id，報備時才關聯得到帳號）
-      bovCurrentUser = { id: newBroker ? newBroker.id : null, name, company, email };
-      localStorage.setItem('bov_user', JSON.stringify(bovCurrentUser));
-      showBovMsg('registerMsg','申請成功！歡迎加入譽誠聯合銷售平台','success');
-      setTimeout(() => showBovLoggedIn(), 1200);
+  const { error } = await _sb.auth.signUp({
+    email, password: pwd,
+    options: {
+      emailRedirectTo: window.location.origin + window.location.pathname,
+      data: { signup_type: 'broker', broker_name: name, broker_company: company, broker_phone: phone, broker_license_no: licenseNo }
     }
-  } catch(e) {
-    showBovMsg('registerMsg','連線錯誤，請稍後再試','error');
-  }
+  });
+  if (error) showBovMsg('registerMsg','申請失敗：' + error.message,'error');
+  else showBovMsg('registerMsg','驗證信已寄出。請完成驗證，管理員審核啟用後即可登入。','success');
   btn.textContent = '送出申請'; btn.disabled = false;
 }
+
+_sb.auth.onAuthStateChange((event) => {
+  if (event !== 'PASSWORD_RECOVERY') return;
+  openBrokerOverlay();
+  document.getElementById('resetRequestArea').style.display = 'none';
+  document.getElementById('resetUpdateArea').style.display = '';
+  switchBovTab('reset');
+  showBovMsg('resetMsg','請設定新的登入密碼。','success');
+});
 
 // ── 客戶報備 ──────────────────────────────────────────────────────────────
 async function doClientReport() {
@@ -1689,10 +1667,9 @@ async function bovSaveReschedule() {
   const btn = document.getElementById('rgeSaveBtn');
   btn.disabled = true; btn.textContent = '儲存中…';
   try {
-    // 改期後回到待確認，並重置提醒旗標讓系統重新寄 24 小時提醒
-    const { error } = await _sb.from('client_registrations')
-      .update({ view_date: d, view_time: t, status: 'pending', reminder_sent: false })
-      .eq('id', bovEditRegId);
+    const { error } = await _sb.functions.invoke('update-broker-registration', {
+      body: { id: bovEditRegId, action: 'reschedule', viewDate: d, viewTime: t }
+    });
     if (error) { alert('更新失敗：' + error.message); }
     else { bovCloseReschedule(); loadMyRegs(); }
   } catch(e) { alert('連線錯誤，請稍後再試'); }
@@ -1701,8 +1678,9 @@ async function bovSaveReschedule() {
 async function bovCancelReg(id) {
   if (!confirm('確定要取消這筆報備帶看嗎？取消後無法復原。')) return;
   try {
-    const { error } = await _sb.from('client_registrations')
-      .update({ status: 'cancelled' }).eq('id', id);
+    const { error } = await _sb.functions.invoke('update-broker-registration', {
+      body: { id, action: 'cancel' }
+    });
     if (error) { alert('取消失敗：' + error.message); return; }
     loadMyRegs();
   } catch(e) { alert('連線錯誤，請稍後再試'); }
@@ -1745,13 +1723,6 @@ async function loadMyRegs() {
   }
 }
 
-// ── 頁面載入：恢復登入狀態 ───────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  const saved = localStorage.getItem('bov_user');
-  if (saved) {
-    try { bovCurrentUser = JSON.parse(saved); } catch(e) {}
-  }
-});
 </script>
 
 
@@ -6333,6 +6304,7 @@ html, body { overflow-x: clip; }
 <div id="devOverlay">
   <div class="dev-header">
     <div class="dev-logo">譽誠聯合銷售平台 — 建商專區<small>DEVELOPER PORTAL</small></div>
+    <button id="devLogoutBtn" class="dev-close" type="button" style="display:none;width:auto;padding:0 .55rem;font-size:.78rem;" onclick="devSignOut()">登出</button>
     <button class="dev-close" onclick="closeDevOverlay()" aria-label="關閉">✕</button>
   </div>
 
@@ -6341,11 +6313,13 @@ html, body { overflow-x: clip; }
     <div class="dev-login-card">
       <h2 class="dev-login-title">建商登入</h2>
       <p class="dev-login-sub">追蹤您建案的帶看與成交戶況</p>
-      <div class="dev-login-err" id="devLoginErr">帳號或密碼錯誤</div>
-      <div class="dev-field"><label>公司帳號</label><input type="text" id="devAcc" placeholder="公司帳號" /></div>
-      <div class="dev-field"><label>密碼</label><input type="password" id="devPwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doDevLogin()" /></div>
+      <div class="dev-login-err" id="devLoginErr" role="alert" aria-live="polite"></div>
+      <div class="dev-field"><label>公司 Email</label><input type="email" id="devEmail" autocomplete="email" inputmode="email" placeholder="builder@example.com" /></div>
+      <div class="dev-field"><label>密碼</label><input type="password" id="devPwd" autocomplete="current-password" minlength="12" placeholder="至少 12 個字元" onkeydown="if(event.key==='Enter')doDevLogin()" /></div>
       <button class="dev-login-btn" onclick="doDevLogin()">登入</button>
-      <div class="dev-login-note">測試帳號：<b>yucheng</b>／密碼：<b>mu2026</b><br />正式帳號由平台管理員開通，每家建商僅能查看自己的建案。</div>
+      <button type="button" class="dev-login-btn" style="margin-top:.65rem;background:#fff;color:#1A3A5F;border:1px solid #C7D2DE;" onclick="doDevPasskeyLogin()">使用人臉／裝置 Passkey 登入</button>
+      <button type="button" class="dev-login-btn" style="margin-top:.65rem;background:transparent;color:#1A3A5F;border:none;padding:.45rem;box-shadow:none;" onclick="sendDevReset()">忘記密碼</button>
+      <div class="dev-login-note">帳號由譽誠管理員建立並指派建案。登入後僅能查看獲授權建案的銷售戶況；可在登入後啟用此裝置的人臉／Passkey。</div>
     </div>
   </div>
 
@@ -6360,6 +6334,7 @@ html, body { overflow-x: clip; }
     </div>
 
     <div class="dev-proj-tabs" id="devProjTabs"></div>
+    <div style="margin:0 0 1rem;"><button type="button" onclick="registerDevPasskey()" style="background:#fff;color:#1A3A5F;border:1px solid #C7D2DE;border-radius:8px;padding:.55rem .8rem;font:600 .78rem inherit;cursor:pointer;">啟用此裝置的人臉／Passkey 登入</button></div>
 
     <div class="dev-rate">
       <div class="dev-rate-bar"><div class="dev-rate-fill" id="devRateFill"></div></div>
@@ -6420,10 +6395,7 @@ html, body { overflow-x: clip; }
 
 <script>
 // ── 建商專區 ────────────────────────────────────────────────
-// 示範帳號（正式版將移至 Supabase developers 表，由管理員開通）
-const DEV_ACCOUNTS = {
-  'yucheng': { pwd: 'mu2026', company: '譽誠建設', projects: ['譽誠沐光苑', '譽誠星曜'] }
-};
+// 帳號與建案指派由 Supabase Auth + builder_projects 控制。
 
 // 建案資料（s=已成交 v=帶看中 o=未售出；floors 由 1F 排到頂樓）
 const DEV_PROJECTS = {
@@ -6540,23 +6512,73 @@ let devOpenedFromAdmin = false;
 function openDevOverlay() {
   document.getElementById('devOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
+  verifyDevSession(false);
 }
 function closeDevOverlay() {
   document.getElementById('devOverlay').classList.remove('open');
   document.body.style.overflow = '';
   if (devOpenedFromAdmin) { devOpenedFromAdmin = false; openAdmin(); }
 }
-function doDevLogin() {
-  const acc = document.getElementById('devAcc').value.trim().toLowerCase();
+async function doDevLogin() {
+  const email = document.getElementById('devEmail').value.trim().toLowerCase();
   const pwd = document.getElementById('devPwd').value;
-  const a = DEV_ACCOUNTS[acc];
-  if (!a || a.pwd !== pwd) {
-    document.getElementById('devLoginErr').style.display = 'block';
-    return;
+  if (!email || !pwd) { showDevLoginError('請輸入公司 Email 與密碼。'); return; }
+  const { error } = await _sb.auth.signInWithPassword({ email, password: pwd });
+  if (error) { showDevLoginError('登入失敗：請確認 Email、密碼，或先完成信箱設定。'); return; }
+  await verifyDevSession(true);
+}
+function showDevLoginError(message) {
+  const el = document.getElementById('devLoginErr');
+  el.textContent = message; el.style.display = 'block';
+}
+function showDevLogin() {
+  document.getElementById('devLogin').style.display = '';
+  document.getElementById('devDash').style.display = 'none';
+  document.getElementById('devLogoutBtn').style.display = 'none';
+}
+async function verifyDevSession(showError = true) {
+  const { data: { user }, error: userError } = await _sb.auth.getUser();
+  if (userError || !user) { showDevLogin(); return false; }
+  const { data: role } = await _sb.from('user_roles').select('role').eq('user_id', user.id).maybeSingle();
+  if (role?.role !== 'builder') {
+    await _sb.auth.signOut(); showDevLogin();
+    if (showError) showDevLoginError('此帳號未獲建商專區權限，請聯絡譽誠管理員。');
+    return false;
+  }
+  const { data: assignments, error } = await _sb.from('builder_projects').select('project_name').eq('user_id', user.id);
+  const projects = (assignments || []).map(row => row.project_name);
+  if (error || !projects.length) {
+    await _sb.auth.signOut(); showDevLogin();
+    if (showError) showDevLoginError('此帳號尚未指派建案，請聯絡譽誠管理員。');
+    return false;
   }
   document.getElementById('devLoginErr').style.display = 'none';
-  devViewer = { projects: a.projects, isAdmin: false };
+  devViewer = { projects, isAdmin: false };
   showDevDash();
+  return true;
+}
+async function doDevPasskeyLogin() {
+  if (!window.PublicKeyCredential) { showDevLoginError('此瀏覽器不支援 Passkey，請使用 Email 與密碼登入。'); return; }
+  const { error } = await _sb.auth.signInWithPasskey();
+  if (error) { showDevLoginError('Passkey 登入未完成：' + error.message); return; }
+  await verifyDevSession(true);
+}
+async function registerDevPasskey() {
+  if (!window.PublicKeyCredential) { alert('此瀏覽器不支援 Passkey。'); return; }
+  const { error } = await _sb.auth.registerPasskey();
+  if (error) { alert('Passkey 設定未完成：' + error.message); return; }
+  alert('此裝置已可使用人臉／Passkey 登入。');
+}
+async function sendDevReset() {
+  const email = document.getElementById('devEmail').value.trim().toLowerCase();
+  if (!email) { showDevLoginError('請先輸入公司 Email，再寄送重設信。'); return; }
+  const { error } = await _sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + window.location.pathname });
+  if (error) { showDevLoginError('重設信寄送失敗，請稍後再試。'); return; }
+  showDevLoginError('重設連結已寄至信箱；開啟後請在仲介專區的重設頁設定新密碼。');
+}
+async function devSignOut() {
+  await _sb.auth.signOut();
+  devViewer = null; showDevLogin();
 }
 /* 管理後台入口：免登入、可看全部建案 */
 function openDevPortalFromAdmin() {
@@ -6569,6 +6591,7 @@ function openDevPortalFromAdmin() {
 function showDevDash() {
   document.getElementById('devLogin').style.display = 'none';
   document.getElementById('devDash').style.display = 'block';
+  document.getElementById('devLogoutBtn').style.display = '';
   devCurrentProject = devViewer.projects[0];
   devSelectedFloor = 1;
   renderDevDash();

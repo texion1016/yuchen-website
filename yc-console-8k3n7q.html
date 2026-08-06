@@ -185,6 +185,7 @@
       <button class="adm-nav-btn" onclick="switchAdmPanel('units')">戶況管理</button>
       <button class="adm-nav-btn" onclick="switchAdmPanel('brokers')">仲介管理</button>
       <button class="adm-nav-btn" onclick="switchAdmPanel('admins')">管理員帳戶</button>
+      <button class="adm-nav-btn" onclick="switchAdmPanel('builders')">建商帳戶</button>
       <button class="adm-nav-btn" onclick="openDevPortalFromAdmin()">建案戶況(檢視)</button>
     </div>
     <div class="adm-content">
@@ -245,6 +246,16 @@
           <div id="admInviteMsg" style="display:none;margin-top:.8rem;font-size:.8rem;line-height:1.6;" role="status" aria-live="polite"></div>
         </div>
         <button type="button" onclick="registerAdminPasskey()" style="margin-top:1rem;background:#fff;color:#1A3A5F;border:1px solid #C7D2DE;border-radius:10px;padding:.7rem 1rem;cursor:pointer;font:600 .82rem inherit;">啟用此裝置的人臉／Passkey 登入</button>
+      </div>
+      <div class="adm-panel" id="admBuilders">
+        <div class="adm-title">建商帳戶</div>
+        <div style="max-width:520px;background:#fff;border:1px solid var(--ov-line);border-radius:14px;padding:1.35rem;">
+          <p style="margin:0 0 1rem;font-size:.82rem;line-height:1.75;color:#55687E;">由管理員寄送建商邀请，并明确指派可查看的建案。建商只能看到这些建案的销售户况。</p>
+          <div class="bov-field"><label for="builderInviteEmail">建商 Email</label><input type="email" id="builderInviteEmail" autocomplete="email" inputmode="email" maxlength="254" placeholder="builder@example.com" /></div>
+          <div class="bov-field"><label for="builderInviteProjects">指派建案名称</label><textarea id="builderInviteProjects" rows="4" maxlength="1500" placeholder="每行一个建案名称，例如：&#10;譽誠沐光苑&#10;譽誠星曜"></textarea></div>
+          <button class="bov-btn" id="builderInviteBtn" type="button" onclick="inviteBuilderAccount()">寄送建商帳戶邀請</button>
+          <div id="builderInviteMsg" style="display:none;margin-top:.8rem;font-size:.8rem;line-height:1.6;" role="status" aria-live="polite"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -447,6 +458,27 @@ async function inviteAdmin() {
   message.style.display = 'block';
   if (error) { message.style.color = '#B03030'; message.textContent = '邀請未送出：' + error.message; return; }
   input.value = ''; message.style.color = '#2F6B4F'; message.textContent = '邀請已寄出；對方完成信箱流程後即可建立管理員帳號。';
+}
+async function inviteBuilderAccount() {
+  const emailInput = document.getElementById('builderInviteEmail');
+  const projectsInput = document.getElementById('builderInviteProjects');
+  const email = emailInput.value.trim().toLowerCase();
+  const projects = [...new Set(projectsInput.value.split(/\r?\n/).map(value => value.trim()).filter(Boolean))];
+  const message = document.getElementById('builderInviteMsg');
+  const button = document.getElementById('builderInviteBtn');
+  if (!/^\S+@\S+\.\S+$/.test(email)) {
+    message.style.display = 'block'; message.style.color = '#B03030'; message.textContent = '請輸入有效的建商 Email。'; return;
+  }
+  if (!projects.length) {
+    message.style.display = 'block'; message.style.color = '#B03030'; message.textContent = '請至少指派一個已建立的建案。'; return;
+  }
+  button.disabled = true; button.textContent = '寄送中…';
+  const { error } = await _sb.functions.invoke('invite-builder', { body: { email, projects } });
+  button.disabled = false; button.textContent = '寄送建商帳戶邀請';
+  message.style.display = 'block';
+  if (error) { message.style.color = '#B03030'; message.textContent = '邀請未送出：' + error.message; return; }
+  emailInput.value = ''; projectsInput.value = '';
+  message.style.color = '#2F6B4F'; message.textContent = '邀請已寄出；對方設定密碼后即可登入建商專區。';
 }
 function switchAdmPanel(name) {
   document.querySelectorAll('.adm-panel').forEach(p => p.classList.remove('active'));
@@ -868,7 +900,7 @@ async function loadAdmInq() {
 
 async function loadAdmBrokers() {
   const el = document.getElementById('admBrokerContent');
-  const { data } = await _sb.from('brokers').select('*').order('created_at',{ascending:false});
+  const { data } = await _sb.from('brokers').select('id,name,company,phone,email,license_no,status,created_at').order('created_at',{ascending:false});
   if (!data||!data.length){el.innerHTML='<div class="adm-empty">尚無資料</div>';return;}
   const stLabel = { pending:'審核中', active:'啟用', suspended:'已停用' };
   el.innerHTML = `<table class="adm-table"><thead><tr>

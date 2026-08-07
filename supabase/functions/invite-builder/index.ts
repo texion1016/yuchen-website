@@ -6,13 +6,14 @@ const allowedOrigins = new Set([
   "https://www.yuchen-realty.com",
 ]);
 
-function response(body: Record<string, string>, status: number, origin: string) {
-  return new Response(JSON.stringify(body), {
+function response(body: Record<string, string> | null, status: number, origin: string) {
+  return new Response(body ? JSON.stringify(body) : null, {
     status,
     headers: {
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": origin,
       "Access-Control-Allow-Headers": "authorization, apikey, content-type",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
       "Vary": "Origin",
     },
   });
@@ -21,7 +22,7 @@ function response(body: Record<string, string>, status: number, origin: string) 
 Deno.serve(async (request) => {
   const origin = request.headers.get("origin") ?? "";
   if (!allowedOrigins.has(origin)) return response({ error: "Unapproved origin" }, 403, "https://yuchen-realty.com");
-  if (request.method === "OPTIONS") return response({}, 204, origin);
+  if (request.method === "OPTIONS") return response(null, 204, origin);
   if (request.method !== "POST") return response({ error: "Method not allowed" }, 405, origin);
 
   const authorization = request.headers.get("authorization");

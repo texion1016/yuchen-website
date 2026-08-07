@@ -12,7 +12,7 @@ function response(body: Record<string, string> | null, status: number, origin: s
     headers: {
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": origin,
-      "Access-Control-Allow-Headers": "authorization, apikey, content-type",
+      "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
       "Access-Control-Allow-Methods": "POST, OPTIONS",
       "Vary": "Origin",
     },

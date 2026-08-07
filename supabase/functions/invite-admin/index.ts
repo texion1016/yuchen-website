@@ -16,6 +16,17 @@ function apiKey(keysVariable: string, legacyVariable: string) {
   return Deno.env.get(legacyVariable) ?? "";
 }
 
+function adminApiHeaders(key: string) {
+  const headers: Record<string, string> = {
+    "apikey": key,
+    "Content-Type": "application/json",
+  };
+  if (!key.startsWith("sb_secret_")) {
+    headers.Authorization = `Bearer ${key}`;
+  }
+  return headers;
+}
+
 function response(body: Record<string, string> | null, status: number, origin: string) {
   return new Response(body ? JSON.stringify(body) : null, {
     status,
@@ -80,18 +91,14 @@ Deno.serve(async (request) => {
     return response({ error: "A valid email is required" }, 400, origin);
   }
 
-  const adminHeaders = {
-    "apikey": serviceRoleKey,
-    "Content-Type": "application/json",
-  };
-  const invitationResponse = await fetch(`${url}/rest/v1/admin_invitations?on_conflict=email`, {
+  const adminHeaders = adminApiHeaders(serviceRoleKey);
+  const invitationResponse = await fetch(`${url}/rest/v1/rpc/create_admin_invitation`, {
     method: "POST",
-    headers: { ...adminHeaders, "Prefer": "resolution=merge-duplicates,return=minimal" },
+    headers: adminHeaders,
     body: JSON.stringify({
-      email,
-      invited_by: auth.user.id,
-      expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      accepted_at: null,
+      invitation_email: email,
+      invitation_invited_by: auth.user.id,
+      invitation_expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
     }),
   });
   if (!invitationResponse.ok) {
@@ -106,9 +113,10 @@ Deno.serve(async (request) => {
   });
   if (!inviteResponse.ok) {
     console.error("Could not send administrator invitation", inviteResponse.status, await inviteResponse.text());
-    await fetch(`${url}/rest/v1/admin_invitations?email=eq.${encodeURIComponent(email)}&accepted_at=is.null`, {
-      method: "DELETE",
+    await fetch(`${url}/rest/v1/rpc/delete_pending_admin_invitation`, {
+      method: "POST",
       headers: adminHeaders,
+      body: JSON.stringify({ invitation_email: email }),
     });
     return response({ error: "This email may already have an account, or the invitation could not be sent" }, 400, origin);
   }

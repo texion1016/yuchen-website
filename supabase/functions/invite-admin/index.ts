@@ -6,6 +6,16 @@ const allowedOrigins = new Set([
   "https://www.yuchen-realty.com",
 ]);
 
+function apiKey(keysVariable: string, legacyVariable: string) {
+  try {
+    const keys = JSON.parse(Deno.env.get(keysVariable) ?? "{}");
+    if (typeof keys.default === "string" && keys.default) return keys.default;
+  } catch {
+    // Fall back to the legacy environment variable below.
+  }
+  return Deno.env.get(legacyVariable) ?? "";
+}
+
 function response(body: Record<string, string> | null, status: number, origin: string) {
   return new Response(body ? JSON.stringify(body) : null, {
     status,
@@ -33,16 +43,15 @@ Deno.serve(async (request) => {
   }
 
   const url = Deno.env.get("SUPABASE_URL") ?? "";
-  const publishableKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
-  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+  const publishableKey = apiKey("SUPABASE_PUBLISHABLE_KEYS", "SUPABASE_ANON_KEY");
+  const serviceRoleKey = apiKey("SUPABASE_SECRET_KEYS", "SUPABASE_SERVICE_ROLE_KEY");
+  if (!publishableKey || !serviceRoleKey) {
+    return response({ error: "Invitation service is not configured" }, 500, origin);
+  }
   const userClient = createClient(url, publishableKey, {
     global: { headers: { Authorization: authorization } },
     auth: { autoRefreshToken: false, persistSession: false },
   });
-  const adminClient = createClient(url, serviceRoleKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-
   const token = authorization.slice("Bearer ".length);
   const { data: auth, error: authError } = await userClient.auth.getUser(token);
   if (authError || !auth.user) return response({ error: "Invalid session" }, 401, origin);
@@ -71,17 +80,36 @@ Deno.serve(async (request) => {
     return response({ error: "A valid email is required" }, 400, origin);
   }
 
-  const { error: invitationError } = await adminClient.from("admin_invitations").upsert(
-    { email, invited_by: auth.user.id, expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), accepted_at: null },
-    { onConflict: "email" },
-  );
-  if (invitationError) return response({ error: "Could not create invitation" }, 500, origin);
-
-  const { error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(email, {
-    redirectTo: `${origin}/yc-console-8k3n7q.html`,
+  const adminHeaders = {
+    "apikey": serviceRoleKey,
+    "Content-Type": "application/json",
+  };
+  const invitationResponse = await fetch(`${url}/rest/v1/admin_invitations?on_conflict=email`, {
+    method: "POST",
+    headers: { ...adminHeaders, "Prefer": "resolution=merge-duplicates,return=minimal" },
+    body: JSON.stringify({
+      email,
+      invited_by: auth.user.id,
+      expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      accepted_at: null,
+    }),
   });
-  if (inviteError) {
-    await adminClient.from("admin_invitations").delete().eq("email", email).eq("accepted_at", null);
+  if (!invitationResponse.ok) {
+    console.error("Could not create admin invitation record", invitationResponse.status, await invitationResponse.text());
+    return response({ error: "Could not create invitation" }, 500, origin);
+  }
+
+  const inviteResponse = await fetch(`${url}/auth/v1/invite`, {
+    method: "POST",
+    headers: adminHeaders,
+    body: JSON.stringify({ email, redirect_to: `${origin}/yc-console-8k3n7q.html` }),
+  });
+  if (!inviteResponse.ok) {
+    console.error("Could not send administrator invitation", inviteResponse.status, await inviteResponse.text());
+    await fetch(`${url}/rest/v1/admin_invitations?email=eq.${encodeURIComponent(email)}&accepted_at=is.null`, {
+      method: "DELETE",
+      headers: adminHeaders,
+    });
     return response({ error: "This email may already have an account, or the invitation could not be sent" }, 400, origin);
   }
 

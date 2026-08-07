@@ -485,6 +485,13 @@ _sb.auth.onAuthStateChange((event) => {
   showAdminPasswordReset();
   setAdminLoginMessage('請設定你要使用的新密碼；不需要知道舊密碼。', false);
 });
+async function functionErrorMessage(error) {
+  try {
+    const body = await error.context?.json();
+    if (typeof body?.error === 'string') return body.error;
+  } catch (_) {}
+  return error?.message || '伺服器暫時無法處理，請稍後再試。';
+}
 async function inviteAdmin() {
   const input = document.getElementById('admInviteEmail');
   const email = input.value.trim().toLowerCase();
@@ -497,7 +504,7 @@ async function inviteAdmin() {
   const { error } = await _sb.functions.invoke('invite-admin', { body: { email } });
   button.disabled = false; button.textContent = '寄送管理員邀請';
   message.style.display = 'block';
-  if (error) { message.style.color = '#B03030'; message.textContent = '邀請未送出：' + error.message; return; }
+  if (error) { message.style.color = '#B03030'; message.textContent = '邀請未送出：' + await functionErrorMessage(error); return; }
   input.value = ''; message.style.color = '#2F6B4F'; message.textContent = '邀請已寄出；對方完成信箱流程後即可建立管理員帳號。';
 }
 async function inviteBuilderAccount() {
@@ -517,7 +524,7 @@ async function inviteBuilderAccount() {
   const { error } = await _sb.functions.invoke('invite-builder', { body: { email, projects } });
   button.disabled = false; button.textContent = '寄送建商帳戶邀請';
   message.style.display = 'block';
-  if (error) { message.style.color = '#B03030'; message.textContent = '邀請未送出：' + error.message; return; }
+  if (error) { message.style.color = '#B03030'; message.textContent = '邀請未送出：' + await functionErrorMessage(error); return; }
   emailInput.value = ''; projectsInput.value = '';
   message.style.color = '#2F6B4F'; message.textContent = '邀請已寄出；對方設定密碼后即可登入建商專區。';
 }

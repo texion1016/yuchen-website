@@ -43,7 +43,11 @@ Deno.serve(async (request) => {
   const { data: auth, error: authError } = await userClient.auth.getUser(token);
   if (authError || !auth.user) return response({ error: "Invalid session" }, 401, origin);
 
-  const { data: role } = await adminClient.from("user_roles").select("role").eq("user_id", auth.user.id).maybeSingle();
+  const { data: role, error: roleError } = await userClient.from("user_roles").select("role").eq("user_id", auth.user.id).maybeSingle();
+  if (roleError) {
+    console.error("Could not verify the caller's administrator role", roleError);
+    return response({ error: "Could not verify administrator permission" }, 500, origin);
+  }
   if (role?.role !== "admin") return response({ error: "Administrator permission required" }, 403, origin);
 
   let body: { email?: unknown; projects?: unknown };

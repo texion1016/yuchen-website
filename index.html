@@ -1426,11 +1426,18 @@
 <script>
 // ── Broker Overlay — Supabase Auth + 角色權限 ────────────────────────────────
 let bovCurrentUser = null; // { id, name, company, email, companyId, memberRole }
-const bovInviteMode = /(?:^|[?&#])type=invite(?:[&#]|$)/.test(window.location.search + '&' + window.location.hash);
+const rootAuthCallback = window.location.search + '&' + window.location.hash;
+const rootAuthCallbackType = (rootAuthCallback.match(/(?:^|[?&#])type=([^&#]+)/)?.[1] || '').toLowerCase();
+const bovInviteMode = rootAuthCallbackType === 'invite';
+let rootPasswordSetupPending = rootAuthCallbackType === 'recovery' || bovInviteMode;
+let bovPasswordSetupMode = false;
+let devPasswordSetupMode = false;
 
 function openBrokerOverlay() {
   document.getElementById('brokerOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
+  if (bovPasswordSetupMode) return;
+  if (rootPasswordSetupPending) { void routeRootPasswordCallback(); return; }
   verifyBrokerSession(false);
 }
 function closeBrokerOv() {
@@ -1504,6 +1511,7 @@ async function doBrokerLogin() {
 }
 
 async function verifyBrokerSession(showError = true) {
+  if (bovPasswordSetupMode || rootPasswordSetupPending) { if (bovPasswordSetupMode) showBrokerPasswordSetup(bovInviteMode); return false; }
   const { data: { user }, error: userError } = await _sb.auth.getUser();
   if (userError || !user) { showBovLoggedOut(); return false; }
   const { data: role } = await _sb.from('user_roles').select('role').eq('user_id', user.id).maybeSingle();
@@ -1575,6 +1583,8 @@ async function doBrokerReset() {
   if (error) { showBovMsg('resetMsg','重設連結已失效，請重新寄送。','error'); return; }
   showBovMsg('resetMsg', bovInviteMode ? '密碼已設定，正在開啟仲介專區。' : '密碼已更新，請使用新密碼登入。','success');
   document.getElementById('rsPwd').value = ''; document.getElementById('rsPwd2').value = '';
+  bovPasswordSetupMode = false;
+  rootPasswordSetupPending = false;
   history.replaceState(null, '', window.location.pathname);
   if (bovInviteMode) { setTimeout(() => verifyBrokerSession(true), 600); return; }
   await _sb.auth.signOut(); setTimeout(() => switchBovTab('login'), 900);
@@ -1647,6 +1657,7 @@ async function loadBrokerCompanyMembers() {
 }
 
 function showBrokerPasswordSetup(isInvitation) {
+  bovPasswordSetupMode = true;
   openBrokerOverlay();
   document.getElementById('resetRequestArea').style.display = 'none';
   document.getElementById('resetUpdateArea').style.display = '';
@@ -1654,10 +1665,19 @@ function showBrokerPasswordSetup(isInvitation) {
   document.querySelector('#bovReset .bov-form-title').textContent = isInvitation ? '設定登入密碼' : '重設密碼';
   showBovMsg('resetMsg', isInvitation ? '請先設定您的登入密碼，完成後即可進入仲介專區。' : '請設定新的登入密碼。','success');
 }
+async function routeRootPasswordCallback() {
+  if (!rootPasswordSetupPending) return;
+  const { data: { user } } = await _sb.auth.getUser();
+  if (!user) return;
+  const { data: role } = await _sb.from('user_roles').select('role').eq('user_id', user.id).maybeSingle();
+  if (role?.role === 'broker') { bovPasswordSetupMode = true; devPasswordSetupMode = false; showBrokerPasswordSetup(bovInviteMode); return; }
+  if (role?.role === 'builder') { devPasswordSetupMode = true; bovPasswordSetupMode = false; showDevPasswordReset(bovInviteMode); }
+}
 _sb.auth.onAuthStateChange((event) => {
-  if (event === 'PASSWORD_RECOVERY') { showBrokerPasswordSetup(false); return; }
-  if (event === 'SIGNED_IN' && bovInviteMode) showBrokerPasswordSetup(true);
+  if (event === 'PASSWORD_RECOVERY') { rootPasswordSetupPending = true; void routeRootPasswordCallback(); return; }
+  if (event === 'SIGNED_IN' && bovInviteMode) { rootPasswordSetupPending = true; void routeRootPasswordCallback(); }
 });
+if (rootPasswordSetupPending) window.setTimeout(() => { void routeRootPasswordCallback(); }, 0);
 
 // ── 客戶報備 ──────────────────────────────────────────────────────────────
 async function doClientReport() {
@@ -6396,11 +6416,19 @@ html, body { overflow-x: clip; }
       <h2 class="dev-login-title">建商登入</h2>
       <p class="dev-login-sub">追蹤您建案的帶看與成交戶況</p>
       <div class="dev-login-err" id="devLoginErr" role="alert" aria-live="polite"></div>
-      <div class="dev-field"><label>公司 Email</label><input type="email" id="devEmail" autocomplete="email" inputmode="email" placeholder="builder@example.com" /></div>
-      <div class="dev-field"><label>密碼</label><input type="password" id="devPwd" autocomplete="current-password" minlength="12" placeholder="至少 12 個字元" onkeydown="if(event.key==='Enter')doDevLogin()" /></div>
-      <button class="dev-login-btn" onclick="doDevLogin()">登入</button>
-      <button type="button" class="dev-login-btn" style="margin-top:.65rem;background:#fff;color:#1A3A5F;border:1px solid #C7D2DE;" onclick="doDevPasskeyLogin()">使用人臉／裝置 Passkey 登入</button>
-      <button type="button" class="dev-login-btn" style="margin-top:.65rem;background:transparent;color:#1A3A5F;border:none;padding:.45rem;box-shadow:none;" onclick="sendDevReset()">忘記密碼</button>
+      <div id="devLoginControls">
+        <div class="dev-field"><label>公司 Email</label><input type="email" id="devEmail" autocomplete="email" inputmode="email" placeholder="builder@example.com" /></div>
+        <div class="dev-field"><label>密碼</label><input type="password" id="devPwd" autocomplete="current-password" minlength="12" placeholder="至少 12 個字元" onkeydown="if(event.key==='Enter')doDevLogin()" /></div>
+        <button class="dev-login-btn" onclick="doDevLogin()">登入</button>
+        <button type="button" class="dev-login-btn" style="margin-top:.65rem;background:#fff;color:#1A3A5F;border:1px solid #C7D2DE;" onclick="doDevPasskeyLogin()">使用人臉／裝置 Passkey 登入</button>
+        <button type="button" class="dev-login-btn" style="margin-top:.65rem;background:transparent;color:#1A3A5F;border:none;padding:.45rem;box-shadow:none;" onclick="sendDevReset()">忘記密碼</button>
+      </div>
+      <div id="devResetArea" style="display:none;">
+        <p class="dev-login-sub" id="devResetHint" style="margin-top:0;">請設定新的登入密碼。</p>
+        <div class="dev-field"><label>新密碼</label><input type="password" id="devResetPwd" autocomplete="new-password" minlength="12" placeholder="至少 12 個字元" /></div>
+        <div class="dev-field"><label>確認新密碼</label><input type="password" id="devResetPwd2" autocomplete="new-password" minlength="12" placeholder="再輸入一次新密碼" onkeydown="if(event.key==='Enter')saveDevPasswordReset()" /></div>
+        <button type="button" class="dev-login-btn" onclick="saveDevPasswordReset()">儲存新密碼</button>
+      </div>
       <div class="dev-login-note">帳號由譽誠管理員建立並指派建案。登入後僅能查看獲授權建案的銷售戶況；可在登入後啟用此裝置的人臉／Passkey。</div>
     </div>
   </div>
@@ -6594,6 +6622,8 @@ let devOpenedFromAdmin = false;
 function openDevOverlay() {
   document.getElementById('devOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
+  if (devPasswordSetupMode) return;
+  if (rootPasswordSetupPending) { void routeRootPasswordCallback(); return; }
   verifyDevSession(false);
 }
 function closeDevOverlay() {
@@ -6617,8 +6647,23 @@ function showDevLogin() {
   document.getElementById('devLogin').style.display = '';
   document.getElementById('devDash').style.display = 'none';
   document.getElementById('devLogoutBtn').style.display = 'none';
+  document.getElementById('devLoginControls').style.display = '';
+  document.getElementById('devResetArea').style.display = 'none';
+}
+function showDevPasswordReset(isInvitation) {
+  devPasswordSetupMode = true;
+  document.getElementById('devOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('devLogin').style.display = '';
+  document.getElementById('devDash').style.display = 'none';
+  document.getElementById('devLogoutBtn').style.display = 'none';
+  document.getElementById('devLoginControls').style.display = 'none';
+  document.getElementById('devResetArea').style.display = '';
+  document.getElementById('devResetHint').textContent = isInvitation ? '請先設定您的登入密碼，完成後即可進入建商專區。' : '請設定新的登入密碼。';
+  showDevLoginError(isInvitation ? '請先設定登入密碼。' : '請設定新的登入密碼。');
 }
 async function verifyDevSession(showError = true) {
+  if (devPasswordSetupMode || rootPasswordSetupPending) { if (devPasswordSetupMode) showDevPasswordReset(bovInviteMode); return false; }
   const { data: { user }, error: userError } = await _sb.auth.getUser();
   if (userError || !user) { showDevLogin(); return false; }
   const { data: role } = await _sb.from('user_roles').select('role').eq('user_id', user.id).maybeSingle();
@@ -6656,7 +6701,21 @@ async function sendDevReset() {
   if (!email) { showDevLoginError('請先輸入公司 Email，再寄送重設信。'); return; }
   const { error } = await _sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + window.location.pathname });
   if (error) { showDevLoginError('重設信寄送失敗，請稍後再試。'); return; }
-  showDevLoginError('重設連結已寄至信箱；開啟後請在仲介專區的重設頁設定新密碼。');
+  showDevLoginError('重設連結已寄至信箱；開啟後可直接設定新的建商登入密碼。');
+}
+async function saveDevPasswordReset() {
+  const password = document.getElementById('devResetPwd').value;
+  const confirmPassword = document.getElementById('devResetPwd2').value;
+  if (password.length < 12) { showDevLoginError('新密碼至少需要 12 個字元。'); return; }
+  if (password !== confirmPassword) { showDevLoginError('兩次輸入的新密碼不一致。'); return; }
+  const { error } = await _sb.auth.updateUser({ password });
+  if (error) { showDevLoginError('重設連結已失效，請重新寄送。'); return; }
+  devPasswordSetupMode = false;
+  rootPasswordSetupPending = false;
+  document.getElementById('devResetPwd').value = '';
+  document.getElementById('devResetPwd2').value = '';
+  history.replaceState(null, '', window.location.pathname);
+  await verifyDevSession();
 }
 async function devSignOut() {
   await _sb.auth.signOut();

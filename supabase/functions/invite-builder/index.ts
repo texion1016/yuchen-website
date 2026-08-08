@@ -62,7 +62,7 @@ Deno.serve(async (request) => {
   const { data: existingProjects, error: projectError } = await adminClient.from("projects").select("name").in("name", projects);
   if (projectError || (existingProjects?.length ?? 0) !== projects.length) return response({ error: "One or more project names are invalid" }, 400, origin);
 
-  const { data: invited, error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(email, { redirectTo: `${origin}/index.html` });
+  const { data: invited, error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(email, { redirectTo: origin });
   if (inviteError || !invited.user) return response({ error: "This email may already have an account, or the invitation could not be sent" }, 400, origin);
 
   const { error: roleError } = await adminClient.from("user_roles").upsert({ user_id: invited.user.id, role: "builder" });

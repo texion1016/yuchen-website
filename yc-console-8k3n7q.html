@@ -257,25 +257,25 @@
       <div class="adm-panel" id="admBrokers">
         <div class="adm-title">中介公司合作管理</div>
         <div style="max-width:720px;background:#fff;border:1px solid var(--ov-line);border-radius:14px;padding:1.35rem;margin-bottom:1.2rem;">
-          <p style="margin:0 0 1rem;font-size:.82rem;line-height:1.75;color:#55687E;">先建立合作中介公司，再邀请该公司的负责人。负责人完成信箱设定后，即可在仲介专区邀请和管理旗下员工；不同公司之间的资料会自动隔离。</p>
+          <p style="margin:0 0 1rem;font-size:.82rem;line-height:1.75;color:#55687E;">先建立合作中介公司，再邀請該公司的負責人。負責人完成信箱設定後，即可在仲介專區邀請和管理旗下員工；不同公司之間的資料會自動隔離。</p>
           <div class="apj-grid2">
-            <div class="bov-field"><label for="brokerCompanyLegalName">中介公司全名 *</label><input id="brokerCompanyLegalName" maxlength="150" placeholder="例：誉诚不动产有限公司" /></div>
-            <div class="bov-field"><label for="brokerCompanyDisplayName">后台显示名称 *</label><input id="brokerCompanyDisplayName" maxlength="150" placeholder="例：誉诚不动产" /></div>
+            <div class="bov-field"><label for="brokerCompanyLegalName">中介公司全名 *</label><input id="brokerCompanyLegalName" maxlength="150" placeholder="例：譽誠不動產有限公司" /></div>
+            <div class="bov-field"><label for="brokerCompanyDisplayName">後台顯示名稱 *</label><input id="brokerCompanyDisplayName" maxlength="150" placeholder="例：譽誠不動產" /></div>
           </div>
           <div class="apj-grid2">
-            <div class="bov-field"><label for="brokerCompanyTaxId">统一编号</label><input id="brokerCompanyTaxId" maxlength="30" inputmode="numeric" placeholder="选填" /></div>
-            <div class="bov-field"><label for="brokerCompanyOwnerName">负责人姓名 *</label><input id="brokerCompanyOwnerName" maxlength="100" placeholder="王大明" /></div>
+            <div class="bov-field"><label for="brokerCompanyTaxId">統一編號</label><input id="brokerCompanyTaxId" maxlength="30" inputmode="numeric" placeholder="選填" /></div>
+            <div class="bov-field"><label for="brokerCompanyOwnerName">負責人姓名 *</label><input id="brokerCompanyOwnerName" maxlength="100" placeholder="王大明" /></div>
           </div>
           <div class="apj-grid2">
-            <div class="bov-field"><label for="brokerCompanyOwnerPhone">负责人电话 *</label><input id="brokerCompanyOwnerPhone" maxlength="40" inputmode="tel" placeholder="0912-345-678" /></div>
-            <div class="bov-field"><label for="brokerCompanyOwnerEmail">负责人 Email *</label><input type="email" id="brokerCompanyOwnerEmail" maxlength="254" autocomplete="email" placeholder="owner@example.com" /></div>
+            <div class="bov-field"><label for="brokerCompanyOwnerPhone">負責人電話 *</label><input id="brokerCompanyOwnerPhone" maxlength="40" inputmode="tel" placeholder="0912-345-678" /></div>
+            <div class="bov-field"><label for="brokerCompanyOwnerEmail">負責人 Email *</label><input type="email" id="brokerCompanyOwnerEmail" maxlength="254" autocomplete="email" placeholder="owner@example.com" /></div>
           </div>
-          <button class="bov-btn" id="brokerCompanyInviteBtn" type="button" onclick="inviteBrokerCompany()">建立公司并寄送负责人邀请</button>
+          <button class="bov-btn" id="brokerCompanyInviteBtn" type="button" onclick="inviteBrokerCompany()">建立公司並寄送負責人邀請</button>
           <div id="brokerCompanyInviteMsg" style="display:none;margin-top:.8rem;font-size:.8rem;line-height:1.6;" role="status" aria-live="polite"></div>
         </div>
         <div style="font-weight:700;color:#1A3A5F;margin:0 0 .6rem;">合作中介公司</div>
-        <div id="admBrokerCompanyContent"><div class="adm-empty">载入中…</div></div>
-        <details style="margin-top:1.3rem;"><summary style="cursor:pointer;color:#55687E;font-size:.82rem;">旧制个人仲介资料（仅供查阅）</summary><div id="admBrokerContent" style="margin-top:.8rem;"><div class="adm-empty">载入中…</div></div></details>
+        <div id="admBrokerCompanyContent"><div class="adm-empty">載入中…</div></div>
+        <details style="margin-top:1.3rem;"><summary style="cursor:pointer;color:#55687E;font-size:.82rem;">舊制個人仲介資料（僅供查閱）</summary><div id="admBrokerContent" style="margin-top:.8rem;"><div class="adm-empty">載入中…</div></div></details>
       </div>
       <div class="adm-panel" id="admAdmins">
         <div class="adm-title">管理員帳戶</div>
@@ -290,9 +290,9 @@
       <div class="adm-panel" id="admBuilders">
         <div class="adm-title">建商帳戶</div>
         <div style="max-width:520px;background:#fff;border:1px solid var(--ov-line);border-radius:14px;padding:1.35rem;">
-          <p style="margin:0 0 1rem;font-size:.82rem;line-height:1.75;color:#55687E;">由管理員寄送建商邀请，并明确指派可查看的建案。建商只能看到这些建案的销售户况。</p>
+          <p style="margin:0 0 1rem;font-size:.82rem;line-height:1.75;color:#55687E;">由管理員寄送建商邀請，並明確指派可查看的建案。建商只能看到這些建案的銷售戶況。</p>
           <div class="bov-field"><label for="builderInviteEmail">建商 Email</label><input type="email" id="builderInviteEmail" autocomplete="email" inputmode="email" maxlength="254" placeholder="builder@example.com" /></div>
-          <div class="bov-field"><label for="builderInviteProjects">指派建案名称</label><textarea id="builderInviteProjects" rows="4" maxlength="1500" placeholder="每行一个建案名称，例如：&#10;譽誠沐光苑&#10;譽誠星曜"></textarea></div>
+          <div class="bov-field"><label for="builderInviteProjects">指派建案名稱</label><textarea id="builderInviteProjects" rows="4" maxlength="1500" placeholder="每行一個建案名稱，例如：&#10;譽誠沐光苑&#10;譽誠星曜"></textarea></div>
           <button class="bov-btn" id="builderInviteBtn" type="button" onclick="inviteBuilderAccount()">寄送建商帳戶邀請</button>
           <div id="builderInviteMsg" style="display:none;margin-top:.8rem;font-size:.8rem;line-height:1.6;" role="status" aria-live="polite"></div>
         </div>
@@ -545,7 +545,7 @@ async function inviteBuilderAccount() {
   message.style.display = 'block';
   if (error) { message.style.color = '#B03030'; message.textContent = '邀請未送出：' + await functionErrorMessage(error); return; }
   emailInput.value = ''; projectsInput.value = '';
-  message.style.color = '#2F6B4F'; message.textContent = '邀請已寄出；對方設定密碼后即可登入建商專區。';
+  message.style.color = '#2F6B4F'; message.textContent = '邀請已寄出；對方設定密碼後即可登入建商專區。';
 }
 async function inviteBrokerCompany() {
   const fields = {
@@ -558,15 +558,15 @@ async function inviteBrokerCompany() {
   const message = document.getElementById('brokerCompanyInviteMsg');
   const button = document.getElementById('brokerCompanyInviteBtn');
   if (!body.legalName || !body.displayName || !body.ownerName || !body.ownerPhone || !/^\S+@\S+\.\S+$/.test(body.ownerEmail)) {
-    message.style.display = 'block'; message.style.color = '#B03030'; message.textContent = '请完整填写公司及负责人资料。'; return;
+    message.style.display = 'block'; message.style.color = '#B03030'; message.textContent = '請完整填寫公司及負責人資料。'; return;
   }
-  button.disabled = true; button.textContent = '建立并寄送中…';
+  button.disabled = true; button.textContent = '建立並寄送中…';
   const { error } = await _sb.functions.invoke('invite-broker-company', { body });
-  button.disabled = false; button.textContent = '建立公司并寄送负责人邀请';
+  button.disabled = false; button.textContent = '建立公司並寄送負責人邀請';
   message.style.display = 'block';
   if (error) { message.style.color = '#B03030'; message.textContent = '建立未完成：' + await functionErrorMessage(error); return; }
   Object.values(fields).forEach(input => input.value = '');
-  message.style.color = '#2F6B4F'; message.textContent = '公司已建立，负责人邀请邮件已寄出。对方完成设定后，可在仲介专区管理旗下员工。';
+  message.style.color = '#2F6B4F'; message.textContent = '公司已建立，負責人邀請郵件已寄出。對方完成設定後，可在仲介專區管理旗下員工。';
   loadAdmBrokerCompanies();
 }
 function switchAdmPanel(name) {
@@ -1009,24 +1009,24 @@ async function loadAdmBrokerCompanies() {
   const el = document.getElementById('admBrokerCompanyContent');
   const legacy = document.getElementById('admBrokerContent');
   const safe = value => String(value == null ? '' : value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-  el.innerHTML = '<div class="adm-empty">载入中…</div>';
+  el.innerHTML = '<div class="adm-empty">載入中…</div>';
   const [{ data: companies, error }, legacyResult] = await Promise.all([
     _sb.from('broker_companies').select('id,legal_name,display_name,tax_id,contact_name,contact_phone,status,created_at,broker_company_members(id,status)').order('created_at', { ascending: false }),
     _sb.from('brokers').select('id,name,company,phone,email,license_no,status,created_at').order('created_at', { ascending: false })
   ]);
-  if (error) { el.innerHTML = '<div class="adm-empty">无法载入公司资料</div>'; return; }
-  if (!companies || !companies.length) el.innerHTML = '<div class="adm-empty">尚未建立合作中介公司。请从上方建立公司并邀请负责人。</div>';
+  if (error) { el.innerHTML = '<div class="adm-empty">無法載入公司資料</div>'; return; }
+  if (!companies || !companies.length) el.innerHTML = '<div class="adm-empty">尚未建立合作中介公司。請從上方建立公司並邀請負責人。</div>';
   else {
-    const statusLabel = { active:'合作中', suspended:'暂停', ended:'已结束' };
-    el.innerHTML = `<table class="adm-table"><thead><tr><th>公司</th><th>负责人</th><th>电话</th><th>统一编号</th><th>成员</th><th>合作状态</th><th>建立时间</th></tr></thead><tbody>${companies.map(c => {
+    const statusLabel = { active:'合作中', suspended:'暫停', ended:'已結束' };
+    el.innerHTML = `<table class="adm-table"><thead><tr><th>公司</th><th>負責人</th><th>電話</th><th>統一編號</th><th>成員</th><th>合作狀態</th><th>建立時間</th></tr></thead><tbody>${companies.map(c => {
       const members = (c.broker_company_members || []).filter(m => m.status === 'active').length;
       return `<tr><td><strong>${safe(c.display_name)}</strong><br><span style="font-size:.75rem;color:#718096">${safe(c.legal_name)}</span></td><td>${safe(c.contact_name)}</td><td>${safe(c.contact_phone)}</td><td>${safe(c.tax_id || '—')}</td><td>${members} 人</td><td><span class="adm-badge ${c.status === 'active' ? 'confirmed' : 'pending'}">${statusLabel[c.status] || c.status}</span></td><td style="font-size:.78rem">${new Date(c.created_at).toLocaleString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false})}</td></tr>`;
     }).join('')}</tbody></table>`;
   }
   const data = legacyResult.data;
   if (!legacy) return;
-  if (!data || !data.length) { legacy.innerHTML = '<div class="adm-empty">尚无旧制资料</div>'; return; }
-  legacy.innerHTML = `<table class="adm-table"><thead><tr><th>姓名</th><th>公司</th><th>电话</th><th>信箱</th><th>状态</th></tr></thead><tbody>${data.map(r => `<tr><td>${safe(r.name)}</td><td>${safe(r.company)}</td><td>${safe(r.phone)}</td><td>${safe(r.email)}</td><td>${safe(r.status)}</td></tr>`).join('')}</tbody></table>`;
+  if (!data || !data.length) { legacy.innerHTML = '<div class="adm-empty">尚無舊制資料</div>'; return; }
+  legacy.innerHTML = `<table class="adm-table"><thead><tr><th>姓名</th><th>公司</th><th>電話</th><th>信箱</th><th>狀態</th></tr></thead><tbody>${data.map(r => `<tr><td>${safe(r.name)}</td><td>${safe(r.company)}</td><td>${safe(r.phone)}</td><td>${safe(r.email)}</td><td>${safe(r.status)}</td></tr>`).join('')}</tbody></table>`;
 }
 
 async function admSetBrokerStatus(id, val, btn) {

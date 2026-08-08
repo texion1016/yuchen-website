@@ -663,10 +663,6 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18.5h2"/></svg>手機版</a>
     <a href="yc-console-8k3n7q.html" onclick="startAdminPasskeyLogin(event)">管理員</a>
   </nav>
-  <div class="nav-cta">
-    
-    <a href="#" onclick="openBrokerOverlay();return false;" class="btn nav-broker-btn">仲介登入</a>
-  </div>
 </header>
 
 <!-- ━━ HERO 分屏手帖 ━━ -->
@@ -1211,7 +1207,7 @@
       <button class="bov-btn" onclick="doBrokerLogin()">登入</button>
       <button type="button" class="bov-btn bov-btn-sec" style="margin-top:.65rem;" onclick="doBrokerPasskeyLogin()">使用人臉／裝置 Passkey 登入</button>
       <div class="bov-forgot"><a href="#" onclick="switchBovTab('reset');return false;">忘記密碼？</a></div>
-      <p style="margin:1.3rem 0 0;padding-top:1rem;border-top:1px solid var(--line);font-size:.78rem;line-height:1.75;color:var(--ink-dim);">帐号由合作中介公司的负责人建立。若你尚未收到邀请，请联系你的公司负责人或譽诚平台管理员。</p>
+      <p style="margin:1.3rem 0 0;padding-top:1rem;border-top:1px solid var(--line);font-size:.78rem;line-height:1.75;color:var(--ink-dim);">帳號由合作中介公司的負責人建立。若你尚未收到邀請，請聯絡你的公司負責人或譽誠平台管理員。</p>
     </div>
 
     <!-- 重設密碼 -->
@@ -1242,8 +1238,8 @@
 
     <!-- 舊制申請入口已停用 -->
     <div class="bov-panel" id="bovRegister">
-      <div class="bov-form-title">帐号建立方式</div>
-      <p class="bov-reset-hint">譽诚平台与中介公司签约后，会先邀请公司负责人；负责人再从公司团队页面邀请旗下员工。这样每位仲介都会自动归属正确公司，且资料不会跨公司显示。</p>
+      <div class="bov-form-title">帳號建立方式</div>
+      <p class="bov-reset-hint">譽誠平台與中介公司簽約後，會先邀請公司負責人；負責人再從公司團隊頁面邀請旗下員工。這樣每位仲介都會自動歸屬正確公司，且資料不會跨公司顯示。</p>
       <button class="bov-btn bov-btn-sec" onclick="switchBovTab('login')">返回登入</button>
     </div>
 
@@ -1289,21 +1285,21 @@
     </div>
 
     <div class="bov-panel" id="bovTeam">
-      <div class="bov-form-title">公司团队</div>
-      <p class="bov-reset-hint">仅公司负责人或主管可邀请成员；受邀员工会自动归属此公司，无法读取其他公司的资料。</p>
+      <div class="bov-form-title">公司團隊</div>
+      <p class="bov-reset-hint">僅公司負責人或主管可邀請成員；受邀員工會自動歸屬此公司，無法讀取其他公司的資料。</p>
       <div style="border:1px solid var(--line);border-radius:12px;padding:1rem;margin:1rem 0 1.25rem;background:rgba(255,255,255,.03);">
-        <div class="bov-row"><div class="bov-field"><label>员工姓名 *</label><input id="teamMemberName" maxlength="100" placeholder="王小明" /></div><div class="bov-field"><label>员工职务 *</label><select id="teamMemberRole"><option value="agent">一般中介</option><option value="manager">公司主管</option></select></div></div>
-        <div class="bov-row"><div class="bov-field"><label>联络电话 *</label><input id="teamMemberPhone" maxlength="40" inputmode="tel" placeholder="0912-345-678" /></div><div class="bov-field"><label>经纪人证件号</label><input id="teamMemberLicense" maxlength="80" placeholder="选填" /></div></div>
-        <div class="bov-field"><label>员工 Email *</label><input type="email" id="teamMemberEmail" maxlength="254" autocomplete="email" placeholder="agent@example.com" /></div>
-        <button class="bov-btn" id="teamInviteBtn" type="button" onclick="inviteBrokerMember()">寄送员工邀请</button>
+        <div class="bov-row"><div class="bov-field"><label>員工姓名 *</label><input id="teamMemberName" maxlength="100" placeholder="王小明" /></div><div class="bov-field"><label>員工職務 *</label><select id="teamMemberRole"><option value="agent">一般中介</option><option value="manager">公司主管</option></select></div></div>
+        <div class="bov-row"><div class="bov-field"><label>聯絡電話 *</label><input id="teamMemberPhone" maxlength="40" inputmode="tel" placeholder="0912-345-678" /></div><div class="bov-field"><label>經紀人證件號</label><input id="teamMemberLicense" maxlength="80" placeholder="選填" /></div></div>
+        <div class="bov-field"><label>員工 Email *</label><input type="email" id="teamMemberEmail" maxlength="254" autocomplete="email" placeholder="agent@example.com" /></div>
+        <button class="bov-btn" id="teamInviteBtn" type="button" onclick="inviteBrokerMember()">寄送員工邀請</button>
         <div id="teamInviteMsg" class="bov-msg" style="margin-top:.8rem;"></div>
       </div>
-      <div id="teamMemberContent"><div class="bov-empty">载入中…</div></div>
+      <div id="teamMemberContent"><div class="bov-empty">載入中…</div></div>
     </div>
 
     <div class="bov-panel" id="bovSecurity">
       <div class="bov-form-title">登入設定</div>
-      <p class="bov-reset-hint">Passkey 使用此装置的人脸、指纹或解锁码，不会上传或保存任何生物特征资料。</p>
+      <p class="bov-reset-hint">Passkey 使用此裝置的人臉、指紋或解鎖碼，不會上傳或保存任何生物特徵資料。</p>
       <button type="button" class="bov-btn" onclick="registerBrokerPasskey()">啟用此裝置的人臉／Passkey 登入</button>
     </div>
 
@@ -1527,7 +1523,7 @@ async function verifyBrokerSession(showError = true) {
     .select('company_id,member_role,status,broker_companies(display_name)').eq('user_id', user.id).maybeSingle();
   if (membershipError || !membership || membership.status !== 'active') {
     await _sb.auth.signOut(); showBovLoggedOut();
-    if (showError) showBovMsg('loginMsg','此帐号尚未归属合作中介公司，请联系公司负责人或平台管理员。','error');
+    if (showError) showBovMsg('loginMsg','此帳號尚未歸屬合作中介公司，請聯絡公司負責人或平台管理員。','error');
     return false;
   }
   const company = Array.isArray(membership.broker_companies) ? membership.broker_companies[0] : membership.broker_companies;
@@ -1583,7 +1579,7 @@ async function doBrokerReset() {
 
 // ── 申請合作 ──────────────────────────────────────────────────────────────
 async function doBrokerRegister() {
-  showBovMsg('registerMsg','个人自助申请已改为公司邀请制，请联系公司负责人或平台管理员。','error');
+  showBovMsg('registerMsg','個人自助申請已改為公司邀請制，請聯絡公司負責人或平台管理員。','error');
   return;
   const name = document.getElementById('regName').value.trim();
   const company = document.getElementById('regCompany').value.trim();
@@ -1618,30 +1614,30 @@ async function inviteBrokerMember() {
   const memberRole = document.getElementById('teamMemberRole').value;
   const message = document.getElementById('teamInviteMsg');
   const button = document.getElementById('teamInviteBtn');
-  if (!name || !phone || !/^\S+@\S+\.\S+$/.test(email)) { showBovMsg('teamInviteMsg','请填写员工姓名、电话与有效 Email。','error'); return; }
+  if (!name || !phone || !/^\S+@\S+\.\S+$/.test(email)) { showBovMsg('teamInviteMsg','請填寫員工姓名、電話與有效 Email。','error'); return; }
   button.disabled = true; button.textContent = '寄送中…';
   const { error } = await _sb.functions.invoke('invite-broker-member', { body: { name, phone, email, licenseNo, memberRole } });
-  button.disabled = false; button.textContent = '寄送员工邀请';
-  if (error) { showBovMsg('teamInviteMsg','邀请未送出：' + await functionErrorMessage(error),'error'); return; }
+  button.disabled = false; button.textContent = '寄送員工邀請';
+  if (error) { showBovMsg('teamInviteMsg','邀請未送出：' + await functionErrorMessage(error),'error'); return; }
   document.getElementById('teamMemberName').value = '';
   document.getElementById('teamMemberPhone').value = '';
   document.getElementById('teamMemberEmail').value = '';
   document.getElementById('teamMemberLicense').value = '';
-  showBovMsg('teamInviteMsg','邀请已寄出；员工完成信箱流程后，即可登入本公司仲介专区。','success');
+  showBovMsg('teamInviteMsg','邀請已寄出；員工完成信箱流程後，即可登入本公司仲介專區。','success');
   loadBrokerCompanyMembers();
 }
 async function loadBrokerCompanyMembers() {
   if (!bovCurrentUser || !['owner','manager'].includes(bovCurrentUser.memberRole)) return;
   const el = document.getElementById('teamMemberContent');
   const safe = value => String(value == null ? '' : value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-  el.innerHTML = '<div class="bov-empty">载入中…</div>';
+  el.innerHTML = '<div class="bov-empty">載入中…</div>';
   const { data, error } = await _sb.from('broker_company_members')
     .select('id,member_role,status,joined_at,brokers(name,email,phone,license_no)')
     .eq('company_id', bovCurrentUser.companyId).order('joined_at', { ascending: true });
-  if (error || !data || !data.length) { el.innerHTML = '<div class="bov-empty">尚无公司成员。</div>'; return; }
-  const roleLabel = { owner:'负责人', manager:'公司主管', agent:'一般中介' };
-  const statusLabel = { active:'启用', suspended:'已停用' };
-  el.innerHTML = `<table class="bov-reg-table"><thead><tr><th>成员</th><th>职务</th><th>电话</th><th>Email</th><th>状态</th></tr></thead><tbody>${data.map(m => {
+  if (error || !data || !data.length) { el.innerHTML = '<div class="bov-empty">尚無公司成員。</div>'; return; }
+  const roleLabel = { owner:'負責人', manager:'公司主管', agent:'一般中介' };
+  const statusLabel = { active:'啟用', suspended:'已停用' };
+  el.innerHTML = `<table class="bov-reg-table"><thead><tr><th>成員</th><th>職務</th><th>電話</th><th>Email</th><th>狀態</th></tr></thead><tbody>${data.map(m => {
     const broker = Array.isArray(m.brokers) ? m.brokers[0] : m.brokers;
     return `<tr><td>${safe(broker?.name || '—')}${broker?.license_no ? '<br><span style="font-size:.72rem;color:var(--ink-dim)">' + safe(broker.license_no) + '</span>' : ''}</td><td>${roleLabel[m.member_role] || m.member_role}</td><td>${safe(broker?.phone || '—')}</td><td>${safe(broker?.email || '—')}</td><td><span class="bov-status ${m.status}">${statusLabel[m.status] || m.status}</span></td></tr>`;
   }).join('')}</tbody></table>`;
@@ -4049,6 +4045,8 @@ function openAdmin(event) {
 async function startAdminPasskeyLogin(event) {
   if (event) event.preventDefault();
   const openPasswordLogin = () => { window.location.href = 'yc-console-8k3n7q.html'; };
+  const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if (!isMobileDevice) { openPasswordLogin(); return; }
   if (!window.PublicKeyCredential) { openPasswordLogin(); return; }
   try {
     const { data, error } = await _sb.auth.signInWithPasskey();

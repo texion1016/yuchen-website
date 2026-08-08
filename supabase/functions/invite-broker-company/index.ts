@@ -58,7 +58,7 @@ Deno.serve(async (request) => {
   }
 
   const { data: invited, error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(ownerEmail, {
-    redirectTo: `${origin}/index.html`,
+    redirectTo: origin,
     data: { platform_invitation: "broker_company_owner" },
   });
   if (inviteError || !invited.user) return reply({ error: "This email may already have an account, or the invitation could not be sent" }, 400, origin);

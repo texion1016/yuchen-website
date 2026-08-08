@@ -48,7 +48,7 @@ Deno.serve(async (request) => {
   const { data: company } = await adminClient.from("broker_companies").select("display_name,status").eq("id", caller.company_id).maybeSingle();
   if (!company || company.status !== "active") return reply({ error: "Company information is unavailable" }, 500, origin);
   const { data: invited, error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(email, {
-    redirectTo: `${origin}/index.html`, data: { platform_invitation: "broker_company_member" },
+    redirectTo: origin, data: { platform_invitation: "broker_company_member" },
   });
   if (inviteError || !invited.user) return reply({ error: "This email may already have an account, or the invitation could not be sent" }, 400, origin);
   const rollbackUser = async () => { await adminClient.auth.admin.deleteUser(invited.user.id); };

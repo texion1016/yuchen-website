@@ -1426,6 +1426,7 @@
 <script>
 // ── Broker Overlay — Supabase Auth + 角色權限 ────────────────────────────────
 let bovCurrentUser = null; // { id, name, company, email, companyId, memberRole }
+const bovInviteMode = /(?:^|[?&#])type=invite(?:[&#]|$)/.test(window.location.search + '&' + window.location.hash);
 
 function openBrokerOverlay() {
   document.getElementById('brokerOverlay').classList.add('open');
@@ -1572,8 +1573,10 @@ async function doBrokerReset() {
   const { error } = await _sb.auth.updateUser({ password: pwd });
   btn.disabled = false; btn.textContent = '儲存新密碼';
   if (error) { showBovMsg('resetMsg','重設連結已失效，請重新寄送。','error'); return; }
-  showBovMsg('resetMsg','密碼已更新，請使用新密碼登入。','success');
+  showBovMsg('resetMsg', bovInviteMode ? '密碼已設定，正在開啟仲介專區。' : '密碼已更新，請使用新密碼登入。','success');
   document.getElementById('rsPwd').value = ''; document.getElementById('rsPwd2').value = '';
+  history.replaceState(null, '', window.location.pathname);
+  if (bovInviteMode) { setTimeout(() => verifyBrokerSession(true), 600); return; }
   await _sb.auth.signOut(); setTimeout(() => switchBovTab('login'), 900);
 }
 
@@ -1643,13 +1646,17 @@ async function loadBrokerCompanyMembers() {
   }).join('')}</tbody></table>`;
 }
 
-_sb.auth.onAuthStateChange((event) => {
-  if (event !== 'PASSWORD_RECOVERY') return;
+function showBrokerPasswordSetup(isInvitation) {
   openBrokerOverlay();
   document.getElementById('resetRequestArea').style.display = 'none';
   document.getElementById('resetUpdateArea').style.display = '';
   switchBovTab('reset');
-  showBovMsg('resetMsg','請設定新的登入密碼。','success');
+  document.querySelector('#bovReset .bov-form-title').textContent = isInvitation ? '設定登入密碼' : '重設密碼';
+  showBovMsg('resetMsg', isInvitation ? '請先設定您的登入密碼，完成後即可進入仲介專區。' : '請設定新的登入密碼。','success');
+}
+_sb.auth.onAuthStateChange((event) => {
+  if (event === 'PASSWORD_RECOVERY') { showBrokerPasswordSetup(false); return; }
+  if (event === 'SIGNED_IN' && bovInviteMode) showBrokerPasswordSetup(true);
 });
 
 // ── 客戶報備 ──────────────────────────────────────────────────────────────

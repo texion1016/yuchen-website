@@ -1185,14 +1185,15 @@
 <div id="brokerOverlay">
   <div class="bov-header">
     <div class="bov-logo">譽誠聯合銷售平台 — 仲介專區</div>
+    <span id="bovCompanyLabel" style="display:none;color:var(--cyan);font-size:.76rem;border:1px solid rgba(91,232,255,.3);border-radius:999px;padding:.32rem .7rem;white-space:nowrap;"></span>
     <button id="bovLogout" class="bov-close" type="button" style="display:none;width:auto;padding:0 .5rem;font-size:.78rem;" onclick="brokerSignOut()">登出</button>
     <button class="bov-close" onclick="closeBrokerOv()">✕</button>
   </div>
   <div class="bov-tabs" id="bovTabs">
     <button class="bov-tab active" id="tabLogin" onclick="switchBovTab('login')">仲介登入</button>
-    <button class="bov-tab" id="tabRegister" onclick="switchBovTab('register')">申請合作</button>
     <button class="bov-tab" id="tabReport" style="display:none" onclick="switchBovTab('report')">客戶報備</button>
     <button class="bov-tab" id="tabMyReg" style="display:none" onclick="switchBovTab('myreg')">我的報備</button>
+    <button class="bov-tab" id="tabTeam" style="display:none" onclick="switchBovTab('team')">公司團隊</button>
     <button class="bov-tab" id="tabSecurity" style="display:none" onclick="switchBovTab('security')">登入設定</button>
     <button class="bov-tab" id="tabBonus" onclick="switchBovTab('bonus')">獎金辦法</button>
   </div>
@@ -1210,8 +1211,7 @@
       <button class="bov-btn" onclick="doBrokerLogin()">登入</button>
       <button type="button" class="bov-btn bov-btn-sec" style="margin-top:.65rem;" onclick="doBrokerPasskeyLogin()">使用人臉／裝置 Passkey 登入</button>
       <div class="bov-forgot"><a href="#" onclick="switchBovTab('reset');return false;">忘記密碼？</a></div>
-      <div class="bov-divider">或</div>
-      <button class="bov-btn bov-btn-sec" onclick="switchBovTab('register')">還沒有帳號？申請成為合作仲介</button>
+      <p style="margin:1.3rem 0 0;padding-top:1rem;border-top:1px solid var(--line);font-size:.78rem;line-height:1.75;color:var(--ink-dim);">帐号由合作中介公司的负责人建立。若你尚未收到邀请，请联系你的公司负责人或譽诚平台管理员。</p>
     </div>
 
     <!-- 重設密碼 -->
@@ -1240,26 +1240,11 @@
       <button class="bov-btn bov-btn-sec" onclick="switchBovTab('login')">返回登入</button>
     </div>
 
-    <!-- 申請合作 -->
+    <!-- 舊制申請入口已停用 -->
     <div class="bov-panel" id="bovRegister">
-      <div class="bov-form-title">申請成為合作仲介</div>
-      <div id="registerMsg" class="bov-msg"></div>
-      <div class="bov-row">
-        <div class="bov-field"><label>姓名 *</label><input type="text" id="regName" placeholder="王大明" /></div>
-        <div class="bov-field"><label>仲介公司 *</label><input type="text" id="regCompany" placeholder="信義房屋" /></div>
-      </div>
-      <div class="bov-row">
-        <div class="bov-field"><label>聯絡電話 *</label><input type="tel" id="regPhone" placeholder="0912-345-678" /></div>
-        <div class="bov-field"><label>電子信箱 *</label><input type="email" id="regEmail" placeholder="broker@example.com" /></div>
-      </div>
-      <div class="bov-field"><label>經紀人證件號 *</label><input type="text" id="regLicenseNo" placeholder="例：B-01234567" /></div>
-      <div class="bov-field"><label>設定密碼 *</label><div class="pwd-wrap">
-      <input type="password" id="regPwd" minlength="12" placeholder="至少 12 個字元" />
-      <span class="pwd-eye" onclick="togglePwd('regPwd',this)">👁</span>
-    </div></div>
-      <button class="bov-btn" onclick="doBrokerRegister()">送出申請</button>
-      <div class="bov-divider">或</div>
-      <button class="bov-btn bov-btn-sec" onclick="switchBovTab('login')">已有帳號？登入</button>
+      <div class="bov-form-title">帐号建立方式</div>
+      <p class="bov-reset-hint">譽诚平台与中介公司签约后，会先邀请公司负责人；负责人再从公司团队页面邀请旗下员工。这样每位仲介都会自动归属正确公司，且资料不会跨公司显示。</p>
+      <button class="bov-btn bov-btn-sec" onclick="switchBovTab('login')">返回登入</button>
     </div>
 
     <!-- 客戶報備 -->
@@ -1297,10 +1282,23 @@
 
     <!-- 我的報備紀錄 -->
     <div class="bov-panel" id="bovMyReg">
-      <div class="bov-form-title">我的報備紀錄</div>
+      <div class="bov-form-title" id="myRegTitle">我的報備紀錄</div>
       <div id="myregContent">
         <div class="bov-empty">載入中…</div>
       </div>
+    </div>
+
+    <div class="bov-panel" id="bovTeam">
+      <div class="bov-form-title">公司团队</div>
+      <p class="bov-reset-hint">仅公司负责人或主管可邀请成员；受邀员工会自动归属此公司，无法读取其他公司的资料。</p>
+      <div style="border:1px solid var(--line);border-radius:12px;padding:1rem;margin:1rem 0 1.25rem;background:rgba(255,255,255,.03);">
+        <div class="bov-row"><div class="bov-field"><label>员工姓名 *</label><input id="teamMemberName" maxlength="100" placeholder="王小明" /></div><div class="bov-field"><label>员工职务 *</label><select id="teamMemberRole"><option value="agent">一般中介</option><option value="manager">公司主管</option></select></div></div>
+        <div class="bov-row"><div class="bov-field"><label>联络电话 *</label><input id="teamMemberPhone" maxlength="40" inputmode="tel" placeholder="0912-345-678" /></div><div class="bov-field"><label>经纪人证件号</label><input id="teamMemberLicense" maxlength="80" placeholder="选填" /></div></div>
+        <div class="bov-field"><label>员工 Email *</label><input type="email" id="teamMemberEmail" maxlength="254" autocomplete="email" placeholder="agent@example.com" /></div>
+        <button class="bov-btn" id="teamInviteBtn" type="button" onclick="inviteBrokerMember()">寄送员工邀请</button>
+        <div id="teamInviteMsg" class="bov-msg" style="margin-top:.8rem;"></div>
+      </div>
+      <div id="teamMemberContent"><div class="bov-empty">载入中…</div></div>
     </div>
 
     <div class="bov-panel" id="bovSecurity">
@@ -1431,7 +1429,7 @@
 
 <script>
 // ── Broker Overlay — Supabase Auth + 角色權限 ────────────────────────────────
-let bovCurrentUser = null; // { id, name, company, email }
+let bovCurrentUser = null; // { id, name, company, email, companyId, memberRole }
 
 function openBrokerOverlay() {
   document.getElementById('brokerOverlay').classList.add('open');
@@ -1445,13 +1443,14 @@ function closeBrokerOv() {
 function switchBovTab(tab) {
   document.querySelectorAll('.bov-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.bov-tab').forEach(t => t.classList.remove('active'));
-  const panelMap = { login:'bovLogin', register:'bovRegister', report:'bovReport', myreg:'bovMyReg', bonus:'bovBonus', reset:'bovReset', security:'bovSecurity' };
+  const panelMap = { login:'bovLogin', register:'bovRegister', report:'bovReport', myreg:'bovMyReg', team:'bovTeam', bonus:'bovBonus', reset:'bovReset', security:'bovSecurity' };
   const panel = document.getElementById(panelMap[tab]);
   if (panel) panel.classList.add('active');
   document.querySelectorAll('.bov-tab').forEach(t => {
     if (t.getAttribute('onclick') && t.getAttribute('onclick').includes("'"+tab+"'")) t.classList.add('active');
   });
   if (tab === 'myreg') loadMyRegs();
+  if (tab === 'team') loadBrokerCompanyMembers();
 }
 function showBovMsg(id, msg, type) {
   const el = document.getElementById(id);
@@ -1461,22 +1460,32 @@ function showBovMsg(id, msg, type) {
 }
 function showBovLoggedIn() {
   document.getElementById('tabLogin').style.display = 'none';
-  document.getElementById('tabRegister').style.display = 'none';
   const bcta = document.querySelector('.bonus-cta'); if (bcta) bcta.style.display = 'none';
   document.getElementById('tabReport').style.display = '';
   document.getElementById('tabMyReg').style.display = '';
   document.getElementById('tabSecurity').style.display = '';
+  document.getElementById('tabTeam').style.display = ['owner','manager'].includes(bovCurrentUser.memberRole) ? '' : 'none';
   document.getElementById('bovLogout').style.display = '';
+  const companyLabel = document.getElementById('bovCompanyLabel');
+  companyLabel.textContent = bovCurrentUser.company; companyLabel.style.display = '';
   switchBovTab('report');
+}
+async function functionErrorMessage(error) {
+  try {
+    const body = await error.context?.json();
+    if (typeof body?.error === 'string') return body.error;
+  } catch (_) {}
+  return error?.message || '伺服器暫時無法處理，請稍後再試。';
 }
 function showBovLoggedOut() {
   bovCurrentUser = null;
   document.getElementById('tabLogin').style.display = '';
-  document.getElementById('tabRegister').style.display = '';
   document.getElementById('tabReport').style.display = 'none';
   document.getElementById('tabMyReg').style.display = 'none';
+  document.getElementById('tabTeam').style.display = 'none';
   document.getElementById('tabSecurity').style.display = 'none';
   document.getElementById('bovLogout').style.display = 'none';
+  document.getElementById('bovCompanyLabel').style.display = 'none';
 }
 function genRegNo() {
   const d = new Date().toISOString().slice(2,10).replace(/-/g,'');
@@ -1514,7 +1523,15 @@ async function verifyBrokerSession(showError = true) {
     if (showError) showBovMsg('loginMsg','此合作仲介帳號目前不可使用，請聯絡管理員。','error');
     return false;
   }
-  bovCurrentUser = profile;
+  const { data: membership, error: membershipError } = await _sb.from('broker_company_members')
+    .select('company_id,member_role,status,broker_companies(display_name)').eq('user_id', user.id).maybeSingle();
+  if (membershipError || !membership || membership.status !== 'active') {
+    await _sb.auth.signOut(); showBovLoggedOut();
+    if (showError) showBovMsg('loginMsg','此帐号尚未归属合作中介公司，请联系公司负责人或平台管理员。','error');
+    return false;
+  }
+  const company = Array.isArray(membership.broker_companies) ? membership.broker_companies[0] : membership.broker_companies;
+  bovCurrentUser = { ...profile, companyId: membership.company_id, memberRole: membership.member_role, company: company?.display_name || profile.company };
   showBovLoggedIn();
   return true;
 }
@@ -1566,6 +1583,8 @@ async function doBrokerReset() {
 
 // ── 申請合作 ──────────────────────────────────────────────────────────────
 async function doBrokerRegister() {
+  showBovMsg('registerMsg','个人自助申请已改为公司邀请制，请联系公司负责人或平台管理员。','error');
+  return;
   const name = document.getElementById('regName').value.trim();
   const company = document.getElementById('regCompany').value.trim();
   const phone = document.getElementById('regPhone').value.trim();
@@ -1588,6 +1607,44 @@ async function doBrokerRegister() {
   if (error) showBovMsg('registerMsg','申請失敗：' + error.message,'error');
   else showBovMsg('registerMsg','驗證信已寄出。請完成驗證，管理員審核啟用後即可登入。','success');
   btn.textContent = '送出申請'; btn.disabled = false;
+}
+
+async function inviteBrokerMember() {
+  if (!bovCurrentUser || !['owner','manager'].includes(bovCurrentUser.memberRole)) return;
+  const name = document.getElementById('teamMemberName').value.trim();
+  const phone = document.getElementById('teamMemberPhone').value.trim();
+  const email = document.getElementById('teamMemberEmail').value.trim().toLowerCase();
+  const licenseNo = document.getElementById('teamMemberLicense').value.trim();
+  const memberRole = document.getElementById('teamMemberRole').value;
+  const message = document.getElementById('teamInviteMsg');
+  const button = document.getElementById('teamInviteBtn');
+  if (!name || !phone || !/^\S+@\S+\.\S+$/.test(email)) { showBovMsg('teamInviteMsg','请填写员工姓名、电话与有效 Email。','error'); return; }
+  button.disabled = true; button.textContent = '寄送中…';
+  const { error } = await _sb.functions.invoke('invite-broker-member', { body: { name, phone, email, licenseNo, memberRole } });
+  button.disabled = false; button.textContent = '寄送员工邀请';
+  if (error) { showBovMsg('teamInviteMsg','邀请未送出：' + await functionErrorMessage(error),'error'); return; }
+  document.getElementById('teamMemberName').value = '';
+  document.getElementById('teamMemberPhone').value = '';
+  document.getElementById('teamMemberEmail').value = '';
+  document.getElementById('teamMemberLicense').value = '';
+  showBovMsg('teamInviteMsg','邀请已寄出；员工完成信箱流程后，即可登入本公司仲介专区。','success');
+  loadBrokerCompanyMembers();
+}
+async function loadBrokerCompanyMembers() {
+  if (!bovCurrentUser || !['owner','manager'].includes(bovCurrentUser.memberRole)) return;
+  const el = document.getElementById('teamMemberContent');
+  const safe = value => String(value == null ? '' : value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  el.innerHTML = '<div class="bov-empty">载入中…</div>';
+  const { data, error } = await _sb.from('broker_company_members')
+    .select('id,member_role,status,joined_at,brokers(name,email,phone,license_no)')
+    .eq('company_id', bovCurrentUser.companyId).order('joined_at', { ascending: true });
+  if (error || !data || !data.length) { el.innerHTML = '<div class="bov-empty">尚无公司成员。</div>'; return; }
+  const roleLabel = { owner:'负责人', manager:'公司主管', agent:'一般中介' };
+  const statusLabel = { active:'启用', suspended:'已停用' };
+  el.innerHTML = `<table class="bov-reg-table"><thead><tr><th>成员</th><th>职务</th><th>电话</th><th>Email</th><th>状态</th></tr></thead><tbody>${data.map(m => {
+    const broker = Array.isArray(m.brokers) ? m.brokers[0] : m.brokers;
+    return `<tr><td>${safe(broker?.name || '—')}${broker?.license_no ? '<br><span style="font-size:.72rem;color:var(--ink-dim)">' + safe(broker.license_no) + '</span>' : ''}</td><td>${roleLabel[m.member_role] || m.member_role}</td><td>${safe(broker?.phone || '—')}</td><td>${safe(broker?.email || '—')}</td><td><span class="bov-status ${m.status}">${statusLabel[m.status] || m.status}</span></td></tr>`;
+  }).join('')}</tbody></table>`;
 }
 
 _sb.auth.onAuthStateChange((event) => {
@@ -1620,6 +1677,7 @@ async function doClientReport() {
     const { error } = await _sb.from('client_registrations').insert({
       registration_no: regNo,
       broker_id: bovCurrentUser.id || null,
+      broker_company_id: bovCurrentUser.companyId,
       broker_name: bovCurrentUser.name,
       broker_company: bovCurrentUser.company,
       project_name: project,
@@ -1691,11 +1749,11 @@ async function loadMyRegs() {
   const el = document.getElementById('myregContent');
   el.innerHTML = '<div class="bov-empty">載入中…</div>';
   try {
-    const { data, error } = await _sb.from('client_registrations')
-      .select('*')
-      .eq('broker_name', bovCurrentUser.name)
-      .eq('broker_company', bovCurrentUser.company)
-      .order('created_at', { ascending: false });
+    const companyManager = ['owner','manager'].includes(bovCurrentUser.memberRole);
+    document.getElementById('myRegTitle').textContent = companyManager ? bovCurrentUser.company + '｜公司報備紀錄' : '我的報備紀錄';
+    let query = _sb.from('client_registrations').select('*').order('created_at', { ascending: false });
+    query = companyManager ? query.eq('broker_company_id', bovCurrentUser.companyId) : query.eq('broker_id', bovCurrentUser.id);
+    const { data, error } = await query;
     if (error || !data || data.length === 0) {
       el.innerHTML = '<div class="bov-empty">尚無報備紀錄</div>'; return;
     }

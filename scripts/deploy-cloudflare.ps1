@@ -19,3 +19,5 @@ $env:CLOUDFLARE_API_TOKEN = $token
 if ($LASTEXITCODE -ne 0) {
   throw "Cloudflare deployment failed with exit code $LASTEXITCODE."
 }
+
+& (Join-Path $PSScriptRoot 'submit-indexnow.ps1')

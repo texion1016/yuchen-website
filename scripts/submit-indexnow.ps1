@@ -4,7 +4,9 @@ $indexNowKey = '1e2cd6976b8c425298b0f3a0d66e3440'
 $siteHost = 'yuchen-realty.com'
 $urls = @(
   'https://yuchen-realty.com/',
-  'https://yuchen-realty.com/install.html'
+  'https://yuchen-realty.com/install.html',
+  'https://yuchen-realty.com/developer-partnership.html',
+  'https://yuchen-realty.com/broker-partnership.html'
 )
 
 $payload = @{

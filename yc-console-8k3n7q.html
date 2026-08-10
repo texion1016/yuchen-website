@@ -203,8 +203,12 @@
       
       <button class="adm-nav-btn" onclick="switchAdmPanel('inquiries')">案件詢問</button>
       <button class="adm-nav-btn" onclick="switchAdmPanel('projects')">建案管理</button>
+      <button class="adm-nav-btn" onclick="switchAdmPanel('approvals')">區代提案審核</button>
       <button class="adm-nav-btn" onclick="switchAdmPanel('units')">戶況管理</button>
       <button class="adm-nav-btn" onclick="switchAdmPanel('brokers')">中介公司</button>
+      <button class="adm-nav-btn" onclick="switchAdmPanel('sales')">成交審核</button>
+      <button class="adm-nav-btn" onclick="switchAdmPanel('commissions')">獎金流向</button>
+      <button class="adm-nav-btn" onclick="switchAdmPanel('partners')">合作夥伴帳戶</button>
       <button class="adm-nav-btn" onclick="switchAdmPanel('admins')">管理員帳戶</button>
       <button class="adm-nav-btn" onclick="switchAdmPanel('builders')">建商帳戶</button>
       <button class="adm-nav-btn" onclick="openDevPortalFromAdmin()">建案戶況(檢視)</button>
@@ -234,6 +238,11 @@
         </div>
         <div style="font-size:.74rem;color:#7A8CA0;margin:-.6rem 0 1rem;">刊登中的建案會即時顯示在官網首頁與報備下拉；圖片最多 15 張，第 1 張為封面。</div>
         <div id="admProjContent"><div class="adm-empty">載入中…</div></div>
+      </div>
+      <div class="adm-panel" id="admApprovals">
+        <div class="adm-title">區代建案提案審核</div>
+        <div style="font-size:.78rem;line-height:1.7;color:#55687E;margin:-.55rem 0 1rem;">區代提交的建案在這裡審核。通過後才會上架到主網站；請先確認建案、建商、區域及平台佣金比例。</div>
+        <div id="admApprovalContent"><div class="adm-empty">載入中…</div></div>
       </div>
       <!-- 戶況管理 -->
       <div class="adm-panel" id="admUnits">
@@ -277,6 +286,44 @@
         <div id="admBrokerCompanyContent"><div class="adm-empty">載入中…</div></div>
         <details style="margin-top:1.3rem;"><summary style="cursor:pointer;color:#55687E;font-size:.82rem;">舊制個人仲介資料（僅供查閱）</summary><div id="admBrokerContent" style="margin-top:.8rem;"><div class="adm-empty">載入中…</div></div></details>
       </div>
+      <div class="adm-panel" id="admSales">
+        <div class="adm-title">中介成交審核</div>
+        <div style="font-size:.78rem;line-height:1.7;color:#55687E;margin:-.55rem 0 1rem;">中介公司或旗下中介提交成交後，請在此核准。核准後系統會更新戶況，並依當下比例建立不可回溯修改的暫估獎金明細。</div>
+        <div id="admSaleContent"><div class="adm-empty">載入中…</div></div>
+      </div>
+      <div class="adm-panel" id="admCommissions">
+        <div class="adm-title" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">全平台獎金流向
+          <button onclick="admExportCommissionsCSV()" style="background:#fff;border:1px solid #C7D2DE;color:#1A3A5F;border-radius:8px;padding:.45rem 1rem;font-size:.78rem;font-weight:600;cursor:pointer;font-family:inherit;">⬇ 匯出 Excel</button>
+        </div>
+        <div style="font-size:.78rem;line-height:1.7;color:#55687E;margin:-.55rem 0 1rem;">此處為依已核准成交自動計算的暫估分潤，不表示已開票、已結算或已付款。</div>
+        <div id="admCommissionSummary" class="adm-stats" style="margin-bottom:1rem;"></div>
+        <div id="admCommissionContent"><div class="adm-empty">載入中…</div></div>
+      </div>
+      <div class="adm-panel" id="admPartners">
+        <div class="adm-title">合作夥伴帳戶</div>
+        <div class="apj-grid2">
+          <div style="background:#fff;border:1px solid var(--ov-line);border-radius:14px;padding:1.2rem;">
+            <div style="font-weight:700;color:#1A3A5F;margin-bottom:.35rem;">邀請區域代理人</div>
+            <p style="font-size:.76rem;line-height:1.65;color:#55687E;margin:.2rem 0 .85rem;">區代可提交建案提案、查看自己負責區域的戶況與暫估獎金。</p>
+            <div class="bov-field"><label>姓名 *</label><input id="regionalPartnerName" maxlength="100" placeholder="王大明" /></div>
+            <div class="bov-field"><label>Email *</label><input id="regionalPartnerEmail" type="email" maxlength="254" placeholder="partner@example.com" /></div>
+            <div class="bov-field"><label>電話</label><input id="regionalPartnerPhone" maxlength="40" /></div>
+            <div class="bov-field"><label>負責區域 *</label><input id="regionalPartnerRegion" maxlength="100" placeholder="桃園市" /></div>
+            <button class="bov-btn" type="button" onclick="invitePlatformPartner('regional_agent')">寄送區代邀請</button>
+          </div>
+          <div style="background:#fff;border:1px solid var(--ov-line);border-radius:14px;padding:1.2rem;">
+            <div style="font-weight:700;color:#1A3A5F;margin-bottom:.35rem;">邀請拓案夥伴</div>
+            <p style="font-size:.76rem;line-height:1.65;color:#55687E;margin:.2rem 0 .85rem;">拓案夥伴可查看自己接入建案的戶況與暫估獎金。</p>
+            <div class="bov-field"><label>姓名 *</label><input id="sourcingPartnerName" maxlength="100" placeholder="王大明" /></div>
+            <div class="bov-field"><label>Email *</label><input id="sourcingPartnerEmail" type="email" maxlength="254" placeholder="partner@example.com" /></div>
+            <div class="bov-field"><label>電話</label><input id="sourcingPartnerPhone" maxlength="40" /></div>
+            <button class="bov-btn" type="button" onclick="invitePlatformPartner('sourcing_partner')">寄送拓案邀請</button>
+          </div>
+        </div>
+        <div id="admPartnerMsg" style="display:none;margin-top:.9rem;font-size:.8rem;line-height:1.6;" role="status" aria-live="polite"></div>
+        <div style="font-weight:700;color:#1A3A5F;margin:1.35rem 0 .6rem;">已建立的合作夥伴</div>
+        <div id="admPartnerContent"><div class="adm-empty">載入中…</div></div>
+      </div>
       <div class="adm-panel" id="admAdmins">
         <div class="adm-title">管理員帳戶</div>
         <div style="max-width:520px;background:#fff;border:1px solid var(--ov-line);border-radius:14px;padding:1.35rem;">
@@ -315,6 +362,19 @@
         <div class="apj-grid2">
           <div class="bov-field"><label>價格（萬起）*</label><input type="text" id="apjPrice" inputmode="numeric" placeholder="988" /></div>
           <div class="bov-field"><label>價格備註</label><input type="text" id="apjPriceNote" placeholder="附基本輕裝修，即買即住" /></div>
+        </div>
+        <div class="apj-sec">①-1 合作歸屬與暫估分潤　<small>核准成交後依此比例建立歷史快照</small></div>
+        <div class="apj-grid2">
+          <div class="bov-field"><label>所屬區域</label><input type="text" id="apjRegion" placeholder="桃園市" /></div>
+          <div class="bov-field"><label>平台向建商申請佣金比例（%）</label><input type="number" id="apjCommissionRate" min="0" max="100" step="0.01" placeholder="例：6" /></div>
+        </div>
+        <div class="apj-grid2">
+          <div class="bov-field"><label>區域代理人</label><select id="apjRegionalAgent"><option value="">未指派</option></select></div>
+          <div class="bov-field"><label>區代分潤比例（%）</label><input type="number" id="apjRegionalRate" min="0" max="100" step="0.01" placeholder="例：10" /></div>
+        </div>
+        <div class="apj-grid2">
+          <div class="bov-field"><label>拓案夥伴</label><select id="apjSourcingPartner"><option value="">未指派</option></select></div>
+          <div class="bov-field"><label>拓案分潤比例（%）</label><input type="number" id="apjSourcingRate" min="0" max="100" step="0.01" placeholder="例：6" /></div>
         </div>
         <div class="apj-grid2">
           <div class="bov-field"><label>卡片標籤</label><input type="text" id="apjTag" placeholder="新上架 / 熱銷中…" /></div>
@@ -580,7 +640,7 @@ function switchAdmPanel(name) {
   document.querySelectorAll('.adm-nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('adm' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
   event.target.classList.add('active');
-  const loaders = { registrations: loadAdmRegs, inquiries: loadAdmInq, brokers: loadAdmBrokerCompanies, units: loadAdmUnits, projects: loadAdmProjects };
+  const loaders = { registrations: loadAdmRegs, inquiries: loadAdmInq, brokers: loadAdmBrokerCompanies, units: loadAdmUnits, projects: loadAdmProjects, approvals: loadAdmProjectApprovals, sales: loadAdmSales, commissions: loadAdmCommissions, partners: loadAdmPartners };
   if (loaders[name]) loaders[name]();
 }
 
@@ -766,7 +826,7 @@ async function loadAdmProjects() {
       + '</tr>').join('') + '</tbody></table>';
 }
 
-function openProjForm(id) {
+async function openProjForm(id) {
   const p = id ? _apjRows.find(r => r.id === id) : null;
   apjEdit = { id: id || null, newId: id ? null : crypto.randomUUID(), existing: p ? (p.images || []).slice() : [], pending: [] };
   document.getElementById('apjTitle').innerText = p ? '編輯建案' : '新增建案';
@@ -775,6 +835,10 @@ function openProjForm(id) {
   document.getElementById('apjAddr').value = p ? (p.address || '') : '';
   document.getElementById('apjPrice').value = p ? (p.price || '') : '';
   document.getElementById('apjPriceNote').value = p ? (p.price_note || '') : '';
+  document.getElementById('apjRegion').value = p ? (p.region || '') : '';
+  document.getElementById('apjCommissionRate').value = p && p.platform_commission_rate != null ? p.platform_commission_rate : '';
+  document.getElementById('apjRegionalRate').value = p && p.regional_agent_rate != null ? p.regional_agent_rate : '';
+  document.getElementById('apjSourcingRate').value = p && p.sourcing_partner_rate != null ? p.sourcing_partner_rate : '';
   document.getElementById('apjTag').value = p ? (p.tag || '') : '';
   document.getElementById('apjTagHot').checked = p ? !!p.tag_hot : false;
   document.getElementById('apjBadges').value = p ? (p.badges || '') : '';
@@ -796,9 +860,23 @@ function openProjForm(id) {
   document.getElementById('apjFac').value = p ? (p.facilities || '') : '';
   document.getElementById('apjVideo').value = p ? (p.video_url || '') : '';
   document.getElementById('apjMap').value = p ? (p.map_url || '') : '';
+  await apjLoadPartnerOptions(p);
   document.getElementById('apjFiles').value = '';
   apjRenderThumbs();
   document.getElementById('admProjModal').classList.add('open');
+}
+
+async function apjLoadPartnerOptions(project) {
+  const { data, error } = await _sb.from('platform_partners')
+    .select('user_id,role,display_name,region,status').eq('status', 'active').order('display_name');
+  if (error) return;
+  const safe = value => String(value == null ? '' : value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const fill = (id, role, selected) => {
+    const list = (data || []).filter(row => row.role === role);
+    document.getElementById(id).innerHTML = '<option value="">未指派</option>' + list.map(row => '<option value="' + row.user_id + '"' + (row.user_id === selected ? ' selected' : '') + '>' + safe(row.display_name) + (row.region ? '（' + safe(row.region) + '）' : '') + '</option>').join('');
+  };
+  fill('apjRegionalAgent', 'regional_agent', project?.regional_agent_user_id);
+  fill('apjSourcingPartner', 'sourcing_partner', project?.sourcing_partner_user_id);
 }
 function closeProjForm() {
   document.getElementById('admProjModal').classList.remove('open');
@@ -890,6 +968,12 @@ async function saveProjForm() {
       amenities: val('apjAmen'),
       images: urls.slice(0, 15),
       sort: parseInt(document.getElementById('apjSort').value, 10) || 100,
+      region: val('apjRegion') || null,
+      platform_commission_rate: Number(document.getElementById('apjCommissionRate').value) || 0,
+      regional_agent_user_id: document.getElementById('apjRegionalAgent').value || null,
+      regional_agent_rate: Number(document.getElementById('apjRegionalRate').value) || 0,
+      sourcing_partner_user_id: document.getElementById('apjSourcingPartner').value || null,
+      sourcing_partner_rate: Number(document.getElementById('apjSourcingRate').value) || 0,
       updated_at: new Date().toISOString()
     };
     // 擴充欄位（需先執行 projects_upgrade.sql；若資料庫尚未升級會自動退回只存基本欄位）
@@ -901,7 +985,7 @@ async function saveProjForm() {
     };
     const doSave = async r => {
       if (apjEdit.id) return (await _sb.from('projects').update(r).eq('id', apjEdit.id)).error;
-      return (await _sb.from('projects').insert(Object.assign({ id: apjEdit.newId, published: true }, r))).error;
+      return (await _sb.from('projects').insert(Object.assign({ id: apjEdit.newId, published: true, approval_status: 'approved' }, r))).error;
     };
     let err = await doSave(Object.assign({}, row, extra));
     if (err && /column|schema/i.test(err.message)) {
@@ -1017,22 +1101,29 @@ async function loadAdmBrokerCompanies() {
   const safe = value => String(value == null ? '' : value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   el.innerHTML = '<div class="adm-empty">載入中…</div>';
   const [{ data: companies, error }, legacyResult] = await Promise.all([
-    _sb.from('broker_companies').select('id,legal_name,display_name,tax_id,contact_name,contact_phone,status,created_at,broker_company_members(id,status)').order('created_at', { ascending: false }),
+    _sb.from('broker_companies').select('id,legal_name,display_name,tax_id,contact_name,contact_phone,status,partner_tier,broker_share_rate,created_at,broker_company_members(id,status)').order('created_at', { ascending: false }),
     _sb.from('brokers').select('id,name,company,phone,email,license_no,status,created_at').order('created_at', { ascending: false })
   ]);
   if (error) { el.innerHTML = '<div class="adm-empty">無法載入公司資料</div>'; return; }
   if (!companies || !companies.length) el.innerHTML = '<div class="adm-empty">尚未建立合作中介公司。請從上方建立公司並邀請負責人。</div>';
   else {
     const statusLabel = { active:'合作中', suspended:'暫停', ended:'已結束' };
-    el.innerHTML = `<table class="adm-table"><thead><tr><th>公司</th><th>負責人</th><th>電話</th><th>統一編號</th><th>成員</th><th>合作狀態</th><th>建立時間</th></tr></thead><tbody>${companies.map(c => {
+    el.innerHTML = `<table class="adm-table"><thead><tr><th>公司</th><th>負責人</th><th>電話</th><th>統一編號</th><th>成員</th><th>夥伴等級／分潤</th><th>合作狀態</th><th>建立時間</th></tr></thead><tbody>${companies.map(c => {
       const members = (c.broker_company_members || []).filter(m => m.status === 'active').length;
-      return `<tr><td><strong>${safe(c.display_name)}</strong><br><span style="font-size:.75rem;color:#718096">${safe(c.legal_name)}</span></td><td>${safe(c.contact_name)}</td><td>${safe(c.contact_phone)}</td><td>${safe(c.tax_id || '—')}</td><td>${members} 人</td><td><span class="adm-badge ${c.status === 'active' ? 'confirmed' : 'pending'}">${statusLabel[c.status] || c.status}</span></td><td style="font-size:.78rem">${new Date(c.created_at).toLocaleString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false})}</td></tr>`;
+      return `<tr><td><strong>${safe(c.display_name)}</strong><br><span style="font-size:.75rem;color:#718096">${safe(c.legal_name)}</span></td><td>${safe(c.contact_name)}</td><td>${safe(c.contact_phone)}</td><td>${safe(c.tax_id || '—')}</td><td>${members} 人</td><td><select onchange="admSetBrokerTier('${c.id}',this.value)" style="border:1px solid #C7D2DE;border-radius:6px;padding:.28rem .4rem;font:inherit;font-size:.76rem;color:#1A3A5F;background:#fff;">${[['standard','標準 50%'],['silver','銀牌 53%'],['gold','金牌 55%'],['platinum','白金 57%'],['diamond','鑽石 60%']].map(([tier,label]) => '<option value="' + tier + '"' + ((c.partner_tier || 'standard') === tier ? ' selected' : '') + '>' + label + '</option>').join('')}</select></td><td><span class="adm-badge ${c.status === 'active' ? 'confirmed' : 'pending'}">${statusLabel[c.status] || c.status}</span></td><td style="font-size:.78rem">${new Date(c.created_at).toLocaleString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false})}</td></tr>`;
     }).join('')}</tbody></table>`;
   }
   const data = legacyResult.data;
   if (!legacy) return;
   if (!data || !data.length) { legacy.innerHTML = '<div class="adm-empty">尚無舊制資料</div>'; return; }
   legacy.innerHTML = `<table class="adm-table"><thead><tr><th>姓名</th><th>公司</th><th>電話</th><th>信箱</th><th>狀態</th></tr></thead><tbody>${data.map(r => `<tr><td>${safe(r.name)}</td><td>${safe(r.company)}</td><td>${safe(r.phone)}</td><td>${safe(r.email)}</td><td>${safe(r.status)}</td></tr>`).join('')}</tbody></table>`;
+}
+
+async function admSetBrokerTier(id, tier) {
+  const rates = { standard: 50, silver: 53, gold: 55, platinum: 57, diamond: 60 };
+  const { error } = await _sb.from('broker_companies').update({ partner_tier: tier, broker_share_rate: rates[tier] }).eq('id', id);
+  if (error) { alert('更新合作夥伴等級失敗：' + error.message); loadAdmBrokerCompanies(); return; }
+  loadAdmBrokerCompanies();
 }
 
 async function admSetBrokerStatus(id, val, btn) {
@@ -1059,7 +1150,118 @@ async function admDeleteBroker(id, name) {
   loadAdmBrokers();
 }
 
-verifyAdminSession(false);
+const admSafe = value => String(value == null ? '' : value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+const admMoney = value => new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD', maximumFractionDigits: 0 }).format(Number(value || 0));
+const admDate = value => value ? new Date(value).toLocaleDateString('zh-TW') : '—';
+const admSaleStatus = { pending: '待審核', approved: '已核准', rejected: '未通過' };
+
+async function loadAdmProjectApprovals() {
+  const el = document.getElementById('admApprovalContent');
+  el.innerHTML = '<div class="adm-empty">載入中…</div>';
+  const { data, error } = await _sb.from('projects')
+    .select('id,name,location,region,builder,price,platform_commission_rate,regional_agent_rate,description,created_at')
+    .eq('approval_status', 'pending').order('created_at', { ascending: false });
+  if (error) { el.innerHTML = '<div class="adm-empty">讀取失敗：' + admSafe(error.message) + '</div>'; return; }
+  if (!data?.length) { el.innerHTML = '<div class="adm-empty">目前沒有待審核的區代建案提案。</div>'; return; }
+  el.innerHTML = '<table class="adm-table"><thead><tr><th>建案</th><th>區域</th><th>建商</th><th>平台佣金</th><th>區代</th><th>提交日期</th><th>操作</th></tr></thead><tbody>' + data.map(row => {
+    return '<tr><td><strong>' + admSafe(row.name) + '</strong><br><span style="font-size:.74rem;color:#718096">' + admSafe(row.location) + '</span></td><td>' + admSafe(row.region || '—') + '</td><td>' + admSafe(row.builder || '—') + '</td><td>' + Number(row.platform_commission_rate || 0) + '%</td><td>區代提案</td><td>' + admDate(row.created_at) + '</td><td><button class="mr-btn" onclick="admSetProjectApproval(\'' + row.id + '\',\'approved\')">通過並上架</button><button class="mr-btn mr-cancel" onclick="admSetProjectApproval(\'' + row.id + '\',\'rejected\')">退回</button></td></tr>';
+  }).join('') + '</tbody></table>';
+}
+
+async function admSetProjectApproval(id, status) {
+  const note = status === 'rejected' ? (prompt('請輸入退回原因（會顯示給區代）：') || '') : '';
+  if (status === 'rejected' && !note) return;
+  const { data: { user } } = await _sb.auth.getUser();
+  const { error } = await _sb.from('projects').update({ approval_status: status, published: status === 'approved', approval_note: note || null, approved_by: user?.id || null, approved_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq('id', id);
+  if (error) { alert('審核失敗：' + error.message); return; }
+  loadAdmProjectApprovals(); loadAdmProjects();
+}
+
+async function loadAdmSales() {
+  const el = document.getElementById('admSaleContent');
+  el.innerHTML = '<div class="adm-empty">載入中…</div>';
+  const { data, error } = await _sb.from('sale_submissions')
+    .select('id,deal_price,deal_date,note,status,created_at,projects(name),units(floor,unit_no),brokers(name),broker_companies(display_name)')
+    .order('created_at', { ascending: false });
+  if (error) { el.innerHTML = '<div class="adm-empty">讀取失敗：' + admSafe(error.message) + '</div>'; return; }
+  if (!data?.length) { el.innerHTML = '<div class="adm-empty">尚無中介提交的成交資料。</div>'; return; }
+  el.innerHTML = '<table class="adm-table"><thead><tr><th>建案／戶別</th><th>提交中介</th><th>公司</th><th>成交價</th><th>成交日期</th><th>狀態</th><th>操作</th></tr></thead><tbody>' + data.map(row => {
+    const p = Array.isArray(row.projects) ? row.projects[0] : row.projects, u = Array.isArray(row.units) ? row.units[0] : row.units, b = Array.isArray(row.brokers) ? row.brokers[0] : row.brokers, c = Array.isArray(row.broker_companies) ? row.broker_companies[0] : row.broker_companies;
+    return '<tr><td><strong>' + admSafe(p?.name || '—') + '</strong><br><span style="font-size:.74rem;color:#718096">' + admSafe(u ? String(u.floor).padStart(2, '0') + '-' + u.unit_no : '—') + '</span></td><td>' + admSafe(b?.name || '—') + '</td><td>' + admSafe(c?.display_name || '—') + '</td><td>' + admMoney(row.deal_price) + '</td><td>' + admDate(row.deal_date) + '</td><td><span class="adm-badge ' + row.status + '">' + admSaleStatus[row.status] + '</span></td><td>' + (row.status === 'pending' ? '<button class="mr-btn" onclick="admReviewSale(\'' + row.id + '\',\'approved\')">核准</button><button class="mr-btn mr-cancel" onclick="admReviewSale(\'' + row.id + '\',\'rejected\')">退回</button>' : '—') + '</td></tr>';
+  }).join('') + '</tbody></table>';
+}
+
+async function admReviewSale(id, status) {
+  const note = status === 'rejected' ? (prompt('請輸入退回原因（會顯示給提交中介）：') || '') : '';
+  if (status === 'rejected' && !note) return;
+  const { data: { user } } = await _sb.auth.getUser();
+  const { error } = await _sb.from('sale_submissions').update({ status, review_note: note || null, reviewed_by: user?.id || null, reviewed_at: new Date().toISOString() }).eq('id', id);
+  if (error) { alert('成交審核失敗：' + error.message); return; }
+  loadAdmSales(); loadAdmCommissions(); loadAdmUnits();
+}
+
+async function loadAdmCommissions() {
+  const summary = document.getElementById('admCommissionSummary'), el = document.getElementById('admCommissionContent');
+  el.innerHTML = '<div class="adm-empty">載入中…</div>';
+  const { data, error } = await _sb.from('commission_allocations')
+    .select('id,allocation_role,recipient_name,recipient_company,commission_base_amount,share_rate,estimated_amount,created_at,projects(name),units(floor,unit_no),sale_submissions(deal_date)')
+    .order('created_at', { ascending: false });
+  if (error) { summary.innerHTML = ''; el.innerHTML = '<div class="adm-empty">讀取失敗：' + admSafe(error.message) + '</div>'; return; }
+  const sums = (data || []).reduce((all, row) => { all[row.allocation_role] = (all[row.allocation_role] || 0) + Number(row.estimated_amount || 0); return all; }, {});
+  const labels = { broker_company: '中介公司', regional_agent: '區域代理人', sourcing_partner: '拓案夥伴', platform: '譽誠平台' };
+  summary.innerHTML = Object.entries(labels).map(([role, label]) => '<div class="adm-stat-card"><div class="adm-stat-num" style="font-size:1.2rem">' + admMoney(sums[role]) + '</div><div class="adm-stat-label">' + label + '暫估獎金</div></div>').join('');
+  if (!data?.length) { el.innerHTML = '<div class="adm-empty">尚無已核准成交，因此還沒有暫估獎金。</div>'; return; }
+  el.innerHTML = '<table class="adm-table"><thead><tr><th>建案／戶別</th><th>角色</th><th>對象</th><th>平台佣金基礎</th><th>比例</th><th>暫估金額</th><th>成交日期</th></tr></thead><tbody>' + data.map(row => {
+    const p = Array.isArray(row.projects) ? row.projects[0] : row.projects, u = Array.isArray(row.units) ? row.units[0] : row.units, sale = Array.isArray(row.sale_submissions) ? row.sale_submissions[0] : row.sale_submissions;
+    return '<tr><td><strong>' + admSafe(p?.name || '—') + '</strong><br><span style="font-size:.74rem;color:#718096">' + admSafe(u ? String(u.floor).padStart(2,'0') + '-' + u.unit_no : '—') + '</span></td><td>' + labels[row.allocation_role] + '</td><td>' + admSafe(row.recipient_company || row.recipient_name || '—') + '</td><td>' + admMoney(row.commission_base_amount) + '</td><td>' + Number(row.share_rate || 0) + '%</td><td><strong>' + admMoney(row.estimated_amount) + '</strong></td><td>' + admDate(sale?.deal_date || row.created_at) + '</td></tr>';
+  }).join('') + '</tbody></table>';
+}
+
+async function admExportCommissionsCSV() {
+  const { data, error } = await _sb.from('commission_allocations').select('allocation_role,recipient_name,recipient_company,commission_base_amount,share_rate,estimated_amount,created_at,projects(name),units(floor,unit_no),sale_submissions(deal_date)').order('created_at', { ascending: false });
+  if (error || !data?.length) { alert('目前沒有可匯出的暫估獎金資料'); return; }
+  const labels = { broker_company: '中介公司', regional_agent: '區域代理人', sourcing_partner: '拓案夥伴', platform: '譽誠平台' }, esc = value => '"' + String(value == null ? '' : value).replace(/"/g, '""') + '"';
+  const rows = data.map(row => { const p = Array.isArray(row.projects) ? row.projects[0] : row.projects, u = Array.isArray(row.units) ? row.units[0] : row.units, sale = Array.isArray(row.sale_submissions) ? row.sale_submissions[0] : row.sale_submissions; return [p?.name, u ? String(u.floor).padStart(2,'0') + '-' + u.unit_no : '', labels[row.allocation_role], row.recipient_company || row.recipient_name, row.commission_base_amount, row.share_rate + '%', row.estimated_amount, admDate(sale?.deal_date || row.created_at)]; });
+  const blob = new Blob(['\uFEFF' + [['建案','戶別','角色','對象','平台佣金基礎','分潤比例','暫估金額','成交日期'], ...rows].map(row => row.map(esc).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' });
+  const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = '全平台暫估獎金_' + new Date().toISOString().slice(0,10).replace(/-/g, '') + '.csv'; link.click(); URL.revokeObjectURL(link.href);
+}
+
+async function loadAdmPartners() {
+  const el = document.getElementById('admPartnerContent');
+  const { data, error } = await _sb.from('platform_partners').select('user_id,role,display_name,phone,region,status,created_at').order('created_at', { ascending: false });
+  if (error) { el.innerHTML = '<div class="adm-empty">讀取失敗：' + admSafe(error.message) + '</div>'; return; }
+  if (!data?.length) { el.innerHTML = '<div class="adm-empty">尚未建立區代或拓案夥伴帳戶。</div>'; return; }
+  const labels = { regional_agent: '區域代理人', sourcing_partner: '拓案夥伴' };
+  el.innerHTML = '<table class="adm-table"><thead><tr><th>姓名</th><th>角色</th><th>區域</th><th>電話</th><th>狀態</th><th>建立日期</th></tr></thead><tbody>' + data.map(row => '<tr><td><strong>' + admSafe(row.display_name) + '</strong></td><td>' + (labels[row.role] || row.role) + '</td><td>' + admSafe(row.region || '—') + '</td><td>' + admSafe(row.phone || '—') + '</td><td><span class="adm-badge ' + (row.status === 'active' ? 'confirmed' : 'pending') + '">' + (row.status === 'active' ? '啟用' : row.status) + '</span></td><td>' + admDate(row.created_at) + '</td></tr>').join('') + '</tbody></table>';
+}
+
+async function invitePlatformPartner(role) {
+  const isRegional = role === 'regional_agent', prefix = isRegional ? 'regionalPartner' : 'sourcingPartner';
+  const displayName = document.getElementById(prefix + 'Name').value.trim(), email = document.getElementById(prefix + 'Email').value.trim().toLowerCase(), phone = document.getElementById(prefix + 'Phone').value.trim(), region = isRegional ? document.getElementById(prefix + 'Region').value.trim() : '';
+  const msg = document.getElementById('admPartnerMsg');
+  if (!displayName || !/^\S+@\S+\.\S+$/.test(email) || (isRegional && !region)) { msg.textContent = '請完整填寫必要資料。'; msg.style.color = '#B03030'; msg.style.display = 'block'; return; }
+  const { error } = await _sb.functions.invoke('invite-platform-partner', { body: { role, displayName, email, phone, region } });
+  msg.style.display = 'block';
+  if (error) { msg.textContent = '邀請未送出：' + await functionErrorMessage(error); msg.style.color = '#B03030'; return; }
+  ['Name','Email','Phone'].forEach(key => document.getElementById(prefix + key).value = ''); if (isRegional) document.getElementById(prefix + 'Region').value = '';
+  msg.textContent = '邀請已寄出；對方完成密碼設定後即可登入對應專區。'; msg.style.color = '#2F6B4F'; loadAdmPartners();
+}
+
+async function routePartnerInvitation() {
+  const type = (location.search + '&' + location.hash).match(/(?:^|[?&#])type=([^&#]+)/i)?.[1]?.toLowerCase();
+  if (type !== 'invite' && type !== 'recovery') return false;
+  const { data: { user } } = await _sb.auth.getUser();
+  if (!user) return false;
+  const { data: role } = await _sb.from('user_roles').select('role').eq('user_id', user.id).maybeSingle();
+  const target = role?.role === 'regional_agent' ? 'regional-portal.html' : role?.role === 'sourcing_partner' ? 'sourcing-portal.html' : '';
+  if (!target) return false;
+  location.replace(target + location.search + location.hash); return true;
+}
+
+(async () => { if (!(await routePartnerInvitation())) verifyAdminSession(false); })();
+_sb.auth.onAuthStateChange((event) => {
+  if (event === 'SIGNED_IN' || event === 'PASSWORD_RECOVERY') void routePartnerInvitation();
+});
 </script>
 
 <!-- ══════════════════════════════════════════════

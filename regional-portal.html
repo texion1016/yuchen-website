@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>區代專區｜譽誠聯合銷售平台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;800&family=Noto+Serif+TC:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/partner-portals.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <main class="pp-shell">
+    <header class="pp-topbar">
+      <a class="pp-brand" href="index.html"><span class="pp-brand-mark">譽</span><span><strong>譽誠聯合銷售平台</strong><small>REGIONAL PARTNER PORTAL</small></span></a>
+      <div class="pp-top-actions"><a href="index.html">回主站</a><button type="button" onclick="ppLogout()" id="ppLogout">登出</button></div>
+    </header>
+    <section class="pp-login" id="ppLogin">
+      <div class="pp-login-card">
+        <h1>區代專區</h1>
+        <p>管理您負責區域的建案提案、銷售戶況與暫估獎金。</p>
+        <div id="ppMessage" class="pp-message" role="alert"></div>
+        <div id="ppLoginControls">
+          <div class="pp-field"><label for="ppEmail">Email</label><input id="ppEmail" type="email" autocomplete="email" placeholder="name@example.com" /></div>
+          <div class="pp-field"><label for="ppPassword">密碼</label><input id="ppPassword" type="password" autocomplete="current-password" minlength="12" onkeydown="if(event.key==='Enter')ppLogin()" /></div>
+          <button class="pp-primary" type="button" onclick="ppLogin()">登入</button>
+          <button class="pp-secondary" type="button" onclick="ppPasskey()">使用人臉／裝置 Passkey 登入</button>
+          <button class="pp-link" type="button" onclick="ppResetRequest()">忘記密碼？寄送安全重設連結</button>
+        </div>
+        <div id="ppResetControls" style="display:none">
+          <div class="pp-field"><label for="ppNewPassword">新密碼</label><input id="ppNewPassword" type="password" autocomplete="new-password" minlength="12" /></div>
+          <div class="pp-field"><label for="ppConfirmPassword">確認新密碼</label><input id="ppConfirmPassword" type="password" autocomplete="new-password" minlength="12" /></div>
+          <button class="pp-primary" type="button" onclick="ppSavePassword()">儲存新密碼並登入</button>
+          <button class="pp-link" type="button" onclick="ppBackToLogin()">返回登入</button>
+        </div>
+      </div>
+    </section>
+    <section class="pp-dashboard" id="ppDashboard">
+      <div class="pp-layout">
+        <aside class="pp-sidebar">
+          <div class="pp-user"><strong id="ppUserName">—</strong><span id="ppUserMeta">—</span></div>
+          <button class="pp-nav active" data-panel="Overview" onclick="ppSwitch('Overview')">總覽</button>
+          <button class="pp-nav" data-panel="Projects" onclick="ppSwitch('Projects')">負責建案</button>
+          <button class="pp-nav" data-panel="Submit" onclick="ppSwitch('Submit')">新增建案提案</button>
+          <button class="pp-nav" data-panel="Sales" onclick="ppSwitch('Sales')">區域成交紀錄</button>
+          <button class="pp-nav" data-panel="Commissions" onclick="ppSwitch('Commissions')">暫估獎金</button>
+          <button class="pp-nav" type="button" onclick="ppEnablePasskey()">啟用人臉／Passkey</button>
+        </aside>
+        <div class="pp-main">
+          <section class="pp-panel active" id="ppPanelOverview">
+            <div class="pp-heading"><div><h1>區域營運總覽</h1><p>僅呈現您負責區域與您提交建案的即時資料。</p></div></div>
+            <div class="pp-summary"><div class="pp-stat"><span>已核准建案</span><b id="ppStatProjects">—</b></div><div class="pp-stat"><span>審核通過成交</span><b id="ppStatSales">—</b></div><div class="pp-stat gold"><span>暫估應得獎金</span><b id="ppStatCommission">—</b></div></div>
+            <div class="pp-section"><h2>建案狀態</h2><div class="pp-table-wrap"><table class="pp-table"><thead><tr><th>建案</th><th>狀態</th><th>區域</th></tr></thead><tbody id="ppOverviewProjects"></tbody></table></div></div>
+          </section>
+          <section class="pp-panel" id="ppPanelProjects"><div class="pp-heading"><div><h1>負責建案</h1><p>查看您已被指派或自行提交的建案；待審核建案不會出現在主站。</p></div></div><div class="pp-section"><div class="pp-table-wrap"><table class="pp-table"><thead><tr><th>建案</th><th>建商</th><th>區域</th><th>上架審核</th><th>平台佣金</th></tr></thead><tbody id="ppProjectRows"></tbody></table></div></div></section>
+          <section class="pp-panel" id="ppPanelSubmit"><div class="pp-heading"><div><h1>新增建案提案</h1><p>提案會先進入管理員審核；審核通過且管理員確認資料後才會上架至主頁面。</p></div></div><div class="pp-section"><form id="ppProjectForm" onsubmit="event.preventDefault();ppSubmitProject()"><div class="pp-grid"><div class="pp-field"><label for="ppProjectName">建案名稱 *</label><input id="ppProjectName" maxlength="150" required /></div><div class="pp-field"><label for="ppProjectLocation">地區 *</label><input id="ppProjectLocation" placeholder="桃園市蘆竹區" maxlength="150" required /></div><div class="pp-field"><label for="ppProjectAddress">詳細地址</label><input id="ppProjectAddress" maxlength="255" /></div><div class="pp-field"><label for="ppProjectRegion">負責區域</label><input id="ppProjectRegion" placeholder="桃園市" maxlength="100" /></div><div class="pp-field"><label for="ppProjectBuilder">建商名稱</label><input id="ppProjectBuilder" maxlength="150" /></div><div class="pp-field"><label for="ppProjectPrice">售價／總價說明 *</label><input id="ppProjectPrice" placeholder="1,000 萬起" maxlength="100" required /></div><div class="pp-field"><label for="ppProjectCommissionRate">平台向建商申請佣金比例 (%) *</label><input id="ppProjectCommissionRate" type="number" min="0.01" max="100" step="0.01" required /></div><div class="pp-field"><label for="ppProjectRegionalRate">區代分潤比例 (%) *</label><input id="ppProjectRegionalRate" type="number" min="0" max="100" step="0.01" required /></div><div class="pp-field wide"><label for="ppProjectDescription">建案說明 *</label><textarea id="ppProjectDescription" rows="5" maxlength="4000" required></textarea></div><div class="pp-field wide"><label for="ppProjectCover">建案封面圖片網址</label><input id="ppProjectCover" type="url" placeholder="https://…（管理員審核時也可補上圖片）" maxlength="1500" /></div></div><button id="ppProjectSubmit" class="pp-action" type="submit">送交管理員審核</button><div class="pp-note">提交後不可自行修改審核狀態。需要更正資料時，請聯絡管理員退回或協助調整。</div></form></div></section>
+          <section class="pp-panel" id="ppPanelSales"><div class="pp-heading"><div><h1>區域成交紀錄</h1><p>成交須先經管理員審核；只有審核通過的紀錄會納入獎金。</p></div><div class="pp-export"><button class="pp-action ghost" onclick="ppExportSales()">匯出 Excel</button><button class="pp-action ghost" onclick="ppPrint()">列印</button></div></div><div class="pp-section"><div class="pp-table-wrap"><table class="pp-table"><thead><tr><th>建案</th><th>戶別</th><th>成交價</th><th>成交日期</th><th>審核狀態</th></tr></thead><tbody id="ppSalesRows"></tbody></table></div></div></section>
+          <section class="pp-panel" id="ppPanelCommissions"><div class="pp-heading"><div><h1>暫估獎金</h1><p>每筆金額由審核通過的成交自動計算，不代表已結算或已付款。</p></div><div class="pp-export"><button class="pp-action ghost" onclick="ppExportCommissions()">匯出 Excel</button><button class="pp-action ghost" onclick="ppPrint()">列印</button></div></div><div class="pp-summary"><div class="pp-stat gold"><span>目前累計暫估應得</span><b id="ppCommissionTotal">—</b></div></div><div class="pp-section"><div class="pp-table-wrap"><table class="pp-table"><thead><tr><th>建案</th><th>戶別</th><th>平台佣金基數</th><th>區代比例</th><th>暫估獎金</th><th>納入日期</th></tr></thead><tbody id="ppCommissionRows"></tbody></table></div></div></section>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script>window.PARTNER_PORTAL_CONFIG={role:'regional_agent',title:'區代專區',filePrefix:'區代專區'};</script>
+  <script src="assets/js/partner-portal.js"></script>
+</body>
+</html>

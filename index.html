@@ -661,6 +661,8 @@
   <nav class="nav-links">
     <a href="#" onclick="openDevOverlay();return false;">建商專區</a>
     <a href="#" onclick="openBrokerOverlay();return false;">仲介專區</a>
+    <a href="regional-portal.html">區代專區</a>
+    <a href="sourcing-portal.html">拓案專區</a>
     <a href="install.html" class="nav-a2hs" title="把譽誠加到手機桌面">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18.5h2"/></svg>手機版</a>
     <a href="yc-console-8k3n7q.html" onclick="startAdminPasskeyLogin(event)">管理員</a>
@@ -1193,6 +1195,7 @@
     <button class="bov-tab active" id="tabLogin" onclick="switchBovTab('login')">仲介登入</button>
     <button class="bov-tab" id="tabReport" style="display:none" onclick="switchBovTab('report')">客戶報備</button>
     <button class="bov-tab" id="tabMyReg" style="display:none" onclick="switchBovTab('myreg')">我的報備</button>
+    <button class="bov-tab" id="tabSales" style="display:none" onclick="switchBovTab('sales')">成交申報與獎金</button>
     <button class="bov-tab" id="tabTeam" style="display:none" onclick="switchBovTab('team')">公司團隊</button>
     <button class="bov-tab" id="tabSecurity" style="display:none" onclick="switchBovTab('security')">登入設定</button>
     <button class="bov-tab" id="tabBonus" onclick="switchBovTab('bonus')">獎金辦法</button>
@@ -1286,6 +1289,22 @@
       <div id="myregContent">
         <div class="bov-empty">載入中…</div>
       </div>
+    </div>
+
+    <div class="bov-panel" id="bovSales">
+      <div class="bov-form-title" id="brokerSalesTitle">成交申報與暫估獎金</div>
+      <p class="bov-reset-hint">成交由公司或旗下中介提交，僅在譽誠管理員核准後才會納入各方的暫估獎金；這不是結算或付款紀錄。</p>
+      <div id="saleSubmitMsg" class="bov-msg"></div>
+      <div style="border:1px solid var(--line);border-radius:12px;padding:1rem;margin:1rem 0 1.25rem;background:rgba(255,255,255,.03);">
+        <div class="bov-row"><div class="bov-field"><label>建案 *</label><select id="saleProject" onchange="loadBrokerSaleUnits()"><option value="">請選擇建案</option></select></div><div class="bov-field"><label>成交戶別 *</label><select id="saleUnit"><option value="">請先選擇建案</option></select></div></div>
+        <div class="bov-row"><div class="bov-field"><label>成交價（元）*</label><input id="saleDealPrice" type="number" min="1" inputmode="numeric" placeholder="20000000" /></div><div class="bov-field"><label>成交日期 *</label><input id="saleDealDate" type="date" /></div></div>
+        <div class="bov-field"><label>成交備註</label><textarea id="saleDealNote" rows="2" maxlength="1000" placeholder="選填，例如：買賣契約已簽訂"></textarea></div>
+        <button class="bov-btn" id="saleSubmitBtn" type="button" onclick="submitBrokerSale()">提交成交供管理員審核</button>
+      </div>
+      <div class="bov-heading-row"><strong id="brokerSalesListTitle">我的成交申報</strong><button class="mr-btn" onclick="exportBrokerSalesCsv()">匯出 Excel</button></div>
+      <div id="brokerSalesContent"><div class="bov-empty">載入中…</div></div>
+      <div class="bov-heading-row" style="margin-top:1.4rem;"><strong id="brokerCommissionTitle">公司暫估獎金</strong><button class="mr-btn" onclick="exportBrokerCommissionsCsv()">匯出 Excel</button></div>
+      <div id="brokerCommissionContent"><div class="bov-empty">載入中…</div></div>
     </div>
 
     <div class="bov-panel" id="bovTeam">
@@ -1451,13 +1470,14 @@ function closeBrokerOv() {
 function switchBovTab(tab) {
   document.querySelectorAll('.bov-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.bov-tab').forEach(t => t.classList.remove('active'));
-  const panelMap = { login:'bovLogin', register:'bovRegister', report:'bovReport', myreg:'bovMyReg', team:'bovTeam', bonus:'bovBonus', reset:'bovReset', security:'bovSecurity' };
+  const panelMap = { login:'bovLogin', register:'bovRegister', report:'bovReport', myreg:'bovMyReg', sales:'bovSales', team:'bovTeam', bonus:'bovBonus', reset:'bovReset', security:'bovSecurity' };
   const panel = document.getElementById(panelMap[tab]);
   if (panel) panel.classList.add('active');
   document.querySelectorAll('.bov-tab').forEach(t => {
     if (t.getAttribute('onclick') && t.getAttribute('onclick').includes("'"+tab+"'")) t.classList.add('active');
   });
   if (tab === 'myreg') loadMyRegs();
+  if (tab === 'sales') loadBrokerSales();
   if (tab === 'team') loadBrokerCompanyMembers();
 }
 function showBovMsg(id, msg, type) {
@@ -1471,6 +1491,7 @@ function showBovLoggedIn() {
   const bcta = document.querySelector('.bonus-cta'); if (bcta) bcta.style.display = 'none';
   document.getElementById('tabReport').style.display = '';
   document.getElementById('tabMyReg').style.display = '';
+  document.getElementById('tabSales').style.display = '';
   document.getElementById('tabSecurity').style.display = '';
   document.getElementById('tabTeam').style.display = ['owner','manager'].includes(bovCurrentUser.memberRole) ? '' : 'none';
   document.getElementById('bovLogout').style.display = '';
@@ -1807,6 +1828,70 @@ async function loadMyRegs() {
     el.innerHTML = '<div class="bov-empty">載入失敗，請稍後再試</div>';
   }
 }
+
+// ── 成交申報與公司暫估獎金 ──────────────────────────────────────────────
+let brokerSaleProjects = [];
+let brokerSaleRows = [];
+let brokerCommissionRows = [];
+const brokerSafe = value => String(value == null ? '' : value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+const brokerMoney = value => new Intl.NumberFormat('zh-TW', { style:'currency', currency:'TWD', maximumFractionDigits:0 }).format(Number(value || 0));
+const brokerDate = value => value ? new Date(value).toLocaleDateString('zh-TW') : '—';
+
+async function loadBrokerSales() {
+  if (!bovCurrentUser) return;
+  const salesEl = document.getElementById('brokerSalesContent');
+  const commissionEl = document.getElementById('brokerCommissionContent');
+  salesEl.innerHTML = '<div class="bov-empty">載入中…</div>'; commissionEl.innerHTML = '<div class="bov-empty">載入中…</div>';
+  const companyManager = ['owner','manager'].includes(bovCurrentUser.memberRole);
+  const [projectsResult, salesResult, commissionResult] = await Promise.all([
+    _sb.from('projects').select('id,name,location').eq('published', true).eq('approval_status', 'approved').order('name'),
+    (companyManager ? _sb.from('sale_submissions').select('id,deal_price,deal_date,status,review_note,created_at,projects(name),units(floor,unit_no),brokers(name)').eq('broker_company_id', bovCurrentUser.companyId) : _sb.from('sale_submissions').select('id,deal_price,deal_date,status,review_note,created_at,projects(name),units(floor,unit_no),brokers(name)').eq('broker_id', bovCurrentUser.id)).order('created_at', { ascending:false }),
+    _sb.from('commission_allocations').select('id,commission_base_amount,share_rate,estimated_amount,created_at,projects(name),units(floor,unit_no)').eq('allocation_role', 'broker_company').eq('recipient_company_id', bovCurrentUser.companyId).order('created_at', { ascending:false })
+  ]);
+  brokerSaleProjects = projectsResult.data || [];
+  const projectSelect = document.getElementById('saleProject');
+  projectSelect.innerHTML = '<option value="">請選擇建案</option>' + brokerSaleProjects.map(row => '<option value="' + row.id + '">' + brokerSafe(row.name) + (row.location ? '｜' + brokerSafe(row.location) : '') + '</option>').join('');
+  brokerSaleRows = salesResult.data || []; brokerCommissionRows = commissionResult.data || [];
+  const unitText = unit => unit ? String(unit.floor).padStart(2,'0') + '-' + unit.unit_no : '—';
+  const rel = value => Array.isArray(value) ? value[0] : value;
+  const status = { pending:'待審核', approved:'已核准', rejected:'退回補件' };
+  document.getElementById('brokerSalesTitle').textContent = companyManager ? bovCurrentUser.company + '｜成交申報與暫估獎金' : '成交申報與暫估獎金';
+  document.getElementById('brokerSalesListTitle').textContent = companyManager ? '公司成交申報' : '我的成交申報';
+  salesEl.innerHTML = brokerSaleRows.length ? '<table class="bov-reg-table"><thead><tr><th>建案／戶別</th><th>成交中介</th><th>成交價</th><th>成交日期</th><th>狀態</th><th>審核說明</th></tr></thead><tbody>' + brokerSaleRows.map(row => '<tr><td><strong>' + brokerSafe(rel(row.projects)?.name || '—') + '</strong><br><span style="font-size:.72rem;color:var(--ink-dim)">' + brokerSafe(unitText(rel(row.units))) + '</span></td><td>' + brokerSafe(rel(row.brokers)?.name || '—') + '</td><td>' + brokerMoney(row.deal_price) + '</td><td>' + brokerDate(row.deal_date) + '</td><td><span class="bov-status ' + row.status + '">' + status[row.status] + '</span></td><td>' + brokerSafe(row.review_note || '—') + '</td></tr>').join('') + '</tbody></table>' : '<div class="bov-empty">尚無成交申報。</div>';
+  const total = brokerCommissionRows.reduce((sum, row) => sum + Number(row.estimated_amount || 0), 0);
+  document.getElementById('brokerCommissionTitle').textContent = bovCurrentUser.company + '｜暫估獎金累計：' + brokerMoney(total);
+  commissionEl.innerHTML = brokerCommissionRows.length ? '<table class="bov-reg-table"><thead><tr><th>建案／戶別</th><th>平台佣金基礎</th><th>公司比例</th><th>暫估獎金</th><th>納入日期</th></tr></thead><tbody>' + brokerCommissionRows.map(row => '<tr><td><strong>' + brokerSafe(rel(row.projects)?.name || '—') + '</strong><br><span style="font-size:.72rem;color:var(--ink-dim)">' + brokerSafe(unitText(rel(row.units))) + '</span></td><td>' + brokerMoney(row.commission_base_amount) + '</td><td>' + Number(row.share_rate || 0) + '%</td><td><strong>' + brokerMoney(row.estimated_amount) + '</strong></td><td>' + brokerDate(row.created_at) + '</td></tr>').join('') + '</tbody></table>' : '<div class="bov-empty">尚無已核准成交，因此沒有暫估獎金。</div>';
+}
+
+async function loadBrokerSaleUnits() {
+  const project = brokerSaleProjects.find(row => row.id === document.getElementById('saleProject').value);
+  const unitSelect = document.getElementById('saleUnit');
+  unitSelect.innerHTML = '<option value="">載入中…</option>';
+  if (!project) { unitSelect.innerHTML = '<option value="">請先選擇建案</option>'; return; }
+  const { data, error } = await _sb.from('units').select('id,floor,unit_no,unit_type,list_price,status').eq('project_name', project.name).neq('status', 'sold').order('floor', { ascending:false }).order('unit_no');
+  if (error) { unitSelect.innerHTML = '<option value="">讀取戶別失敗</option>'; showBovMsg('saleSubmitMsg','無法讀取戶別：' + error.message,'error'); return; }
+  unitSelect.innerHTML = '<option value="">請選擇戶別</option>' + (data || []).map(unit => '<option value="' + unit.id + '">' + String(unit.floor).padStart(2,'0') + '-' + brokerSafe(unit.unit_no) + (unit.unit_type ? '｜' + brokerSafe(unit.unit_type) : '') + '</option>').join('');
+}
+
+async function submitBrokerSale() {
+  if (!bovCurrentUser) return;
+  const projectId = document.getElementById('saleProject').value, unitId = document.getElementById('saleUnit').value, dealPrice = Number(document.getElementById('saleDealPrice').value), dealDate = document.getElementById('saleDealDate').value, note = document.getElementById('saleDealNote').value.trim();
+  if (!projectId || !unitId || !(dealPrice > 0) || !dealDate) { showBovMsg('saleSubmitMsg','請完整填寫建案、戶別、成交價與成交日期。','error'); return; }
+  const btn = document.getElementById('saleSubmitBtn'); btn.disabled = true; btn.textContent = '提交中…';
+  const { data: { user } } = await _sb.auth.getUser();
+  const { error } = await _sb.from('sale_submissions').insert({ project_id: projectId, unit_id: unitId, broker_id: bovCurrentUser.id, broker_company_id: bovCurrentUser.companyId, submitted_by: user.id, deal_price: dealPrice, deal_date: dealDate, note, status:'pending' });
+  btn.disabled = false; btn.textContent = '提交成交供管理員審核';
+  if (error) { showBovMsg('saleSubmitMsg','提交失敗：' + error.message,'error'); return; }
+  showBovMsg('saleSubmitMsg','成交申報已提交，待管理員核准後才會列入暫估獎金。','success');
+  document.getElementById('saleProject').value = ''; document.getElementById('saleUnit').innerHTML = '<option value="">請先選擇建案</option>'; document.getElementById('saleDealPrice').value = ''; document.getElementById('saleDealDate').value = ''; document.getElementById('saleDealNote').value = ''; loadBrokerSales();
+}
+
+function brokerCsv(filename, head, data) {
+  const esc = value => '"' + String(value == null ? '' : value).replace(/"/g, '""') + '"';
+  const blob = new Blob(['\uFEFF' + [head, ...data].map(row => row.map(esc).join(',')).join('\r\n')], { type:'text/csv;charset=utf-8' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = filename; link.click(); URL.revokeObjectURL(link.href);
+}
+function exportBrokerSalesCsv() { const rel = value => Array.isArray(value) ? value[0] : value, unitText = unit => unit ? String(unit.floor).padStart(2,'0') + '-' + unit.unit_no : ''; brokerCsv('中介成交申報.csv', ['建案','戶別','成交中介','成交價','成交日期','審核狀態','審核說明'], brokerSaleRows.map(row => [rel(row.projects)?.name, unitText(rel(row.units)), rel(row.brokers)?.name, row.deal_price, row.deal_date, {pending:'待審核',approved:'已核准',rejected:'退回補件'}[row.status], row.review_note])); }
+function exportBrokerCommissionsCsv() { const rel = value => Array.isArray(value) ? value[0] : value, unitText = unit => unit ? String(unit.floor).padStart(2,'0') + '-' + unit.unit_no : ''; brokerCsv('中介公司暫估獎金.csv', ['建案','戶別','平台佣金基礎','公司比例','暫估獎金','納入日期'], brokerCommissionRows.map(row => [rel(row.projects)?.name, unitText(rel(row.units)), row.commission_base_amount, row.share_rate + '%', row.estimated_amount, brokerDate(row.created_at)])); }
 
 </script>
 

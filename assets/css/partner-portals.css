@@ -1,0 +1,86 @@
+:root {
+  --pp-navy: #173b61;
+  --pp-navy-deep: #0e263f;
+  --pp-gold: #c9a451;
+  --pp-gold-pale: #f6edda;
+  --pp-paper: #f6f3ea;
+  --pp-panel: #ffffff;
+  --pp-ink: #162536;
+  --pp-muted: #617285;
+  --pp-line: #d8dfdf;
+  --pp-green: #2f7d58;
+  --pp-red: #a33a36;
+  font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; color: var(--pp-ink); background: var(--pp-paper); }
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+.pp-shell { min-height: 100vh; }
+.pp-topbar { min-height: 74px; background: var(--pp-navy); color: #fff; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .85rem clamp(1rem, 4vw, 3.2rem); }
+.pp-brand { color: #fff; text-decoration: none; display: flex; align-items: center; gap: .75rem; min-width: 0; }
+.pp-brand-mark { width: 35px; height: 35px; border: 1px solid rgba(233,213,170,.58); color: #f6dfaa; border-radius: 50%; display: grid; place-items: center; flex: 0 0 auto; font-family: Georgia, serif; font-size: 1.2rem; }
+.pp-brand strong { display: block; font-family: "Noto Serif TC", "Songti TC", serif; font-size: 1rem; letter-spacing: .07em; }
+.pp-brand small { display: block; margin-top: .08rem; color: rgba(255,255,255,.67); letter-spacing: .14em; font-size: .61rem; }
+.pp-top-actions { display: flex; gap: .55rem; align-items: center; }
+.pp-top-actions a, .pp-top-actions button { border: 1px solid rgba(255,255,255,.45); color: #fff; background: transparent; text-decoration: none; padding: .44rem .72rem; border-radius: 7px; font-size: .76rem; white-space: nowrap; }
+.pp-top-actions button:hover, .pp-top-actions a:hover { background: rgba(255,255,255,.12); }
+.pp-login { min-height: calc(100vh - 74px); display: grid; place-items: center; padding: 1.5rem; background: linear-gradient(135deg, rgba(13,38,63,.96), rgba(29,67,101,.84)), radial-gradient(circle at 86% 15%, rgba(201,164,81,.5), transparent 25%); }
+.pp-login-card { width: min(100%, 430px); padding: 2.35rem; background: rgba(255,255,255,.98); border-radius: 16px; box-shadow: 0 28px 70px rgba(4,18,30,.35); }
+.pp-login-card h1 { font-family: "Noto Serif TC", "Songti TC", serif; margin: 0 0 .45rem; font-size: 1.8rem; color: var(--pp-navy-deep); }
+.pp-login-card p { margin: 0 0 1.5rem; font-size: .86rem; line-height: 1.75; color: var(--pp-muted); }
+.pp-field { margin: 0 0 1rem; }
+.pp-field label { display: block; margin: 0 0 .42rem; color: #3c5771; font-size: .82rem; font-weight: 700; letter-spacing: .04em; }
+.pp-field input, .pp-field textarea, .pp-field select { width: 100%; border: 1px solid #c9d3df; color: var(--pp-ink); background: #fff; border-radius: 8px; padding: .7rem .78rem; outline: none; }
+.pp-field textarea { line-height: 1.6; resize: vertical; }
+.pp-field input:focus, .pp-field textarea:focus, .pp-field select:focus { border-color: var(--pp-navy); box-shadow: 0 0 0 3px rgba(23,59,97,.12); }
+.pp-primary { width: 100%; border: 0; border-radius: 8px; background: var(--pp-navy); color: #fff; padding: .76rem 1rem; font-weight: 800; letter-spacing: .08em; }
+.pp-primary:hover { background: var(--pp-navy-deep); }
+.pp-secondary { width: 100%; border: 1px solid #b7c5d3; border-radius: 8px; background: #fff; color: var(--pp-navy); padding: .68rem .9rem; font-weight: 700; margin-top: .65rem; }
+.pp-secondary:hover { background: #edf4fa; }
+.pp-link { border: 0; background: transparent; padding: 0; color: var(--pp-navy); font-size: .8rem; margin-top: .95rem; text-decoration: underline; }
+.pp-message { display: none; margin: 0 0 1rem; padding: .58rem .7rem; border-radius: 7px; font-size: .8rem; line-height: 1.55; }
+.pp-message.error { display: block; color: #8d2523; background: #fbebea; border: 1px solid #efc3c2; }
+.pp-message.success { display: block; color: #215f43; background: #eaf6ed; border: 1px solid #b7ddc1; }
+.pp-dashboard { display: none; min-height: calc(100vh - 74px); }
+.pp-layout { display: grid; grid-template-columns: 225px minmax(0, 1fr); min-height: calc(100vh - 74px); }
+.pp-sidebar { padding: 1.15rem .75rem; background: #fdfcf9; border-right: 1px solid #dfe3df; }
+.pp-user { padding: .7rem .85rem 1rem; margin-bottom: .75rem; border-bottom: 1px solid #e3e6e2; }
+.pp-user strong { display: block; color: var(--pp-navy); font-size: .9rem; }
+.pp-user span { display: block; margin-top: .2rem; color: var(--pp-muted); font-size: .72rem; }
+.pp-nav { width: 100%; display: block; border: 0; background: transparent; color: #52687d; border-radius: 7px; padding: .7rem .85rem; text-align: left; font-size: .84rem; }
+.pp-nav:hover, .pp-nav.active { background: #eaf0f7; color: var(--pp-navy); font-weight: 800; }
+.pp-main { padding: clamp(1rem, 3vw, 2.4rem); overflow-x: hidden; }
+.pp-panel { display: none; max-width: 1180px; }
+.pp-panel.active { display: block; }
+.pp-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.35rem; }
+.pp-heading h1 { margin: 0; color: var(--pp-navy-deep); font-family: "Noto Serif TC", "Songti TC", serif; font-size: clamp(1.55rem, 3vw, 2.15rem); }
+.pp-heading p { margin: .35rem 0 0; color: var(--pp-muted); font-size: .85rem; line-height: 1.7; }
+.pp-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .9rem; margin-bottom: 1.35rem; }
+.pp-stat { background: var(--pp-panel); border: 1px solid #e0e2dc; border-radius: 11px; padding: 1rem 1.1rem; box-shadow: 0 7px 18px rgba(19,37,54,.035); }
+.pp-stat span { display: block; color: var(--pp-muted); font-size: .76rem; }
+.pp-stat b { display: block; margin-top: .35rem; color: var(--pp-navy); font-family: "Noto Serif TC", "Songti TC", serif; font-size: 1.48rem; font-variant-numeric: tabular-nums; }
+.pp-stat.gold { border-top: 3px solid var(--pp-gold); }
+.pp-section { background: var(--pp-panel); border: 1px solid #e0e2dc; border-radius: 12px; padding: clamp(1rem, 3vw, 1.45rem); margin-bottom: 1.1rem; }
+.pp-section h2 { margin: 0 0 .65rem; color: var(--pp-navy); font-size: 1.05rem; }
+.pp-section > p { margin: 0 0 1rem; font-size: .82rem; line-height: 1.7; color: var(--pp-muted); }
+.pp-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem 1rem; }
+.pp-grid .wide { grid-column: 1 / -1; }
+.pp-action { border: 0; border-radius: 7px; background: var(--pp-navy); color: #fff; padding: .58rem .85rem; font-size: .8rem; font-weight: 700; }
+.pp-action:hover { background: var(--pp-navy-deep); }
+.pp-action.ghost { color: var(--pp-navy); background: #fff; border: 1px solid #c6d1dc; }
+.pp-action.warn { background: #9f3834; }
+.pp-table-wrap { overflow-x: auto; }
+.pp-table { width: 100%; border-collapse: collapse; min-width: 670px; font-size: .81rem; }
+.pp-table th { color: #596f83; background: #f1f4f5; padding: .64rem .68rem; text-align: left; font-size: .72rem; white-space: nowrap; }
+.pp-table td { border-bottom: 1px solid #e8eae6; padding: .72rem .68rem; vertical-align: middle; white-space: nowrap; }
+.pp-table td strong { color: var(--pp-navy); }
+.pp-badge { display: inline-block; padding: .22rem .46rem; border-radius: 99px; font-size: .69rem; font-weight: 800; }
+.pp-badge.pending { color: #80590b; background: #fbf0cc; }
+.pp-badge.approved { color: #215f43; background: #e4f3e8; }
+.pp-badge.rejected { color: #8b2824; background: #fae6e5; }
+.pp-empty { padding: 1.75rem 1rem; color: var(--pp-muted); text-align: center; font-size: .85rem; }
+.pp-note { margin: .8rem 0 0; padding: .7rem .8rem; color: #6b592d; background: #fdf7e8; border: 1px solid #ecdba8; border-radius: 8px; font-size: .78rem; line-height: 1.65; }
+.pp-export { display: flex; gap: .55rem; flex-wrap: wrap; }
+@media print { .pp-topbar, .pp-sidebar, .pp-export, .pp-action { display: none !important; } .pp-layout { display: block; } .pp-main { padding: 0; } .pp-panel { display: none !important; } .pp-panel.active { display: block !important; } .pp-section { box-shadow: none; border-color: #aaa; } body { background: #fff; } }
+@media (max-width: 760px) { .pp-layout { grid-template-columns: 1fr; } .pp-sidebar { border-right: 0; border-bottom: 1px solid #dfe3df; padding: .55rem .75rem; display: flex; overflow-x: auto; align-items: center; } .pp-user { min-width: 145px; margin: 0 .5rem 0 0; padding: .45rem .7rem; border-bottom: 0; border-right: 1px solid #e3e6e2; } .pp-nav { width: auto; flex: 0 0 auto; white-space: nowrap; } .pp-summary { grid-template-columns: 1fr; } .pp-grid { grid-template-columns: 1fr; } .pp-grid .wide { grid-column: auto; } .pp-login-card { padding: 1.65rem 1.35rem; } .pp-brand small { display: none; } }

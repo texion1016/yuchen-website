@@ -646,6 +646,7 @@
       <circle cx="390" cy="360" r="7" />
     </svg>
   </div>
+  <div class="spl-orbit" aria-hidden="true"><span></span><i></i></div>
   <div class="spl-content">
     <div class="spl-rule spl-rule-top"></div>
     <div class="spl-seal">
@@ -659,6 +660,7 @@
     <div class="spl-rule spl-rule-bottom"></div>
     <div class="spl-bar-wrap"><div class="spl-bar"></div></div>
   </div>
+  <div class="spl-cut" aria-hidden="true"></div>
   <button class="spl-skip" type="button" aria-label="略過開場動畫">略過動畫</button>
 </div>
 
@@ -5334,7 +5336,8 @@ document.querySelectorAll('.btn').forEach(btn => {
 #splash {
   position: fixed; inset: 0; z-index: 999999;
   display: flex; align-items: center; justify-content: center;
-  background: #06111E;
+  overflow: hidden; isolation: isolate;
+  background: #071A2F;
   transition: opacity 1.4s cubic-bezier(0.4,0,0.2,1),
               transform 1.6s cubic-bezier(0.4,0,0.2,1);
 }
@@ -5345,9 +5348,10 @@ document.querySelectorAll('.btn').forEach(btn => {
 }
 .spl-bg {
   position: absolute; inset: 0;
-  background: url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=1280&q=70') center/cover no-repeat;
-  opacity: .22;
-  transform: scale(1.04);
+  background:
+    radial-gradient(circle at 50% 42%, rgba(70,111,144,.48) 0, rgba(31,65,94,.2) 28%, transparent 53%),
+    linear-gradient(135deg, #071A2F 0%, #0D2945 48%, #061524 100%);
+  transform: scale(1.06);
   animation: spl-drift 8s ease-in-out infinite alternate;
 }
 @keyframes spl-drift {
@@ -5361,11 +5365,13 @@ document.querySelectorAll('.btn').forEach(btn => {
 }
 .spl-vignette {
   position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(ellipse 90% 90% at 50% 50%,
-    transparent 30%, rgba(6,17,30,0.7) 100%);
+  z-index: 0;
+  background:
+    linear-gradient(90deg, rgba(3,13,24,.68), transparent 36%, transparent 64%, rgba(3,13,24,.68)),
+    radial-gradient(ellipse 90% 90% at 50% 50%, transparent 20%, rgba(3,13,24,.7) 100%);
 }
 .spl-content {
-  position: relative; z-index: 1;
+  position: relative; z-index: 2;
   text-align: center; color: #fff;
   animation: spl-rise 1.1s cubic-bezier(0.2,0,0.2,1) forwards;
 }
@@ -5431,33 +5437,55 @@ document.querySelectorAll('.btn').forEach(btn => {
 /* ── 首頁開場：建築藍圖與品牌印記 ── */
 .spl-architecture {
   position: absolute;
-  width: min(780px, 118vw);
+  z-index: 1;
+  width: min(910px, 124vw);
   left: 50%; top: 50%;
-  transform: translate(-50%, -42%) scale(.94);
-  opacity: .42;
+  transform: translate(-50%, -42%) scale(.91);
+  opacity: .62;
   pointer-events: none;
 }
 .spl-architecture svg { width: 100%; height: auto; overflow: visible; }
 .spl-architecture path, .spl-architecture circle {
-  stroke: rgba(232,193,106,.68);
-  stroke-width: 1;
+  stroke: rgba(240,202,120,.9);
+  stroke-width: 1.15;
   vector-effect: non-scaling-stroke;
 }
 .spl-architecture circle { fill: #E8C16A; stroke: none; }
-.spl-architecture .spl-architecture-faint { stroke: rgba(255,255,255,.24); }
-.spl-seal {
-  width: 68px; height: 68px;
-  display: grid; place-items: center;
-  margin: 0 auto 1.3rem;
-  border: 1px solid rgba(232,193,106,.75);
-  background: rgba(6,17,30,.72);
-  box-shadow: 0 12px 32px rgba(0,0,0,.26), inset 0 0 0 5px rgba(232,193,106,.08);
+.spl-architecture .spl-architecture-faint { stroke: rgba(255,255,255,.3); }
+.spl-orbit {
+  position: absolute; z-index: 1; left: 50%; top: 50%;
+  width: 142px; height: 142px; transform: translate(-50%, -50%);
+  border: 1px solid rgba(232,193,106,.48); border-radius: 50%;
+  box-shadow: inset 0 0 0 8px rgba(232,193,106,.035);
+  pointer-events: none;
 }
-.spl-seal img { width: 48px; height: 48px; object-fit: contain; }
+.spl-orbit::before, .spl-orbit::after {
+  content: ''; position: absolute; left: 50%; top: 50%; border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.spl-orbit::before { width: 112px; height: 112px; border: 1px solid rgba(232,193,106,.16); }
+.spl-orbit::after { width: 5px; height: 5px; background: #F2D18C; box-shadow: 0 0 16px rgba(242,209,140,.85); }
+.spl-orbit span { position:absolute; inset:-5px; border-top:1px solid #F2D18C; border-radius:50%; opacity:.92; }
+.spl-orbit i { position:absolute; width:6px; height:6px; right:12px; top:25px; background:#E8C16A; border-radius:50%; }
+.spl-seal {
+  width: 94px; height: 94px;
+  display: grid; place-items: center;
+  margin: 0 auto 1.5rem;
+  border: 1px solid rgba(240,202,120,.9); border-radius: 50%;
+  background: rgba(7,26,47,.88);
+  box-shadow: 0 14px 36px rgba(0,0,0,.32), inset 0 0 0 7px rgba(232,193,106,.1);
+}
+.spl-seal img { width: 64px; height: 64px; object-fit: contain; }
 .spl-rule-top { margin-top: 0; margin-bottom: 1.2rem; }
 .spl-rule-bottom { margin-top: 1.35rem; margin-bottom: 0; }
+.spl-cut {
+  position: absolute; z-index: 3; left: 0; top: 50%; width: 100%; height: 2px;
+  background: linear-gradient(90deg, transparent 0%, #D6A94F 22%, #FFE4A8 50%, #D6A94F 78%, transparent 100%);
+  box-shadow: 0 0 22px rgba(232,193,106,.6);
+  opacity: 0; transform: scaleX(0); pointer-events: none;
+}
 .spl-skip {
-  position: absolute; z-index: 2; right: 1.4rem; bottom: 1.2rem;
+  position: absolute; z-index: 4; right: 1.4rem; bottom: 1.2rem;
   appearance: none; border: 0; background: transparent; color: rgba(255,255,255,.58);
   font: 500 .72rem/1 var(--font-sans); letter-spacing: .16em; cursor: pointer;
   padding: .65rem .25rem; transition: color .2s ease;
@@ -5468,9 +5496,10 @@ document.querySelectorAll('.btn').forEach(btn => {
 #splash.spl-gsap .spl-cn,
 #splash.spl-gsap .spl-en,
 #splash.spl-gsap .spl-tagline,
-#splash.spl-gsap .spl-bar { animation: none; }
+#splash.spl-gsap .spl-bar,
+#splash.spl-gsap .spl-orbit { animation: none; }
 @media (prefers-reduced-motion: reduce) {
-  .spl-bg, .spl-content, .spl-rule, .spl-cn, .spl-en, .spl-tagline, .spl-bar { animation: none !important; }
+  .spl-bg, .spl-content, .spl-rule, .spl-cn, .spl-en, .spl-tagline, .spl-bar, .spl-orbit { animation: none !important; }
   .spl-architecture { display: none; }
 }
 
@@ -6206,24 +6235,33 @@ html, body { overflow-x: clip; }
     spl.classList.add('spl-gsap');
     var q = function(selector) { return spl.querySelector(selector); };
     var timeline = window.gsap.timeline({ defaults: { ease: 'power3.out' } });
-    window.gsap.set([q('.spl-architecture'), q('.spl-seal'), q('.spl-cn'), q('.spl-en'), q('.spl-tagline'), q('.spl-rule-top'), q('.spl-rule-bottom'), q('.spl-bar-wrap')], { autoAlpha: 0 });
-    window.gsap.set(q('.spl-architecture'), { xPercent: -50, yPercent: -42, scale: .93 });
-    window.gsap.set(q('.spl-seal'), { scale: .78, rotate: -8 });
+    var blueprintPaths = spl.querySelectorAll('.spl-architecture path');
+    window.gsap.set([q('.spl-architecture'), q('.spl-orbit'), q('.spl-seal'), q('.spl-cn'), q('.spl-en'), q('.spl-tagline'), q('.spl-rule-top'), q('.spl-rule-bottom'), q('.spl-bar-wrap'), q('.spl-cut')], { autoAlpha: 0 });
+    window.gsap.set(q('.spl-bg'), { scale: 1.1 });
+    window.gsap.set(q('.spl-architecture'), { xPercent: -50, yPercent: -42, scale: .91 });
+    window.gsap.set(blueprintPaths, { strokeDasharray: 1200, strokeDashoffset: 1200 });
+    window.gsap.set(q('.spl-orbit'), { xPercent: -50, yPercent: -50, scale: .72, rotate: -20 });
+    window.gsap.set(q('.spl-seal'), { scale: .5, rotate: -14 });
     window.gsap.set([q('.spl-rule-top'), q('.spl-rule-bottom')], { width: 0 });
     window.gsap.set(q('.spl-cn'), { y: 22 });
+    window.gsap.set(q('.spl-cut'), { transformOrigin: '50% 50%' });
     timeline
-      .to(q('.spl-architecture'), { autoAlpha: .42, scale: 1, duration: .62 })
-      .to(q('.spl-rule-top'), { autoAlpha: 1, width: 72, duration: .36 }, '-=.42')
-      .to(q('.spl-seal'), { autoAlpha: 1, scale: 1, rotate: 0, duration: .46 }, '-=.14')
-      .to(q('.spl-cn'), { autoAlpha: 1, y: 0, duration: .48 }, '-=.13')
-      .to(q('.spl-en'), { autoAlpha: 1, duration: .32 }, '-=.12')
-      .to(q('.spl-tagline'), { autoAlpha: 1, duration: .32 }, '-=.08')
-      .to(q('.spl-rule-bottom'), { autoAlpha: 1, width: 72, duration: .34 }, '-=.15')
-      .to(q('.spl-bar-wrap'), { autoAlpha: 1, duration: .16 }, '-=.06')
-      .fromTo(q('.spl-bar'), { width: '0%' }, { width: '100%', duration: .62, ease: 'power2.inOut' });
+      .to(q('.spl-bg'), { scale: 1, duration: 2.35, ease: 'power1.out' }, 0)
+      .to(q('.spl-architecture'), { autoAlpha: .8, scale: 1, duration: .18 }, 0)
+      .to(blueprintPaths, { strokeDashoffset: 0, duration: .68, stagger: .06, ease: 'power2.inOut' }, .08)
+      .to(q('.spl-orbit'), { autoAlpha: 1, scale: 1, rotate: 0, duration: .52 }, .3)
+      .to(q('.spl-rule-top'), { autoAlpha: 1, width: 88, duration: .32 }, .65)
+      .to(q('.spl-seal'), { autoAlpha: 1, scale: 1, rotate: 0, duration: .48 }, .58)
+      .to(q('.spl-cn'), { autoAlpha: 1, y: 0, duration: .52 }, .84)
+      .to(q('.spl-en'), { autoAlpha: 1, duration: .3 }, 1.08)
+      .to(q('.spl-tagline'), { autoAlpha: 1, duration: .3 }, 1.2)
+      .to(q('.spl-rule-bottom'), { autoAlpha: 1, width: 88, duration: .32 }, 1.27)
+      .to(q('.spl-bar-wrap'), { autoAlpha: 1, duration: .15 }, 1.42)
+      .fromTo(q('.spl-bar'), { width: '0%' }, { width: '100%', duration: .44, ease: 'power2.inOut' }, 1.42)
+      .to(q('.spl-cut'), { autoAlpha: 1, scaleX: 1, duration: .32, ease: 'power4.inOut' }, 1.86);
   }
   // Auto dismiss after the complete sequence; click or button both allow immediate exit.
-  setTimeout(dismiss, 2250);
+  setTimeout(dismiss, 2450);
   spl.addEventListener('click', function(event) {
     if (event.target === spl || event.target === skip) dismiss();
   });

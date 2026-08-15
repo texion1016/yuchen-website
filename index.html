@@ -5424,9 +5424,9 @@ document.querySelectorAll('.btn').forEach(btn => {
 }
 .spl-brand { overflow: hidden; }
 .spl-cn {
-  font-family: 'Noto Serif TC', serif;
+  font-family: 'LXGW WenKai TC', 'Noto Serif TC', serif;
   font-size: clamp(4rem, 8vw, 7rem);
-  font-weight: 800; letter-spacing: .1em;
+  font-weight: 700; letter-spacing: .055em;
   color: #EBCB80; line-height: 1;
   background: linear-gradient(112deg, #B98D39 0%, #FCE6A6 30%, #D2A44B 52%, #FFF2C4 72%, #B98D39 100%);
   -webkit-background-clip: text; background-clip: text;
@@ -5558,13 +5558,13 @@ document.querySelectorAll('.btn').forEach(btn => {
 }
 @media (min-width: 641px) {
   /* 寬螢幕保留與手機相同的滿版張力，避免品牌元素在畫面中央顯得過小。 */
-  .spl-architecture { width: min(1500px, 88vw); transform: translate(-50%, -42%) scale(1.02); }
-  .spl-cn { font-size: clamp(5rem, 13vw, 14rem); letter-spacing: .075em; }
-  .spl-seal { width: 112px; height: 112px; margin-bottom: 1.6rem; }
-  .spl-seal img { width: 76px; height: 76px; }
-  .spl-orbit { width: 170px; height: 170px; }
-  .spl-orbit::before { width: 134px; height: 134px; }
-  .spl-rule { width: 120px; }
+  .spl-architecture { width: min(1350px, 78vw); transform: translate(-50%, -42%) scale(1); }
+  .spl-cn { font-size: clamp(4.3rem, 8vw, 9.2rem); letter-spacing: .045em; }
+  .spl-seal { width: 92px; height: 92px; margin-bottom: 1.45rem; }
+  .spl-seal img { width: 62px; height: 62px; }
+  .spl-orbit { width: 142px; height: 142px; }
+  .spl-orbit::before { width: 112px; height: 112px; }
+  .spl-rule { width: 104px; }
   .spl-flowlines {
     display: block; position: absolute; inset: 0; z-index: 1;
     width: 100%; height: 100%; overflow: hidden; pointer-events: none;
@@ -6288,14 +6288,14 @@ html, body { overflow-x: clip; }
   var skip = spl.querySelector('.spl-skip');
   var seen = false, reduced = false, forcePreview = false;
   // 開場以頁籤為單位播放一次；版本鍵確保新版正式上線後能正常亮相。
-  try { seen = sessionStorage.getItem('splSeenV6') === '1'; } catch(e) {}
+  try { seen = sessionStorage.getItem('splSeenV7') === '1'; } catch(e) {}
   try { reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e) {}
   try { forcePreview = new URLSearchParams(window.location.search).get('intro') === '1'; } catch(e) {}
   var dismissed = false;
   function dismiss() {
     if (dismissed) return;
     dismissed = true;
-    try { sessionStorage.setItem('splSeenV6', '1'); } catch(e) {}
+    try { sessionStorage.setItem('splSeenV7', '1'); } catch(e) {}
     spl.classList.add('spl-out');
     setTimeout(function() { spl.style.display = 'none'; }, 1600);
   }
@@ -6303,7 +6303,7 @@ html, body { overflow-x: clip; }
     // 同一個頁籤已看過：不重複播放，避免後續瀏覽被開場打斷。
     spl.style.display = 'none';
     dismissed = true;
-    try { sessionStorage.setItem('splSeenV6', '1'); } catch(e) {}
+    try { sessionStorage.setItem('splSeenV7', '1'); } catch(e) {}
     return;
   }
   // 有 GSAP 時，讓開場成為一次有節奏的品牌亮相；載入失敗則保留 CSS 版本。
@@ -6315,11 +6315,11 @@ html, body { overflow-x: clip; }
     var flowPaths = spl.querySelectorAll('.spl-flowlines path');
     var letterFlowPaths = spl.querySelectorAll('.spl-letterflow path');
     var desktopOpening = window.matchMedia('(min-width: 641px)').matches;
-    var architectureScale = desktopOpening ? 1.02 : 1;
-    var ruleWidth = desktopOpening ? 120 : 88;
+    var architectureScale = 1;
+    var ruleWidth = desktopOpening ? 104 : 88;
     window.gsap.set([q('.spl-architecture'), q('.spl-flowlines'), q('.spl-letterflow'), q('.spl-orbit'), q('.spl-seal'), q('.spl-cn'), q('.spl-en'), q('.spl-tagline'), q('.spl-rule-top'), q('.spl-rule-bottom'), q('.spl-bar-wrap'), q('.spl-cut')], { autoAlpha: 0 });
     window.gsap.set(q('.spl-bg'), { scale: 1.1 });
-    window.gsap.set(q('.spl-architecture'), { xPercent: -50, yPercent: -42, scale: desktopOpening ? .94 : .91 });
+    window.gsap.set(q('.spl-architecture'), { xPercent: -50, yPercent: -42, scale: desktopOpening ? .92 : .91 });
     window.gsap.set(blueprintPaths, { strokeDasharray: 1200, strokeDashoffset: 1200 });
     window.gsap.set(flowPaths, { strokeDasharray: 2200, strokeDashoffset: 2200 });
     window.gsap.set(letterFlowPaths, { strokeDasharray: 900, strokeDashoffset: 900 });

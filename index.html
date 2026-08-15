@@ -619,6 +619,8 @@
 
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- 商務開場動畫：不依賴 React，僅在首頁首次進入時使用 -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
   <script src="assets/js/ui-utils.js"></script>
   <script>
     const _SB_URL = 'https://femuufnveodwcnusuthy.supabase.co';
@@ -631,20 +633,33 @@
 <body>
 
 <!-- ━━ SPLASH SCREEN ━━ -->
-<div id="splash" aria-hidden="true">
+<div id="splash" aria-label="譽誠聯合銷售平台開場動畫">
   <div class="spl-bg"></div>
   <div class="spl-grain"></div>
   <div class="spl-vignette"></div>
+  <div class="spl-architecture" aria-hidden="true">
+    <svg viewBox="0 0 780 470" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M68 360 230 178 390 360 548 178 712 360" />
+      <path d="M104 360h572M154 360V248h150v112m28 0V218h152v142m28 0V248h115v112" />
+      <path d="M210 248h38v112m-20-145v-48m48 81h-38m132-30h76m-38-40v40m48 30h54m-27-32v32" />
+      <path d="M68 395h644" class="spl-architecture-faint" />
+      <circle cx="390" cy="360" r="7" />
+    </svg>
+  </div>
   <div class="spl-content">
-    <div class="spl-rule"></div>
+    <div class="spl-rule spl-rule-top"></div>
+    <div class="spl-seal">
+      <img src="photo/icons/logo-mark.png" alt="譽誠廣告標誌" />
+    </div>
     <div class="spl-brand">
       <div class="spl-cn">譽誠廣告</div>
       <div class="spl-en">YUCHEN PROPERTIES</div>
     </div>
-    <div class="spl-tagline">建商成屋 ・ 聯合銷售專家</div>
-    <div class="spl-rule"></div>
+    <div class="spl-tagline">建商成屋 ・ 聯合銷售平台</div>
+    <div class="spl-rule spl-rule-bottom"></div>
     <div class="spl-bar-wrap"><div class="spl-bar"></div></div>
   </div>
+  <button class="spl-skip" type="button" aria-label="略過開場動畫">略過動畫</button>
 </div>
 
 
@@ -5413,6 +5428,52 @@ document.querySelectorAll('.btn').forEach(btn => {
   to   { width: 100%; }
 }
 
+/* ── 首頁開場：建築藍圖與品牌印記 ── */
+.spl-architecture {
+  position: absolute;
+  width: min(780px, 118vw);
+  left: 50%; top: 50%;
+  transform: translate(-50%, -42%) scale(.94);
+  opacity: .42;
+  pointer-events: none;
+}
+.spl-architecture svg { width: 100%; height: auto; overflow: visible; }
+.spl-architecture path, .spl-architecture circle {
+  stroke: rgba(232,193,106,.68);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.spl-architecture circle { fill: #E8C16A; stroke: none; }
+.spl-architecture .spl-architecture-faint { stroke: rgba(255,255,255,.24); }
+.spl-seal {
+  width: 68px; height: 68px;
+  display: grid; place-items: center;
+  margin: 0 auto 1.3rem;
+  border: 1px solid rgba(232,193,106,.75);
+  background: rgba(6,17,30,.72);
+  box-shadow: 0 12px 32px rgba(0,0,0,.26), inset 0 0 0 5px rgba(232,193,106,.08);
+}
+.spl-seal img { width: 48px; height: 48px; object-fit: contain; }
+.spl-rule-top { margin-top: 0; margin-bottom: 1.2rem; }
+.spl-rule-bottom { margin-top: 1.35rem; margin-bottom: 0; }
+.spl-skip {
+  position: absolute; z-index: 2; right: 1.4rem; bottom: 1.2rem;
+  appearance: none; border: 0; background: transparent; color: rgba(255,255,255,.58);
+  font: 500 .72rem/1 var(--font-sans); letter-spacing: .16em; cursor: pointer;
+  padding: .65rem .25rem; transition: color .2s ease;
+}
+.spl-skip:hover, .spl-skip:focus-visible { color: #E8C16A; }
+#splash.spl-gsap .spl-content,
+#splash.spl-gsap .spl-rule,
+#splash.spl-gsap .spl-cn,
+#splash.spl-gsap .spl-en,
+#splash.spl-gsap .spl-tagline,
+#splash.spl-gsap .spl-bar { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .spl-bg, .spl-content, .spl-rule, .spl-cn, .spl-en, .spl-tagline, .spl-bar { animation: none !important; }
+  .spl-architecture { display: none; }
+}
+
 
 /* ── 我的報備紀錄：全寬修正 ── */
 /* 登入/申請/報備面板保持窄版 */
@@ -6120,6 +6181,7 @@ html, body { overflow-x: clip; }
 (function() {
   var spl = document.getElementById('splash');
   if (!spl) return;
+  var skip = spl.querySelector('.spl-skip');
   var seen = false, reduced = false;
   try { seen = sessionStorage.getItem('splSeen') === '1'; } catch(e) {}
   try { reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e) {}
@@ -6138,10 +6200,33 @@ html, body { overflow-x: clip; }
     try { sessionStorage.setItem('splSeen', '1'); } catch(e) {}
     return;
   }
-  // Auto dismiss after 2.8s
-  setTimeout(dismiss, 2800);
-  // Click to skip
-  spl.addEventListener('click', dismiss);
+  // 有 GSAP 時，讓開場成為一次有節奏的品牌亮相；載入失敗則保留 CSS 版本。
+  if (window.gsap) {
+    spl.classList.add('spl-gsap');
+    var q = function(selector) { return spl.querySelector(selector); };
+    var timeline = window.gsap.timeline({ defaults: { ease: 'power3.out' } });
+    window.gsap.set([q('.spl-architecture'), q('.spl-seal'), q('.spl-cn'), q('.spl-en'), q('.spl-tagline'), q('.spl-rule-top'), q('.spl-rule-bottom'), q('.spl-bar-wrap')], { autoAlpha: 0 });
+    window.gsap.set(q('.spl-architecture'), { xPercent: -50, yPercent: -42, scale: .93 });
+    window.gsap.set(q('.spl-seal'), { scale: .78, rotate: -8 });
+    window.gsap.set([q('.spl-rule-top'), q('.spl-rule-bottom')], { width: 0 });
+    window.gsap.set(q('.spl-cn'), { y: 22 });
+    timeline
+      .to(q('.spl-architecture'), { autoAlpha: .42, scale: 1, duration: .62 })
+      .to(q('.spl-rule-top'), { autoAlpha: 1, width: 72, duration: .36 }, '-=.42')
+      .to(q('.spl-seal'), { autoAlpha: 1, scale: 1, rotate: 0, duration: .46 }, '-=.14')
+      .to(q('.spl-cn'), { autoAlpha: 1, y: 0, duration: .48 }, '-=.13')
+      .to(q('.spl-en'), { autoAlpha: 1, duration: .32 }, '-=.12')
+      .to(q('.spl-tagline'), { autoAlpha: 1, duration: .32 }, '-=.08')
+      .to(q('.spl-rule-bottom'), { autoAlpha: 1, width: 72, duration: .34 }, '-=.15')
+      .to(q('.spl-bar-wrap'), { autoAlpha: 1, duration: .16 }, '-=.06')
+      .fromTo(q('.spl-bar'), { width: '0%' }, { width: '100%', duration: .62, ease: 'power2.inOut' });
+  }
+  // Auto dismiss after the complete sequence; click or button both allow immediate exit.
+  setTimeout(dismiss, 2250);
+  spl.addEventListener('click', function(event) {
+    if (event.target === spl || event.target === skip) dismiss();
+  });
+  if (skip) skip.addEventListener('click', dismiss);
 })();
 </script>
 

@@ -6182,9 +6182,10 @@ html, body { overflow-x: clip; }
   var spl = document.getElementById('splash');
   if (!spl) return;
   var skip = spl.querySelector('.spl-skip');
-  var seen = false, reduced = false;
+  var seen = false, reduced = false, forcePreview = false;
   try { seen = sessionStorage.getItem('splSeen') === '1'; } catch(e) {}
   try { reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e) {}
+  try { forcePreview = new URLSearchParams(window.location.search).get('intro') === '1'; } catch(e) {}
   var dismissed = false;
   function dismiss() {
     if (dismissed) return;
@@ -6193,7 +6194,7 @@ html, body { overflow-x: clip; }
     spl.classList.add('spl-out');
     setTimeout(function() { spl.style.display = 'none'; }, 1600);
   }
-  if (seen || reduced) {
+  if ((seen && !forcePreview) || reduced) {
     // 已看過或使用者要求減少動態：立即移除，不擋內容
     spl.style.display = 'none';
     dismissed = true;

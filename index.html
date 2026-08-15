@@ -6219,22 +6219,23 @@ html, body { overflow-x: clip; }
   if (!spl) return;
   var skip = spl.querySelector('.spl-skip');
   var seen = false, reduced = false, forcePreview = false;
-  try { seen = sessionStorage.getItem('splSeen') === '1'; } catch(e) {}
+  // 開場以頁籤為單位播放一次；版本鍵確保新版正式上線後能正常亮相。
+  try { seen = sessionStorage.getItem('splSeenV2') === '1'; } catch(e) {}
   try { reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e) {}
   try { forcePreview = new URLSearchParams(window.location.search).get('intro') === '1'; } catch(e) {}
   var dismissed = false;
   function dismiss() {
     if (dismissed) return;
     dismissed = true;
-    try { sessionStorage.setItem('splSeen', '1'); } catch(e) {}
+    try { sessionStorage.setItem('splSeenV2', '1'); } catch(e) {}
     spl.classList.add('spl-out');
     setTimeout(function() { spl.style.display = 'none'; }, 1600);
   }
-  if ((seen && !forcePreview) || (reduced && !forcePreview)) {
-    // 已看過或使用者要求減少動態：立即移除，不擋內容
+  if (seen && !forcePreview) {
+    // 同一個頁籤已看過：不重複播放，避免後續瀏覽被開場打斷。
     spl.style.display = 'none';
     dismissed = true;
-    try { sessionStorage.setItem('splSeen', '1'); } catch(e) {}
+    try { sessionStorage.setItem('splSeenV2', '1'); } catch(e) {}
     return;
   }
   // 有 GSAP 時，讓開場成為一次有節奏的品牌亮相；載入失敗則保留 CSS 版本。

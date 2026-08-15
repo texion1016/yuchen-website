@@ -6230,7 +6230,7 @@ html, body { overflow-x: clip; }
     spl.classList.add('spl-out');
     setTimeout(function() { spl.style.display = 'none'; }, 1600);
   }
-  if ((seen && !forcePreview) || reduced) {
+  if ((seen && !forcePreview) || (reduced && !forcePreview)) {
     // 已看過或使用者要求減少動態：立即移除，不擋內容
     spl.style.display = 'none';
     dismissed = true;

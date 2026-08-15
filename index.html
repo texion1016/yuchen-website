@@ -5392,9 +5392,10 @@ document.querySelectorAll('.btn').forEach(btn => {
 .spl-brand { overflow: hidden; }
 .spl-cn {
   font-family: 'Noto Serif TC', serif;
-  font-size: clamp(3rem, 9vw, 6.5rem);
-  font-weight: 700; letter-spacing: .08em;
+  font-size: clamp(4rem, 12vw, 9rem);
+  font-weight: 800; letter-spacing: .1em;
   color: #fff; line-height: 1;
+  text-shadow: 0 10px 30px rgba(0,0,0,.22);
   animation: spl-brand-in 1s .2s cubic-bezier(0.2,0,0,1) both;
 }
 @keyframes spl-brand-in {
@@ -5501,6 +5502,12 @@ document.querySelectorAll('.btn').forEach(btn => {
 @media (prefers-reduced-motion: reduce) {
   .spl-bg, .spl-content, .spl-rule, .spl-cn, .spl-en, .spl-tagline, .spl-bar, .spl-orbit { animation: none !important; }
   .spl-architecture { display: none; }
+}
+@media (max-width: 640px) {
+  .spl-cn { font-size: clamp(4rem, 18vw, 5.4rem); letter-spacing: .06em; }
+  .spl-seal { width: 82px; height: 82px; margin-bottom: 1.25rem; }
+  .spl-seal img { width: 56px; height: 56px; }
+  .spl-orbit { width: 124px; height: 124px; }
 }
 
 
@@ -6252,16 +6259,16 @@ html, body { overflow-x: clip; }
       .to(q('.spl-orbit'), { autoAlpha: 1, scale: 1, rotate: 0, duration: .52 }, .3)
       .to(q('.spl-rule-top'), { autoAlpha: 1, width: 88, duration: .32 }, .65)
       .to(q('.spl-seal'), { autoAlpha: 1, scale: 1, rotate: 0, duration: .48 }, .58)
-      .to(q('.spl-cn'), { autoAlpha: 1, y: 0, duration: .52 }, .84)
-      .to(q('.spl-en'), { autoAlpha: 1, duration: .3 }, 1.08)
-      .to(q('.spl-tagline'), { autoAlpha: 1, duration: .3 }, 1.2)
-      .to(q('.spl-rule-bottom'), { autoAlpha: 1, width: 88, duration: .32 }, 1.27)
-      .to(q('.spl-bar-wrap'), { autoAlpha: 1, duration: .15 }, 1.42)
-      .fromTo(q('.spl-bar'), { width: '0%' }, { width: '100%', duration: .44, ease: 'power2.inOut' }, 1.42)
-      .to(q('.spl-cut'), { autoAlpha: 1, scaleX: 1, duration: .32, ease: 'power4.inOut' }, 1.86);
+      .to(q('.spl-cn'), { autoAlpha: 1, y: 0, duration: .58 }, .7)
+      .to(q('.spl-en'), { autoAlpha: 1, duration: .3 }, 1.12)
+      .to(q('.spl-tagline'), { autoAlpha: 1, duration: .3 }, 1.24)
+      .to(q('.spl-rule-bottom'), { autoAlpha: 1, width: 88, duration: .32 }, 1.31)
+      .to(q('.spl-bar-wrap'), { autoAlpha: 1, duration: .15 }, 1.48)
+      .fromTo(q('.spl-bar'), { width: '0%' }, { width: '100%', duration: .5, ease: 'power2.inOut' }, 1.48)
+      .to(q('.spl-cut'), { autoAlpha: 1, scaleX: 1, duration: .32, ease: 'power4.inOut' }, 2.04);
   }
   // Auto dismiss after the complete sequence; click or button both allow immediate exit.
-  setTimeout(dismiss, 2450);
+  setTimeout(dismiss, 2700);
   spl.addEventListener('click', function(event) {
     if (event.target === spl || event.target === skip) dismiss();
   });

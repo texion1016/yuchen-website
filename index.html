@@ -5392,7 +5392,7 @@ document.querySelectorAll('.btn').forEach(btn => {
 .spl-brand { overflow: hidden; }
 .spl-cn {
   font-family: 'Noto Serif TC', serif;
-  font-size: clamp(4rem, 12vw, 9rem);
+  font-size: clamp(4rem, 8vw, 7rem);
   font-weight: 800; letter-spacing: .1em;
   color: #fff; line-height: 1;
   text-shadow: 0 10px 30px rgba(0,0,0,.22);
@@ -5455,7 +5455,7 @@ document.querySelectorAll('.btn').forEach(btn => {
 .spl-architecture .spl-architecture-faint { stroke: rgba(255,255,255,.3); }
 .spl-orbit {
   position: absolute; z-index: 1; left: 50%; top: 50%;
-  width: 142px; height: 142px; transform: translate(-50%, -50%);
+  width: 124px; height: 124px; transform: translate(-50%, -50%);
   border: 1px solid rgba(232,193,106,.48); border-radius: 50%;
   box-shadow: inset 0 0 0 8px rgba(232,193,106,.035);
   pointer-events: none;
@@ -5469,18 +5469,18 @@ document.querySelectorAll('.btn').forEach(btn => {
 .spl-orbit span { position:absolute; inset:-5px; border-top:1px solid #F2D18C; border-radius:50%; opacity:.92; }
 .spl-orbit i { position:absolute; width:6px; height:6px; right:12px; top:25px; background:#E8C16A; border-radius:50%; }
 .spl-seal {
-  width: 94px; height: 94px;
+  width: 82px; height: 82px;
   display: grid; place-items: center;
   margin: 0 auto 1.5rem;
   border: 1px solid rgba(240,202,120,.9); border-radius: 50%;
   background: rgba(7,26,47,.88);
   box-shadow: 0 14px 36px rgba(0,0,0,.32), inset 0 0 0 7px rgba(232,193,106,.1);
 }
-.spl-seal img { width: 64px; height: 64px; object-fit: contain; }
+.spl-seal img { width: 56px; height: 56px; object-fit: contain; }
 .spl-rule-top { margin-top: 0; margin-bottom: 1.2rem; }
 .spl-rule-bottom { margin-top: 1.35rem; margin-bottom: 0; }
 .spl-cut {
-  position: absolute; z-index: 3; left: 0; top: 50%; width: 100%; height: 2px;
+  position: absolute; z-index: 3; left: 0; top: 75%; width: 100%; height: 2px;
   background: linear-gradient(90deg, transparent 0%, #D6A94F 22%, #FFE4A8 50%, #D6A94F 78%, transparent 100%);
   box-shadow: 0 0 22px rgba(232,193,106,.6);
   opacity: 0; transform: scaleX(0); pointer-events: none;
@@ -5505,9 +5505,8 @@ document.querySelectorAll('.btn').forEach(btn => {
 }
 @media (max-width: 640px) {
   .spl-cn { font-size: clamp(4rem, 18vw, 5.4rem); letter-spacing: .06em; }
-  .spl-seal { width: 82px; height: 82px; margin-bottom: 1.25rem; }
-  .spl-seal img { width: 56px; height: 56px; }
-  .spl-orbit { width: 124px; height: 124px; }
+  .spl-seal { margin-bottom: 1.25rem; }
+  .spl-cut { top: 76%; }
 }
 
 
@@ -6220,14 +6219,14 @@ html, body { overflow-x: clip; }
   var skip = spl.querySelector('.spl-skip');
   var seen = false, reduced = false, forcePreview = false;
   // 開場以頁籤為單位播放一次；版本鍵確保新版正式上線後能正常亮相。
-  try { seen = sessionStorage.getItem('splSeenV2') === '1'; } catch(e) {}
+  try { seen = sessionStorage.getItem('splSeenV3') === '1'; } catch(e) {}
   try { reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e) {}
   try { forcePreview = new URLSearchParams(window.location.search).get('intro') === '1'; } catch(e) {}
   var dismissed = false;
   function dismiss() {
     if (dismissed) return;
     dismissed = true;
-    try { sessionStorage.setItem('splSeenV2', '1'); } catch(e) {}
+    try { sessionStorage.setItem('splSeenV3', '1'); } catch(e) {}
     spl.classList.add('spl-out');
     setTimeout(function() { spl.style.display = 'none'; }, 1600);
   }
@@ -6235,7 +6234,7 @@ html, body { overflow-x: clip; }
     // 同一個頁籤已看過：不重複播放，避免後續瀏覽被開場打斷。
     spl.style.display = 'none';
     dismissed = true;
-    try { sessionStorage.setItem('splSeenV2', '1'); } catch(e) {}
+    try { sessionStorage.setItem('splSeenV3', '1'); } catch(e) {}
     return;
   }
   // 有 GSAP 時，讓開場成為一次有節奏的品牌亮相；載入失敗則保留 CSS 版本。

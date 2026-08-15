@@ -663,6 +663,22 @@
       <path class="spl-flow-fine" d="M-70 330 C250 530 540 215 900 380 S1250 600 1660 370" />
     </svg>
   </div>
+  <div class="spl-letterflow" aria-hidden="true">
+    <svg viewBox="0 0 1000 500" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="splLetterGold" x1="0" y1="1" x2=".5" y2="0">
+          <stop offset="0" stop-color="#C39845" stop-opacity=".16" />
+          <stop offset=".55" stop-color="#EBCB80" stop-opacity=".95" />
+          <stop offset="1" stop-color="#FFF0BA" />
+        </linearGradient>
+      </defs>
+      <path d="M105 322 C248 316 326 184 463 118" />
+      <path d="M350 322 C408 285 444 181 488 112" />
+      <path d="M650 322 C592 285 556 181 512 112" />
+      <path d="M895 322 C752 316 674 184 537 118" />
+      <circle cx="500" cy="108" r="4" />
+    </svg>
+  </div>
   <div class="spl-orbit" aria-hidden="true"><span></span><i></i></div>
   <div class="spl-content">
     <div class="spl-rule spl-rule-top"></div>
@@ -5411,8 +5427,11 @@ document.querySelectorAll('.btn').forEach(btn => {
   font-family: 'Noto Serif TC', serif;
   font-size: clamp(4rem, 8vw, 7rem);
   font-weight: 800; letter-spacing: .1em;
-  color: #fff; line-height: 1;
-  text-shadow: 0 10px 30px rgba(0,0,0,.22);
+  color: #EBCB80; line-height: 1;
+  background: linear-gradient(112deg, #B98D39 0%, #FCE6A6 30%, #D2A44B 52%, #FFF2C4 72%, #B98D39 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 10px 30px rgba(0,0,0,.25);
   animation: spl-brand-in 1s .2s cubic-bezier(0.2,0,0,1) both;
 }
 @keyframes spl-brand-in {
@@ -5471,6 +5490,18 @@ document.querySelectorAll('.btn').forEach(btn => {
 .spl-architecture circle { fill: #E8C16A; stroke: none; }
 .spl-architecture .spl-architecture-faint { stroke: rgba(255,255,255,.3); }
 .spl-flowlines { display: none; }
+.spl-letterflow {
+  position: absolute; z-index: 1; left: 50%; top: 32%;
+  width: min(1550px, 128vw); height: 44vh;
+  transform: translateX(-50%); pointer-events: none; opacity: .72;
+}
+.spl-letterflow svg { width: 100%; height: 100%; overflow: visible; }
+.spl-letterflow path {
+  fill: none; stroke: url(#splLetterGold); stroke-width: 1.35;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 0 6px rgba(235,203,128,.3));
+}
+.spl-letterflow circle { fill: #FFF0BA; filter: drop-shadow(0 0 7px rgba(255,224,157,.85)); }
 .spl-orbit {
   position: absolute; z-index: 1; left: 50%; top: 50%;
   width: 124px; height: 124px; transform: translate(-50%, -50%);
@@ -6257,14 +6288,14 @@ html, body { overflow-x: clip; }
   var skip = spl.querySelector('.spl-skip');
   var seen = false, reduced = false, forcePreview = false;
   // 開場以頁籤為單位播放一次；版本鍵確保新版正式上線後能正常亮相。
-  try { seen = sessionStorage.getItem('splSeenV5') === '1'; } catch(e) {}
+  try { seen = sessionStorage.getItem('splSeenV6') === '1'; } catch(e) {}
   try { reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e) {}
   try { forcePreview = new URLSearchParams(window.location.search).get('intro') === '1'; } catch(e) {}
   var dismissed = false;
   function dismiss() {
     if (dismissed) return;
     dismissed = true;
-    try { sessionStorage.setItem('splSeenV5', '1'); } catch(e) {}
+    try { sessionStorage.setItem('splSeenV6', '1'); } catch(e) {}
     spl.classList.add('spl-out');
     setTimeout(function() { spl.style.display = 'none'; }, 1600);
   }
@@ -6272,7 +6303,7 @@ html, body { overflow-x: clip; }
     // 同一個頁籤已看過：不重複播放，避免後續瀏覽被開場打斷。
     spl.style.display = 'none';
     dismissed = true;
-    try { sessionStorage.setItem('splSeenV5', '1'); } catch(e) {}
+    try { sessionStorage.setItem('splSeenV6', '1'); } catch(e) {}
     return;
   }
   // 有 GSAP 時，讓開場成為一次有節奏的品牌亮相；載入失敗則保留 CSS 版本。
@@ -6282,18 +6313,20 @@ html, body { overflow-x: clip; }
     var timeline = window.gsap.timeline({ defaults: { ease: 'power3.out' } });
     var blueprintPaths = spl.querySelectorAll('.spl-architecture path');
     var flowPaths = spl.querySelectorAll('.spl-flowlines path');
+    var letterFlowPaths = spl.querySelectorAll('.spl-letterflow path');
     var desktopOpening = window.matchMedia('(min-width: 641px)').matches;
     var architectureScale = desktopOpening ? 1.02 : 1;
     var ruleWidth = desktopOpening ? 120 : 88;
-    window.gsap.set([q('.spl-architecture'), q('.spl-flowlines'), q('.spl-orbit'), q('.spl-seal'), q('.spl-cn'), q('.spl-en'), q('.spl-tagline'), q('.spl-rule-top'), q('.spl-rule-bottom'), q('.spl-bar-wrap'), q('.spl-cut')], { autoAlpha: 0 });
+    window.gsap.set([q('.spl-architecture'), q('.spl-flowlines'), q('.spl-letterflow'), q('.spl-orbit'), q('.spl-seal'), q('.spl-cn'), q('.spl-en'), q('.spl-tagline'), q('.spl-rule-top'), q('.spl-rule-bottom'), q('.spl-bar-wrap'), q('.spl-cut')], { autoAlpha: 0 });
     window.gsap.set(q('.spl-bg'), { scale: 1.1 });
     window.gsap.set(q('.spl-architecture'), { xPercent: -50, yPercent: -42, scale: desktopOpening ? .94 : .91 });
     window.gsap.set(blueprintPaths, { strokeDasharray: 1200, strokeDashoffset: 1200 });
     window.gsap.set(flowPaths, { strokeDasharray: 2200, strokeDashoffset: 2200 });
+    window.gsap.set(letterFlowPaths, { strokeDasharray: 900, strokeDashoffset: 900 });
     window.gsap.set(q('.spl-orbit'), { xPercent: -50, yPercent: -50, scale: .72, rotate: -20 });
     window.gsap.set(q('.spl-seal'), { scale: .5, rotate: -14 });
     window.gsap.set([q('.spl-rule-top'), q('.spl-rule-bottom')], { width: 0 });
-    window.gsap.set(q('.spl-cn'), { y: 22 });
+    window.gsap.set(q('.spl-cn'), { y: 22, skewX: -5, transformOrigin: '50% 50%' });
     window.gsap.set(q('.spl-cut'), { transformOrigin: '50% 50%' });
     if (desktopOpening) {
       timeline
@@ -6304,19 +6337,21 @@ html, body { overflow-x: clip; }
       .to(q('.spl-bg'), { scale: 1, duration: 2.35, ease: 'power1.out' }, 0)
       .to(q('.spl-architecture'), { autoAlpha: .8, scale: architectureScale, duration: .18 }, 0)
       .to(blueprintPaths, { strokeDashoffset: 0, duration: .68, stagger: .06, ease: 'power2.inOut' }, .08)
-      .to(q('.spl-orbit'), { autoAlpha: 1, scale: 1, rotate: 0, duration: .52 }, .3)
-      .to(q('.spl-rule-top'), { autoAlpha: 1, width: ruleWidth, duration: .32 }, .65)
-      .to(q('.spl-seal'), { autoAlpha: 1, scale: 1, rotate: 0, duration: .48 }, .58)
-      .to(q('.spl-cn'), { autoAlpha: 1, y: 0, duration: .58 }, .7)
-      .to(q('.spl-en'), { autoAlpha: 1, duration: .3 }, 1.12)
-      .to(q('.spl-tagline'), { autoAlpha: 1, duration: .3 }, 1.24)
-      .to(q('.spl-rule-bottom'), { autoAlpha: 1, width: ruleWidth, duration: .32 }, 1.31)
-      .to(q('.spl-bar-wrap'), { autoAlpha: 1, duration: .15 }, 1.48)
-      .fromTo(q('.spl-bar'), { width: '0%' }, { width: '100%', duration: .5, ease: 'power2.inOut' }, 1.48)
-      .to(q('.spl-cut'), { autoAlpha: 1, scaleX: 1, duration: .32, ease: 'power4.inOut' }, 2.04);
+      .to(q('.spl-cn'), { autoAlpha: 1, y: 0, skewX: -1.5, duration: .62 }, .46)
+      .to(q('.spl-letterflow'), { autoAlpha: 1, duration: .14 }, .56)
+      .to(letterFlowPaths, { strokeDashoffset: 0, duration: .68, stagger: .09, ease: 'power2.inOut' }, .61)
+      .to(q('.spl-rule-top'), { autoAlpha: 1, width: ruleWidth, duration: .32 }, .72)
+      .to(q('.spl-seal'), { autoAlpha: 1, scale: 1, rotate: 0, duration: .5 }, .98)
+      .to(q('.spl-orbit'), { autoAlpha: 1, scale: 1, rotate: 0, duration: .52 }, 1.08)
+      .to(q('.spl-en'), { autoAlpha: 1, duration: .3 }, 1.44)
+      .to(q('.spl-tagline'), { autoAlpha: 1, duration: .3 }, 1.56)
+      .to(q('.spl-rule-bottom'), { autoAlpha: 1, width: ruleWidth, duration: .32 }, 1.63)
+      .to(q('.spl-bar-wrap'), { autoAlpha: 1, duration: .15 }, 1.8)
+      .fromTo(q('.spl-bar'), { width: '0%' }, { width: '100%', duration: .5, ease: 'power2.inOut' }, 1.8)
+      .to(q('.spl-cut'), { autoAlpha: 1, scaleX: 1, duration: .32, ease: 'power4.inOut' }, 2.28);
   }
   // Auto dismiss after the complete sequence; click or button both allow immediate exit.
-  setTimeout(dismiss, 2700);
+  setTimeout(dismiss, 3000);
   spl.addEventListener('click', function(event) {
     if (event.target === spl || event.target === skip) dismiss();
   });

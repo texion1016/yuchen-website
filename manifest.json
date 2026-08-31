@@ -1,6 +1,6 @@
 {
-  "name": "譽誠聯合銷售平台",
-  "short_name": "譽誠平台",
+  "name": "房聯網",
+  "short_name": "房聯網",
   "description": "建商成屋 × 仲介共享案源｜客戶報備與戶況追蹤",
   "start_url": "./index.html",
   "scope": "./",

@@ -1,7 +1,7 @@
 {
-  "name": "譽誠管理",
-  "short_name": "譽誠管理",
-  "description": "譽誠聯合銷售平台 管理後台",
+  "name": "房聯網管理",
+  "short_name": "房聯網管理",
+  "description": "房聯網管理後台",
   "start_url": "./yc-console-8k3n7q.html",
   "scope": "./yc-console-8k3n7q.html",
   "display": "standalone",

@@ -722,7 +722,6 @@
     <div class="spl-bar-wrap"><div class="spl-bar"></div></div>
   </div>
   <div class="spl-cut" aria-hidden="true"></div>
-  <button class="spl-skip" type="button" aria-label="略過開場動畫">略過動畫</button>
 </div>
 
 
@@ -5569,13 +5568,6 @@ document.querySelectorAll('.btn').forEach(btn => {
   box-shadow: 0 0 22px rgba(232,193,106,.6);
   opacity: 0; transform: scaleX(0); pointer-events: none;
 }
-.spl-skip {
-  position: absolute; z-index: 4; right: 1.4rem; bottom: 1.2rem;
-  appearance: none; border: 0; background: transparent; color: rgba(255,255,255,.58);
-  font: 500 .72rem/1 var(--font-sans); letter-spacing: .16em; cursor: pointer;
-  padding: .65rem .25rem; transition: color .2s ease;
-}
-.spl-skip:hover, .spl-skip:focus-visible { color: #E8C16A; }
 #splash.spl-gsap .spl-content,
 #splash.spl-gsap .spl-rule,
 #splash.spl-gsap .spl-cn,
@@ -6325,7 +6317,6 @@ html, body { overflow-x: clip; }
 (function() {
   var spl = document.getElementById('splash');
   if (!spl) return;
-  var skip = spl.querySelector('.spl-skip');
   var seen = false, reduced = false, forcePreview = false;
   // 開場以頁籤為單位播放一次；版本鍵確保新版正式上線後能正常亮相。
   try { seen = sessionStorage.getItem('splSeenV9') === '1'; } catch(e) {}
@@ -6390,12 +6381,12 @@ html, body { overflow-x: clip; }
       .fromTo(q('.spl-bar'), { width: '0%' }, { width: '100%', duration: .5, ease: 'power2.inOut' }, 1.8)
       .to(q('.spl-cut'), { autoAlpha: 1, scaleX: 1, duration: .32, ease: 'power4.inOut' }, 2.28);
   }
-  // Auto dismiss after the complete sequence; click or button both allow immediate exit.
+  // Auto dismiss after the complete sequence; any click immediately enters the site.
   setTimeout(dismiss, 3000);
-  spl.addEventListener('click', function(event) {
-    if (event.target === spl || event.target === skip) dismiss();
-  });
-  if (skip) skip.addEventListener('click', dismiss);
+  spl.addEventListener('click', dismiss);
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') dismiss();
+  }, { once: true });
 })();
 </script>
 

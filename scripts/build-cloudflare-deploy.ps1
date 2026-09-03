@@ -14,7 +14,7 @@ if (Test-Path -LiteralPath $publishDir) {
 
 New-Item -ItemType Directory -Path $publishDir | Out-Null
 
-$publicFiles = @('index.html', 'install.html', 'manifest.json', 'yc-console-8k3n7q.html', 'regional-portal.html', 'sourcing-portal.html', 'admin-manifest.json', 'developer-partnership.html', 'broker-partnership.html', 'robots.txt', 'sitemap.xml', '1e2cd6976b8c425298b0f3a0d66e3440.txt')
+$publicFiles = @('index.html', 'install.html', 'manifest.json', 'sw.js', 'yc-console-8k3n7q.html', 'regional-portal.html', 'sourcing-portal.html', 'admin-manifest.json', 'developer-partnership.html', 'broker-partnership.html', 'robots.txt', 'sitemap.xml', '1e2cd6976b8c425298b0f3a0d66e3440.txt')
 foreach ($file in $publicFiles) {
   $source = Join-Path $projectRoot $file
   if (-not (Test-Path -LiteralPath $source -PathType Leaf)) {

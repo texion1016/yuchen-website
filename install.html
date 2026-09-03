@@ -25,6 +25,11 @@
     window._bip = e;
     if (window._onBipReady) window._onBipReady();
   });
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function () {});
+    });
+  }
 </script>
 
 <style>
@@ -309,13 +314,9 @@
 
   <!-- ══ 電腦 ══ -->
   <section id="stDesktop" hidden>
-    <div class="qrbox">
-      <p style="margin:0 0 1.2rem;font-size:1.08rem;color:var(--ink-2);line-height:1.8;">
-        這個功能是給手機用的。<br />請用<b style="color:var(--ink)">手機相機掃描</b>下面的 QR&nbsp;Code：
-      </p>
-      <img id="qrImg" src="photo/icons/qr-install.png" alt="用手機掃描以開啟安裝說明" />
-      <p style="margin:1.2rem 0 0;font-size:.95rem;color:var(--ink-2);word-break:break-all;" id="qrUrl"></p>
-    </div>
+    <div class="note">把房聯網安裝到這台電腦後，可從桌面或開始功能表直接開啟，不必再輸入網址。</div>
+    <button class="btn btn-gold" id="btnDesktopInstall" onclick="doDesktopInstall()">安裝到電腦</button>
+    <p id="desktopInstallHint" style="margin:1rem 0 0;font-size:.9rem;color:var(--ink-2);line-height:1.8;">Chrome／Edge 可直接安裝；Safari 請從「檔案」選單選擇「加入 Dock」。</p>
   </section>
 
   <!-- 完成後長這樣 -->
@@ -384,8 +385,11 @@
   }
 
   if (!mobile) {
-    document.getElementById('qrUrl').textContent = location.href;
     show('stDesktop');
+    window._onBipReady = function () {
+      document.getElementById('desktopInstallHint').textContent = '已準備好，按上方按鈕即可安裝。';
+    };
+    if (window._bip) window._onBipReady();
     return;
   }
 
@@ -409,6 +413,24 @@ function doInstall() {
     // 使用者按了取消，改給手動步驟當備案
     document.getElementById('stAndroid').hidden = true;
     document.getElementById('stAndroidManual').hidden = false;
+  });
+}
+
+function doDesktopInstall() {
+  var btn = document.getElementById('btnDesktopInstall');
+  var hint = document.getElementById('desktopInstallHint');
+  if (!window._bip) {
+    hint.textContent = '安裝功能正在準備。請重新整理後再試；若仍未出現，Chrome／Edge 可按網址列右側的安裝圖示。Safari 請選「檔案 → 加入 Dock」。';
+    return;
+  }
+  btn.disabled = true;
+  window._bip.prompt();
+  window._bip.userChoice.then(function (r) {
+    window._bip = null;
+    btn.disabled = false;
+    hint.textContent = r && r.outcome === 'accepted'
+      ? '已開始安裝房聯網，完成後可從桌面或開始功能表開啟。'
+      : '尚未安裝；準備好後可再按一次「安裝到電腦」。';
   });
 }
 

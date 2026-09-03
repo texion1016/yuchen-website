@@ -4,10 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
-  <title>譽誠管理</title>
+  <title>房聯網管理</title>
   <link rel="manifest" href="admin-manifest.json" />
   <meta name="theme-color" content="#151D2C" />
-  <meta name="apple-mobile-web-app-title" content="譽誠管理" />
+  <meta name="apple-mobile-web-app-title" content="房聯網管理" />
   <link rel="icon" type="image/png" href="photo/icons/adm-icon-192.png" />
   <link rel="apple-touch-icon" href="photo/icons/adm-apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -179,7 +179,7 @@
   <div id="admLoginWrap" style="flex:1;display:flex;align-items:center;justify-content:center;">
     <div class="adm-login-box">
       <div style="font-family:var(--font-serif);font-size:1.3rem;margin-bottom:.45rem;color:var(--ink);">管理員登入</div>
-      <p style="font-size:.78rem;line-height:1.65;color:#55687E;margin:0 0 1.35rem;">僅限獲授權的譽誠管理員。未完成裝置驗證時，請使用 Email 與密碼登入。</p>
+      <p style="font-size:.78rem;line-height:1.65;color:#55687E;margin:0 0 1.35rem;">僅限獲授權的房聯網管理員。未完成裝置驗證時，請使用 Email 與密碼登入。</p>
       <div id="admLoginErr" class="bov-msg error" style="display:none;" role="alert" aria-live="polite"></div>
       <div id="admLoginMsg" style="display:none;padding:.55rem .9rem;border-radius:8px;font-size:.8rem;line-height:1.6;margin-bottom:1rem;background:#EEF6F0;border:1px solid rgba(47,107,79,.25);color:#2F6B4F;" role="status" aria-live="polite"></div>
       <div id="admLoginControls">
@@ -1208,7 +1208,7 @@ async function loadAdmCommissions() {
     .order('created_at', { ascending: false });
   if (error) { summary.innerHTML = ''; el.innerHTML = '<div class="adm-empty">讀取失敗：' + admSafe(error.message) + '</div>'; return; }
   const sums = (data || []).reduce((all, row) => { all[row.allocation_role] = (all[row.allocation_role] || 0) + Number(row.estimated_amount || 0); return all; }, {});
-  const labels = { broker_company: '中介公司', regional_agent: '區域代理人', sourcing_partner: '拓案夥伴', platform: '譽誠平台' };
+  const labels = { broker_company: '中介公司', regional_agent: '區域代理人', sourcing_partner: '拓案夥伴', platform: '房聯網' };
   summary.innerHTML = Object.entries(labels).map(([role, label]) => '<div class="adm-stat-card"><div class="adm-stat-num" style="font-size:1.2rem">' + admMoney(sums[role]) + '</div><div class="adm-stat-label">' + label + '暫估獎金</div></div>').join('');
   if (!data?.length) { el.innerHTML = '<div class="adm-empty">尚無已核准成交，因此還沒有暫估獎金。</div>'; return; }
   el.innerHTML = '<table class="adm-table"><thead><tr><th>建案／戶別</th><th>角色</th><th>對象</th><th>平台佣金基礎</th><th>比例</th><th>暫估金額</th><th>成交日期</th></tr></thead><tbody>' + data.map(row => {
@@ -1220,7 +1220,7 @@ async function loadAdmCommissions() {
 async function admExportCommissionsCSV() {
   const { data, error } = await _sb.from('commission_allocations').select('allocation_role,recipient_name,recipient_company,commission_base_amount,share_rate,estimated_amount,created_at,projects(name),units(floor,unit_no),sale_submissions(deal_date)').order('created_at', { ascending: false });
   if (error || !data?.length) { alert('目前沒有可匯出的暫估獎金資料'); return; }
-  const labels = { broker_company: '中介公司', regional_agent: '區域代理人', sourcing_partner: '拓案夥伴', platform: '譽誠平台' }, esc = value => '"' + String(value == null ? '' : value).replace(/"/g, '""') + '"';
+  const labels = { broker_company: '中介公司', regional_agent: '區域代理人', sourcing_partner: '拓案夥伴', platform: '房聯網' }, esc = value => '"' + String(value == null ? '' : value).replace(/"/g, '""') + '"';
   const rows = data.map(row => { const p = Array.isArray(row.projects) ? row.projects[0] : row.projects, u = Array.isArray(row.units) ? row.units[0] : row.units, sale = Array.isArray(row.sale_submissions) ? row.sale_submissions[0] : row.sale_submissions; return [p?.name, u ? String(u.floor).padStart(2,'0') + '-' + u.unit_no : '', labels[row.allocation_role], row.recipient_company || row.recipient_name, row.commission_base_amount, row.share_rate + '%', row.estimated_amount, admDate(sale?.deal_date || row.created_at)]; });
   const blob = new Blob(['\uFEFF' + [['建案','戶別','角色','對象','平台佣金基礎','分潤比例','暫估金額','成交日期'], ...rows].map(row => row.map(esc).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' });
   const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = '全平台暫估獎金_' + new Date().toISOString().slice(0,10).replace(/-/g, '') + '.csv'; link.click(); URL.revokeObjectURL(link.href);

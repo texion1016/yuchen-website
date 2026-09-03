@@ -11,6 +11,16 @@
   <meta property="og:title" content="房聯網｜成屋聯合銷售 × 建商合作 × 仲介共享案源" />
   <meta property="og:description" content="串聯建商、合作仲介與客戶，整合案源、戶況與帶看報備。" />
   <meta property="og:site_name" content="房聯網" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "房聯網",
+    "alternateName": "譽誠聯合銷售平台",
+    "url": "https://yuchen-realty.com/",
+    "description": "建商與合作仲介的成屋聯合銷售平台。"
+  }
+  </script>
   <link rel="canonical" href="https://yuchen-realty.com/" />
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#1A3A5F" />
@@ -720,7 +730,7 @@
     <a href="#" onclick="openBrokerOverlay();return false;">仲介專區</a>
     <a href="regional-portal.html">區代專區</a>
     <a href="sourcing-portal.html">拓案專區</a>
-    <a href="install.html" class="nav-a2hs" title="把譽誠加到手機桌面">
+    <a href="install.html" class="nav-a2hs" title="把房聯網加到手機桌面">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18.5h2"/></svg>手機版</a>
     <a href="yc-console-8k3n7q.html" onclick="startAdminPasskeyLogin(event)">管理員</a>
   </nav>
@@ -895,7 +905,7 @@
       <h2 class="section-title">裝修新時代，<br />預製新工法，<br />品質、效率<em>一次到位</em></h2>
       <p class="cmp-desc">
         從毛胚到精品，最快 15 天完工。
-        譽誠設計團隊提供一站式輕裝修方案，
+        房聯網設計團隊提供一站式輕裝修方案，
         選材、施工、保固，全程無憂。
       </p>
       <div class="cmp-list">
@@ -1130,7 +1140,7 @@
           <img src="photo/icons/qr-site.png" alt="房聯網官網二維碼" />
           <div class="footer-qr-txt">
             <span>掃描或長按<br />開啟官網</span>
-            <a href="photo/icons/qr-site.png" download="譽誠平台二維碼.png">⬇ 下載二維碼</a>
+            <a href="photo/icons/qr-site.png" download="房聯網二維碼.png">⬇ 下載二維碼</a>
           </div>
         </div>
         <div class="footer-social">
@@ -1271,7 +1281,7 @@
       <button class="bov-btn" onclick="doBrokerLogin()">登入</button>
       <button type="button" class="bov-btn bov-btn-sec" style="margin-top:.65rem;" onclick="doBrokerPasskeyLogin()">使用人臉／裝置 Passkey 登入</button>
       <div class="bov-forgot"><a href="#" onclick="switchBovTab('reset');return false;">忘記密碼？</a></div>
-      <p style="margin:1.3rem 0 0;padding-top:1rem;border-top:1px solid var(--line);font-size:.78rem;line-height:1.75;color:var(--ink-dim);">帳號由合作中介公司的負責人建立。若你尚未收到邀請，請聯絡你的公司負責人或譽誠平台管理員。</p>
+      <p style="margin:1.3rem 0 0;padding-top:1rem;border-top:1px solid var(--line);font-size:.78rem;line-height:1.75;color:var(--ink-dim);">帳號由合作中介公司的負責人建立。若你尚未收到邀請，請聯絡你的公司負責人或房聯網管理員。</p>
     </div>
 
     <!-- 重設密碼 -->
@@ -1303,7 +1313,7 @@
     <!-- 舊制申請入口已停用 -->
     <div class="bov-panel" id="bovRegister">
       <div class="bov-form-title">帳號建立方式</div>
-      <p class="bov-reset-hint">譽誠平台與中介公司簽約後，會先邀請公司負責人；負責人再從公司團隊頁面邀請旗下員工。這樣每位仲介都會自動歸屬正確公司，且資料不會跨公司顯示。</p>
+      <p class="bov-reset-hint">房聯網與中介公司簽約後，會先邀請公司負責人；負責人再從公司團隊頁面邀請旗下員工。這樣每位仲介都會自動歸屬正確公司，且資料不會跨公司顯示。</p>
       <button class="bov-btn bov-btn-sec" onclick="switchBovTab('login')">返回登入</button>
     </div>
 
@@ -1350,7 +1360,7 @@
 
     <div class="bov-panel" id="bovSales">
       <div class="bov-form-title" id="brokerSalesTitle">成交申報與暫估獎金</div>
-      <p class="bov-reset-hint">成交由公司或旗下中介提交，僅在譽誠管理員核准後才會納入各方的暫估獎金；這不是結算或付款紀錄。</p>
+      <p class="bov-reset-hint">成交由公司或旗下中介提交，僅在房聯網管理員核准後才會納入各方的暫估獎金；這不是結算或付款紀錄。</p>
       <div id="saleSubmitMsg" class="bov-msg"></div>
       <div style="border:1px solid var(--line);border-radius:12px;padding:1rem;margin:1rem 0 1.25rem;background:rgba(255,255,255,.03);">
         <div class="bov-row"><div class="bov-field"><label>建案 *</label><select id="saleProject" onchange="loadBrokerSaleUnits()"><option value="">請選擇建案</option></select></div><div class="bov-field"><label>成交戶別 *</label><select id="saleUnit"><option value="">請先選擇建案</option></select></div></div>
@@ -6747,7 +6757,7 @@ html, body { overflow-x: clip; }
         <div class="dev-field"><label>確認新密碼</label><input type="password" id="devResetPwd2" autocomplete="new-password" minlength="12" placeholder="再輸入一次新密碼" onkeydown="if(event.key==='Enter')saveDevPasswordReset()" /></div>
         <button type="button" class="dev-login-btn" onclick="saveDevPasswordReset()">儲存新密碼</button>
       </div>
-      <div class="dev-login-note">帳號由譽誠管理員建立並指派建案。登入後僅能查看獲授權建案的銷售戶況；可在登入後啟用此裝置的人臉／Passkey。</div>
+      <div class="dev-login-note">帳號由房聯網管理員建立並指派建案。登入後僅能查看獲授權建案的銷售戶況；可在登入後啟用此裝置的人臉／Passkey。</div>
     </div>
   </div>
 
@@ -6987,14 +6997,14 @@ async function verifyDevSession(showError = true) {
   const { data: role } = await _sb.from('user_roles').select('role').eq('user_id', user.id).maybeSingle();
   if (role?.role !== 'builder') {
     await _sb.auth.signOut(); showDevLogin();
-    if (showError) showDevLoginError('此帳號未獲建商專區權限，請聯絡譽誠管理員。');
+    if (showError) showDevLoginError('此帳號未獲建商專區權限，請聯絡房聯網管理員。');
     return false;
   }
   const { data: assignments, error } = await _sb.from('builder_projects').select('project_name').eq('user_id', user.id);
   const projects = (assignments || []).map(row => row.project_name);
   if (error || !projects.length) {
     await _sb.auth.signOut(); showDevLogin();
-    if (showError) showDevLoginError('此帳號尚未指派建案，請聯絡譽誠管理員。');
+    if (showError) showDevLoginError('此帳號尚未指派建案，請聯絡房聯網管理員。');
     return false;
   }
   document.getElementById('devLoginErr').style.display = 'none';

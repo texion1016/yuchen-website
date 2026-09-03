@@ -6,10 +6,10 @@
 <!-- 對外品牌已切換為「房聯網」；保留既有 logo 圖樣。 -->
 <title>加到手機桌面｜房聯網</title>
 <meta name="theme-color" content="#1A3A5F" />
-<!-- 用主站同一份 manifest：加到桌面後名稱是「譽誠平台」、圖示是主 logo、
+<!-- 用主站同一份 manifest：加到桌面後名稱是「房聯網」、圖示是主 logo、
      開啟的是 index.html，而不是這頁說明。 -->
 <link rel="manifest" href="manifest.json" />
-<meta name="apple-mobile-web-app-title" content="譽誠平台" />
+<meta name="apple-mobile-web-app-title" content="房聯網" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <link rel="apple-touch-icon" href="photo/icons/apple-touch-icon.png" />
 <link rel="icon" type="image/png" sizes="192x192" href="photo/icons/icon-192.png" />
@@ -171,7 +171,7 @@
     <a class="back-home" href="index.html" aria-label="返回主站">← 返回主站</a>
   </div>
 
-  <h1>把譽誠加到<br />手機桌面</h1>
+  <h1>把房聯網加到<br />手機桌面</h1>
   <p class="lede">加好之後，桌面上會多一個圖示，<b>以後點一下就能開</b>，不用再掃碼、也不用記網址。</p>
 
   <!-- ══ 已經裝好 ══ -->
@@ -264,7 +264,7 @@
         <div class="step-n">3</div>
         <div class="step-body">
           <div class="step-t">按右上角的「新增」</div>
-          <div class="step-s">按完就完成了，桌面上會出現譽誠的圖示。</div>
+          <div class="step-s">按完就完成了，桌面上會出現房聯網的圖示。</div>
         </div>
       </li>
     </ul>
@@ -301,7 +301,7 @@
         <div class="step-n">3</div>
         <div class="step-body">
           <div class="step-t">按「安裝」確認</div>
-          <div class="step-s">按完就完成了，桌面上會出現譽誠的圖示。</div>
+          <div class="step-s">按完就完成了，桌面上會出現房聯網的圖示。</div>
         </div>
       </li>
     </ul>
@@ -335,7 +335,7 @@
   var ua = navigator.userAgent || '';
   var show = function (id) { var e = document.getElementById(id); if (e) e.hidden = false; };
 
-  // 從桌面圖示開啟時直接進主站 —— 使用者要的是譽誠平台，不是這頁說明。
+  // 從桌面圖示開啟時直接進主站 —— 使用者要的是房聯網，不是這頁說明。
   // （manifest 的 start_url 已指向 index.html，這裡是舊版 iOS 的保險）
   var standalone = window.matchMedia('(display-mode: standalone)').matches
                    || window.navigator.standalone === true;

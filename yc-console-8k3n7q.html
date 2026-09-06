@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+  <script src="/assets/js/auth-entry.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
@@ -462,7 +463,7 @@
 const _SB_URL = 'https://femuufnveodwcnusuthy.supabase.co';
 const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlbXV1Zm52ZW9kd2NudXN1dGh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2ODQ0MjcsImV4cCI6MjA5NzI2MDQyN30.TQER06oE6_CT8nHprhPlf79qjbcsgS4nhEJs5VUregQ';
 const _sb = supabase.createClient(_SB_URL, _SB_KEY, {
-  auth: { experimental: { passkey: true }, persistSession: true, autoRefreshToken: true }
+  auth: { experimental: { passkey: true }, persistSession: !window.flwAuthRedirecting, autoRefreshToken: true, detectSessionInUrl: !window.flwAuthRedirecting }
 });
 const adminAuthCallbackType = ((window.location.search + '&' + window.location.hash).match(/(?:^|[?&#])type=([^&#]+)/)?.[1] || '').toLowerCase();
 const adminInvitationMode = adminAuthCallbackType === 'invite';

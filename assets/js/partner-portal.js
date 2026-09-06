@@ -1,7 +1,8 @@
 /* 區代專區與拓案專區共用登入、資料顯示及匯出邏輯。 */
 (() => {
+  if (window.flwAuthRedirecting) return;
   const config = window.PARTNER_PORTAL_CONFIG;
-  const sb = supabase.createClient('https://femuufnveodwcnusuthy.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlbXV1Zm52ZW9kdXN1dGh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2ODQ0MjcsImV4cCI6MjA5NzI2MDQyN30.TQER06oE6_CT8nHprhPlf79qjbcsgS4nhEJs5VUregQ', { auth: { experimental: { passkey: true }, persistSession: true, autoRefreshToken: true } });
+const sb = supabase.createClient('https://femuufnveodwcnusuthy.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlbXV1Zm52ZW9kd2NudXN1dGh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2ODQ0MjcsImV4cCI6MjA5NzI2MDQyN30.TQER06oE6_CT8nHprhPlf79qjbcsgS4nhEJs5VUregQ', { auth: { experimental: { passkey: true }, persistSession: true, autoRefreshToken: true } });
   let currentUser = null;
   let rows = { projects: [], sales: [], commissions: [] };
   const $ = id => document.getElementById(id);

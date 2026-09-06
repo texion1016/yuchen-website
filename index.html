@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+  <script src="/assets/js/auth-entry.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- 品牌切換備註：目前對外品牌為「房聯網」；保留舊稱以便日後切回。 -->
@@ -242,12 +243,12 @@
     .nav-links a.nav-a2hs svg { width: 1.05em; height: 1.05em; flex-shrink: 0; }
     .nav-desktop-install {
       display: none; position: absolute; right: 2.4rem; align-items: center; gap: .48rem;
-      border: 1px solid rgba(232,193,106,.56); border-radius: 999px; background: rgba(232,193,106,.08);
-      color: #F4D891; padding: .5rem .88rem; font: inherit; font-size: .78rem; letter-spacing: .08em;
+      border: 1px solid #405E7B; border-radius: 999px; background: #18334F;
+      color: #FFFFFF; padding: .5rem .88rem; font: inherit; font-size: .78rem; letter-spacing: .08em;
       white-space: nowrap; cursor: pointer; transition: background .22s var(--ease), color .22s var(--ease), border-color .22s var(--ease), transform .22s var(--ease);
     }
     .nav-desktop-install svg { width: 1rem; height: 1rem; flex: 0 0 auto; }
-    .nav-desktop-install:hover { background: rgba(232,193,106,.17); border-color: var(--gold); color: #FFF1C8; transform: translateY(-1px); }
+    .nav-desktop-install:hover { background: #10263B; border-color: #7189A0; color: #FFFFFF; transform: translateY(-1px); }
     .nav-desktop-install:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
     .nav-desktop-install:disabled { opacity: .56; cursor: wait; transform: none; }
     @media (min-width: 1024px) { .nav-desktop-install { display: inline-flex; } }
@@ -654,7 +655,7 @@
     const _SB_URL = 'https://femuufnveodwcnusuthy.supabase.co';
     const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlbXV1Zm52ZW9kd2NudXN1dGh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2ODQ0MjcsImV4cCI6MjA5NzI2MDQyN30.TQER06oE6_CT8nHprhPlf79qjbcsgS4nhEJs5VUregQ';
     const _sb = supabase.createClient(_SB_URL, _SB_KEY, {
-      auth: { experimental: { passkey: true }, persistSession: true, autoRefreshToken: true }
+      auth: { experimental: { passkey: true }, persistSession: !window.flwAuthRedirecting, autoRefreshToken: true, detectSessionInUrl: !window.flwAuthRedirecting }
     });
   </script>
 </head>
@@ -767,6 +768,12 @@
     <div class="hr-btns">
       <a href="#projects" class="btn btn-gold">查看建案</a>
       <a href="#" onclick="openBrokerOverlay();return false;" class="btn btn-outline">仲介登入</a>
+      <button type="button" class="btn btn-outline" id="shareWebsite" aria-describedby="shareStatus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-4M8.6 13.5l6.8 4"/></svg>分享網站</button>
+    </div>
+    <p id="shareStatus" role="status" aria-live="polite" style="font-size:.9rem;line-height:1.6;"></p>
+    <div id="shareFallback" hidden>
+      <label for="shareUrl">長按或選取下方網址複製：</label>
+      <input id="shareUrl" type="url" value="https://yuchen-realty.com/" readonly style="width:100%;max-width:24rem;font-size:16px;padding:.6rem;" />
     </div>
     <div class="hr-stats">
       <div class="hr-stat">
@@ -1151,10 +1158,10 @@
           建立透明且高效率的聯合銷售機制。
         </p>
         <div class="footer-qr">
-          <img src="photo/icons/qr-site.png" alt="房聯網官網二維碼" />
+          <a href="https://yuchen-realty.com/" aria-label="開啟房聯網官網"><img src="photo/icons/qr-site-current.svg" alt="房聯網官網二維碼，連結至 yuchen-realty.com" /></a>
           <div class="footer-qr-txt">
             <span>掃描或長按<br />開啟官網</span>
-            <a href="photo/icons/qr-site.png" download="房聯網二維碼.png">⬇ 下載二維碼</a>
+            <a href="photo/icons/qr-site-current.svg" download="房聯網二維碼.svg">⬇ 下載二維碼</a>
           </div>
         </div>
         <div class="footer-social">
@@ -7785,5 +7792,6 @@ function dismissA2HS() {
 })();
 </script>
 
+<script src="assets/js/site-share.js"></script>
 </body>
 </html>
